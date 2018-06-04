@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 91d29447e6e1c9f42a569a23f9df98ee, type: 3}
+  m_Name: Weapon_Default
+  m_EditorClassIdentifier: 
+  name: Default Weapon
+  quantity: 1
+  stackLimit: 1
+  canStack: 0
+  description: Default Weapon
+  rarity: 2
+  cooldownDuration: 0.27
+  fullName: Default Weapon Full
+  energyDraw: 2
+  hullDamage: 3
+  shieldDamage: 3
+  thrust: 2
+  range: 300
+  rank: 1
+  damageType: 0
+  projectile: {fileID: 1689651798586984, guid: 6ec226504dd71624eba71637e52715e3, type: 2}
+  clip: {fileID: 8300000, guid: 750ad1ee397a6b2429b6a8edc5529503, type: 3}
