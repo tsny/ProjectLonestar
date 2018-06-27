@@ -16,14 +16,9 @@ public class HUDManager : ShipUIElement
         cruiseText.text = "Engines Nominal";
     }
 
-    protected override void HandlePossession(PlayerController sender, PossessionEventArgs e)
-    {
-        base.HandlePossession(sender, e);
-    }
-
     private void Update()
     {
-        if (playerController == null) return;
+        if (ship == null) return;
 
         SetMouseFlightText();
         SetCruiseText();

@@ -86,7 +86,7 @@ public class HardpointSystem : ShipComponent
 
         if (!owningShip.shipMovement.CanAfterburn) return;
 
-        if (toggle) afterburnerHardpoint.Enable();
+        afterburnerHardpoint.Enable();
     }
 
     private void Update()
@@ -117,5 +117,24 @@ public class HardpointSystem : ShipComponent
     {
         energy = Mathf.Clamp(energy, 0, energyCapacity);
         energy = Mathf.MoveTowards(energy, energyCapacity, chargeRate * Time.deltaTime);
+    }
+
+    public void MountLoadout(Loadout newLoadout)
+    {
+        DemountAll();
+
+        foreach (Equipment equipment in newLoadout.equipment)
+        {
+            foreach(Hardpoint hardpoint in hardpoints)
+            {
+                if (hardpoint.IsMounted) continue;
+
+                if (hardpoint.associatedEquipmentType == equipment.GetType())
+                {
+                    hardpoint.Mount(equipment);
+                    break;
+                }
+            }
+        }
     }
 }

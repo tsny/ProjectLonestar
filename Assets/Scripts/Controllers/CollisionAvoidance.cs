@@ -25,7 +25,6 @@ public class CollisionAvoidance : ShipComponent
     protected override void Awake()
     {
         base.Awake();
-        shipMovement = (ShipMovement)owningShip.shipComponents.Find(x => x.GetType() == typeof(ShipMovement));
     }
 
     public bool CheckForObstacle()

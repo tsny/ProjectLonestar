@@ -15,7 +15,6 @@ public class Ship : WorldObject
     public int cargoHoldCapacity = 30;
 
     [Header("References")]
-    public List<ShipComponent> shipComponents;
     public HardpointSystem hardpointSystem;
     public Vector3 AimPosition;
     public ShipStats stats;
@@ -24,9 +23,6 @@ public class Ship : WorldObject
     public Inventory inventory;
 
     public ParticleSystem dustParticleSystem;
-
-    public delegate void DamageTakenEventHandler(WorldObject sender);
-    public event DamageTakenEventHandler TookDamage;
 
     public bool CanFire
     {
@@ -46,8 +42,6 @@ public class Ship : WorldObject
         indicator.header.text = pilotLastName + " " + faction;
         indicator.targetHealth = hullHealth;
         indicator.targetShield = hardpointSystem.shieldHardpoint.health;
-
-        TookDamage += indicator.HandleTargetDamaged;
     }
 
     protected override void SetName()
@@ -62,7 +56,8 @@ public class Ship : WorldObject
     {
         base.Awake();
 
-        shipComponents.AddRange(GetComponentsInChildren<ShipComponent>(true));
+        FindObjectOfType<PlayerController>().ShipPossessed += HandlePossessed;
+
         hardpointSystem = GetComponentInChildren<HardpointSystem>();
         shipMovement = GetComponent<ShipMovement>();
         inventory = GetComponentInChildren<Inventory>();
@@ -74,26 +69,47 @@ public class Ship : WorldObject
     {
         if (invulnerable) return;
 
-        if (!hardpointSystem.shieldHardpoint.IsOnline)
+        if (hardpointSystem.shieldHardpoint.IsOnline)
         {
-            hullHealth -= weapon.hullDamage;
-
-            if (hullHealth <= 0)
-            {
-                Explode();
-            } 
+            hardpointSystem.shieldHardpoint.TakeDamage(weapon);
+            OnTookDamage(true, weapon.shieldDamage);
+            return;
         }
 
-        else hardpointSystem.shieldHardpoint.TakeDamage(weapon);
+        hullHealth -= weapon.hullDamage;
 
-        if (TookDamage != null) TookDamage(this);
+        if (hullHealth <= 0)
+        {
+            Die();
+        }
+
+        OnTookDamage(false, weapon.hullDamage);
     }
 
-    public void Explode()
+    public void HandlePossessed(PlayerController newController, Ship newShip)
     {
-        // Play FX
-        OnDestroyed();
-        Destroy(gameObject);
+        if (newShip != this)
+        {
+            return;
+        }
+
+        newController.ShipUnpossessed += HandleUnpossessed;
+
+        name = "Player Ship - " + shipName;
+        tag = "Player";
+
+        dustParticleSystem.gameObject.SetActive(true);
+        hardpointSystem.shieldHardpoint.gameObject.layer = LayerMask.NameToLayer("Player");
+    }
+
+    private void HandleUnpossessed(PlayerController sender, Ship oldShip)
+    {
+        sender.ShipUnpossessed -= HandleUnpossessed;
+        SetName();
+
+        dustParticleSystem.gameObject.SetActive(false);
+        tag = "Untagged";
+        hardpointSystem.shieldHardpoint.gameObject.layer = 0;
     }
 }
 

@@ -12,11 +12,16 @@ public class WeaponPanelButton : MonoBehaviour
     public Color enabledColor;
     public Color disabledColor;
 
+    private void Awake()
+    {
+        enabledColor = button.colors.normalColor;
+    }
+
     public void ToggleHardpoint()
     {
         weaponHardpoint.Toggle();
         SetName();
-        //SetColor();
+        SetColor();
     }
 
     public void Initialize(WeaponHardpoint weaponHardpoint)

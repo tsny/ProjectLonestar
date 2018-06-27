@@ -8,13 +8,11 @@ public class Loot : WorldObject
     public bool beingLooted;
     public float pickupRange = 5;
     public float outOfBoundsRange = 100;
+    [ReadOnly]
     public float distanceToTarget;
 
     [Range(0, 1)]
     public float pullForce = .5f;
-
-    public delegate void DamageTakenEventHandler(WorldObject sender);
-    public event DamageTakenEventHandler TookDamage;
 
     private Loot()
     {
@@ -70,7 +68,7 @@ public class Loot : WorldObject
             }
 
             targetInventory.AddItem(item);
-            Explode();
+            Die();
         }
 
         transform.LookAt(target.transform);
@@ -90,16 +88,9 @@ public class Loot : WorldObject
         if (invulnerable) return;
 
         hullHealth -= weapon.hullDamage;
-        if (hullHealth <= 0) Explode();
 
-        if (TookDamage != null) TookDamage(this);
-    }
+        if (hullHealth <= 0) Die();
 
-    public void Explode()
-    {
-        // Play FX
-
-        OnDestroyed();
-        Destroy(gameObject);
+        OnTookDamage(false, weapon.hullDamage);
     }
 }

@@ -10,22 +10,29 @@ public class ShipStatusUI : ShipUIElement
 
     public Text shipSpeed;
 
-    public Ship ship;
     public ShipPhysics shipPhysics;
 
     private void Update()
     {
-        if (playerController == null) return;
-
-        if (playerController.controlledShip != ship)
-        {
-            ship = playerController.controlledShip;
-            shipPhysics = ship.GetComponent<ShipPhysics>();
-        }
+        if (ship == null) return;
 
         SetFillAmounts();
 
         shipSpeed.text = "" + (int) shipPhysics.speed;
+    }
+
+    protected override void HandlePossessed(PlayerController sender, Ship newShip)
+    {
+        base.HandlePossessed(sender, newShip);
+
+        shipPhysics = ship.GetComponent<ShipPhysics>();
+    }
+
+    protected override void HandleUnpossessed(PlayerController sender, Ship oldShip)
+    {
+        base.HandleUnpossessed(sender, oldShip);
+
+        shipPhysics = null;
     }
 
     private void SetFillAmounts()

@@ -22,7 +22,7 @@ public class DebugConsole : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.BackQuote))
+        if (Input.GetKeyDown(KeyCode.BackQuote) && GameManager.instance.debugMode)
         {
             content.SetActive(!content.activeSelf);
         }
@@ -31,6 +31,7 @@ public class DebugConsole : MonoBehaviour
     public void GodMode()
     {
         playerController.controlledShip.invulnerable = !playerController.controlledShip.invulnerable;
+        print("Godmode : " + playerController.controlledShip.invulnerable);
     }
 
     public void SpawnDefaultShip()
@@ -41,6 +42,11 @@ public class DebugConsole : MonoBehaviour
     public void NoEnergyDrain()
     {
         playerController.controlledShip.hardpointSystem.EnableInfiniteEnergy();
+    }
+
+    public void NoThrusterDrain()
+    {
+        playerController.controlledShip.hardpointSystem.afterburnerHardpoint.drain = 0;
     }
 
     public void PopulateMethodList()

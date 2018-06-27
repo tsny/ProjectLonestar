@@ -3,9 +3,27 @@ using System.Collections;
 
 public class ShipSpawner : MonoBehaviour
 {
+    public static ShipSpawner instance;
+
     public GameObject defaultShip;
 
-    public static Loadout CreateLoadout()
+    private void Awake()
+    {
+        SingletonInit();
+    }
+
+    private void SingletonInit()
+    {
+        if (instance == null)
+        {
+            DontDestroyOnLoad(gameObject);
+            instance = this;
+        }
+
+        else if (instance != this) Destroy(gameObject);
+    }
+
+    public static Loadout CreateDummyLoadout()
     {
         Loadout loadout = ScriptableObject.CreateInstance<Loadout>();
         loadout.equipment.Add(ScriptableObject.CreateInstance<Weapon>());
@@ -36,7 +54,7 @@ public class ShipSpawner : MonoBehaviour
         if (loadout == null)
         {
             print("Loadout was null, giving ship defualt loadout...");
-            inventory.Initialize(CreateLoadout());
+            inventory.Initialize(CreateDummyLoadout());
             return ship;
         }
 

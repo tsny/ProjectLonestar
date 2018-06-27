@@ -27,21 +27,20 @@ public class Inventory : ShipComponent
     public List<Item> items;
     public GameObject lootPrefab;
     
-    protected override void Awake()
-    {
-        base.Awake();
-
-        items = new List<Item>(owningShip.cargoHoldCapacity);
-    }
-
     public void Initialize(Loadout loadout)
     {
         items.AddRange(loadout.equipment.ToArray());
+        transform.root.GetComponentInChildren<HardpointSystem>().MountLoadout(loadout);
 
-        MountHardpoints(loadout);
+        //MountHardpoints(loadout);
     }
 
-    public bool AddItem(Item item)
+    /// <summary>
+    /// Adds an item to the inventory and returns a new item if the inventory is full 
+    /// </summary>
+    /// <param name="item"></param>
+    /// <returns></returns>
+    public Item AddItem(Item item)
     {
         if (item.canStack)
         {
@@ -52,7 +51,7 @@ public class Inventory : ShipComponent
                 if (foundItem.SpaceRemaining >= item.quantity)
                 {
                     foundItem.quantity += item.quantity;
-                    return true;
+                    return null;
                 }
 
                 else
@@ -66,7 +65,7 @@ public class Inventory : ShipComponent
             else
             {
                 items.Add(item);
-                return true;
+                return null;
             }
         }
 
@@ -75,10 +74,10 @@ public class Inventory : ShipComponent
             if(!IsFull)
             {
                 items.Add(item);
-                return true;
+                return null;
             }
 
-            else return false;
+            else return item;
         }
     }
 
@@ -95,28 +94,10 @@ public class Inventory : ShipComponent
         return null;
     }
 
-    public void JettisonItem()
+    public void JettisonItem(Item item)
     {
-        Instantiate(lootPrefab, transform.position - Vector3.down, Quaternion.identity);
-    }
-
-    public void MountHardpoints(Loadout newLoadout)
-    {
-        List<Hardpoint> hardpoints = owningShip.GetComponentInChildren<HardpointSystem>().hardpoints;
-
-        foreach (Equipment equipment in newLoadout.equipment)
-        {
-            foreach(Hardpoint hardpoint in hardpoints)
-            {
-                if (hardpoint.IsMounted) continue;
-
-                if (hardpoint.associatedEquipmentType == equipment.GetType())
-                {
-                    hardpoint.Mount(equipment);
-                    break;
-                }
-            }
-        }
+        Loot loot = Instantiate(lootPrefab, transform.position - Vector3.down, Quaternion.identity).GetComponent<Loot>();
+        loot.item = item;
     }
 }
 

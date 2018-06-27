@@ -46,8 +46,8 @@ public class TargetIndicator : MonoBehaviour
     [Header("Target")]
 
     public WorldObject target;
-    public Image healthBarImage;
     public GameObject healthObject;
+    public Image healthBarImage;
 
     public float targetHealth;
     public float targetShield;
@@ -73,9 +73,17 @@ public class TargetIndicator : MonoBehaviour
     public event SelectionEventHandler Deselected;
     public event TargetDestroyedEventHandler TargetDestroyed;
 
+    private void OnDestroy()
+    {
+        target.TookDamage -= HandleTargetTookDamage;
+        target.Killed -= HandleTargetKilled;
+    }
+
     private void Update()
     {
         if (HasTarget == false) return;
+
+        RangeCheck();
 
         CalculatePosition();
         CalculateScale();
@@ -158,6 +166,14 @@ public class TargetIndicator : MonoBehaviour
         transform.localScale = newScale * Vector3.one;
     }
 
+    private void RangeCheck()
+    {
+        if ( (distanceFromTarget > maxRange) && selected)
+        {
+            Deselect();
+        }
+    }
+
     private void CalculateTransparency()
     {
         Color newColor;
@@ -185,9 +201,15 @@ public class TargetIndicator : MonoBehaviour
     {
         newTarget.SetupTargetIndicator(this);
         target = newTarget;
-        target.WorldObjectExploded += HandleTargetDestroyed;
+        target.Killed += HandleTargetKilled;
+        target.TookDamage += HandleTargetTookDamage;
 
         name = target.name;
+        SetHealthBarFill();
+    }
+
+    private void HandleTargetTookDamage(WorldObject sender, DamageEventArgs e)
+    {
         SetHealthBarFill();
     }
 
@@ -206,18 +228,13 @@ public class TargetIndicator : MonoBehaviour
         header.gameObject.SetActive(value);
     }
 
-    public void HandleTargetDamaged(WorldObject sender)
-    {
-        SetHealthBarFill();
-    }
-
     private void SetHealthBarFill()
     {
         targetHealth = target.hullHealth;
         healthBarImage.fillAmount = target.hullHealth / target.hullFullHealth;
     }
 
-    public void HandleTargetDestroyed(WorldObject sender)
+    public void HandleTargetKilled(WorldObject sender, DeathEventArgs e)
     {
         if (TargetDestroyed != null) TargetDestroyed(this);
     }

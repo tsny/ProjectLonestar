@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 public class ShieldHardpoint : Hardpoint, IDamageable
 {
@@ -7,15 +8,14 @@ public class ShieldHardpoint : Hardpoint, IDamageable
     public float capacity;
     public float health;
     public float regenRate;
-    
-    private Timer damagedTimer;
+
     private Shield shield;
 
     public bool IsOnline
     {
         get
         {
-            return (OnCooldown == false && IsMounted == true);
+            return health > 0;
         }
     }
 
@@ -29,8 +29,21 @@ public class ShieldHardpoint : Hardpoint, IDamageable
         base.Mount(newEquipment);
 
         shield = newEquipment as Shield;
+
         health = shield.capacity;
-        capacity = health;
+        capacity = shield.capacity;
+        regenRate = shield.regenRate;
+    }
+
+    public override void Demount()
+    {
+        base.Demount();
+
+        shield = null;
+
+        health = 0;
+        capacity = 0;
+        regenRate = 0;
     }
 
     protected override void Awake()
@@ -43,30 +56,27 @@ public class ShieldHardpoint : Hardpoint, IDamageable
 
     private void Update()
     {
-        if(!OnCooldown && damagedTimer == null) health = Mathf.MoveTowards(health, capacity, regenRate * Time.deltaTime);
+        if(!OnCooldown)
+        {
+            Recharge();
+        }
+    }
+
+    private void Recharge()
+    {
+         health = Mathf.MoveTowards(health, capacity, regenRate * Time.deltaTime);
     }
 
     public void TakeDamage(Weapon weapon)
     {
-        if (shield == null) return;
-
-        float calculatedDamage = Damage.CalculateShieldDamage(weapon, shield.type);
-        health -= calculatedDamage;
-
+        health -= Damage.CalculateShieldDamage(weapon, shield.type);
         hitSource.Play();
 
-        if (damagedTimer == null)
-        {
-            damagedTimer = gameObject.AddComponent<Timer>();
-            damagedTimer.Initialize(2f);
-        }
-
-        else damagedTimer.Restart(true);
-
-        if(health <= 0)
+        if (health <= 0)
         {
             health = 0;
-            BeginCooldown();
         }
+
+        OnCooldown = true;
     }
 }

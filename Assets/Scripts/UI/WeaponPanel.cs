@@ -9,15 +9,30 @@ public class WeaponPanel : ShipUIElement
 
     public GameObject weaponPanelButton;
 
-    protected override void HandlePossession(PlayerController sender, PossessionEventArgs e)
+    protected override void HandlePossessed(PlayerController sender, Ship newShip)
     {
-        base.HandlePossession(sender, e);
+        base.HandlePossessed(sender, newShip);
+
+        hardpointSystem = newShip.hardpointSystem;
 
         ClearPanel();
+        PopulatePanel();
+    }
 
-        foreach (WeaponHardpoint weaponHardpoint in e.newShip.hardpointSystem.weaponHardpoints.Values)
+    protected override void HandleUnpossessed(PlayerController sender, Ship oldShip)
+    {
+        base.HandleUnpossessed(sender, oldShip);
+
+        hardpointSystem = null;
+
+        ClearPanel();
+    }
+
+    private void PopulatePanel()
+    {
+        foreach (WeaponHardpoint weaponHardpoint in hardpointSystem.weaponHardpoints.Values)
         {
-            if (weaponHardpoint.IsMounted) continue;
+            if (!weaponHardpoint.IsMounted) continue;
 
             Instantiate(weaponPanelButton, vlg.transform).GetComponent<WeaponPanelButton>().Initialize(weaponHardpoint);
         }

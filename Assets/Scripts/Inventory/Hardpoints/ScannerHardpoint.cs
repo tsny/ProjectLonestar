@@ -64,9 +64,14 @@ public class ScannerHardpoint : Hardpoint
     
         detectedObjects.Add(objectToAdd);
 
-        objectToAdd.WorldObjectExploded += RemoveEntry;
+        objectToAdd.Killed += HandleEntryKilled;
 
         if (EntryChanged != null) EntryChanged(objectToAdd, true);
+    }
+
+    private void HandleEntryKilled(WorldObject sender, DeathEventArgs e)
+    {
+        RemoveEntry(sender);
     }
 
     public void RemoveEntry(WorldObject objectToRemove)
@@ -75,12 +80,12 @@ public class ScannerHardpoint : Hardpoint
 
         detectedObjects.Remove(objectToRemove);
 
-        objectToRemove.WorldObjectExploded -= RemoveEntry;
+        objectToRemove.Killed -= HandleEntryKilled;
 
         if (EntryChanged != null) EntryChanged(objectToRemove, false);
     }
 
-    public IEnumerator ScanCoroutine()
+    private IEnumerator ScanCoroutine()
     {
         for (; ;)
         {

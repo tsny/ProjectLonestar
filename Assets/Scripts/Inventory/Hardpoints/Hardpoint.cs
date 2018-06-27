@@ -30,9 +30,17 @@ public class Hardpoint : ShipComponent
 
         set
         {
-            if (onCooldown) return;
-            onCooldown = value;
-            StartCoroutine(BeginCooldown());
+            if (value)
+            {
+                StopAllCoroutines();
+                StartCoroutine(CooldownCoroutine());
+            }
+
+            else
+            {
+                StopCoroutine(CooldownCoroutine());
+                onCooldown = false;
+            }
         }
     }
 
@@ -80,8 +88,9 @@ public class Hardpoint : ShipComponent
         if (Demounted != null) Demounted(this);
     }
 
-    protected IEnumerator BeginCooldown()
+    protected IEnumerator CooldownCoroutine()
     {
+        onCooldown = true;
         yield return new WaitForSeconds(currentEquipment.cooldownDuration);
         onCooldown = false;
     }

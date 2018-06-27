@@ -8,19 +8,17 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    public static GameManager gm;
-
-    public int locationID = 0;
-
-    public ShipSpawner shipSpawner;
+    public static GameManager instance;
 
     public PlayerController playerController;
-
-    public Vector3 spawnPosition;
+    //public ShipSpawner shipSpawner;
     public GameObject shipPrefab;
+    public Vector3 spawnPosition;
     public Loadout playerLoadout;
     public Ship playerShip;
 
+    public bool debugMode;
+    public int locationID;
     public bool spawnPlayer;
     private bool paused;
 
@@ -87,7 +85,7 @@ public class GameManager : MonoBehaviour
 
         SceneManager.activeSceneChanged += HandleNewScene;
 
-        shipSpawner = GetComponent<ShipSpawner>();
+        //shipSpawner = GetComponent<ShipSpawner>();
         playerController = FindObjectOfType<PlayerController>();
 
         AssignKeyCodes();
@@ -99,13 +97,13 @@ public class GameManager : MonoBehaviour
 
     private void SingletonInit()
     {
-        if (gm == null)
+        if (instance == null)
         {
             DontDestroyOnLoad(gameObject);
-            gm = this;
+            instance = this;
         }
 
-        else if (gm != this) Destroy(gameObject);
+        else if (instance != this) Destroy(gameObject);
     }
 
     private void AssignKeyCodes()
@@ -154,7 +152,7 @@ public class GameManager : MonoBehaviour
 
         if (spawnPlayer)
         {
-            playerShip = shipSpawner.SpawnPlayerShip(shipPrefab, playerLoadout, spawnPosition);
+            playerShip = ShipSpawner.instance.SpawnPlayerShip(shipPrefab, playerLoadout, spawnPosition);
         }
     }
 
