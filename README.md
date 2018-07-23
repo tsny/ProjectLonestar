@@ -1,4 +1,4 @@
 # ProjectLonestar
 A remake for Freelancer.
 
-![Alt Text](https://media.giphy.com/media/1ivFqEYkV7LLclWnKx/giphy.gif)
+<img src="https://img.itch.zone/aW1hZ2UvMjI5NjY2LzExNzUwNjUucG5n/original/XT8z%2B1.png" width="400" height="300" />
