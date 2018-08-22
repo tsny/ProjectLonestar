@@ -21,6 +21,7 @@ GameObject:
   - component: {fileID: 4470741632504502}
   - component: {fileID: 33380235427858406}
   - component: {fileID: 23086997379688298}
+  - component: {fileID: 135554689794415302}
   m_Layer: 0
   m_Name: PF_Asteroid_Default
   m_TagString: Untagged
@@ -35,7 +36,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1037690988293558}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 241.44936, y: 244.87025, z: -101.773415}
+  m_LocalPosition: {x: 347.7735, y: 240.72247, z: 294.21167}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -82,3 +83,15 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1037690988293558}
   m_Mesh: {fileID: 4300000, guid: ee4a35261634b924789b289e03b2ad4e, type: 3}
+--- !u!135 &135554689794415302
+SphereCollider:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1037690988293558}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 2.0638385
+  m_Center: {x: 0.028364182, y: 0.007007122, z: -0.003988862}

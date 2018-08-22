@@ -4,24 +4,18 @@ using UnityEngine;
 [ExecuteInEditMode]
 public class AsteroidField : MonoBehaviour
 {
-    public GameObject asteroidGO;
-    public float innerRadius = 30;
-    public float outerRadius = 100;
-
-    public int desiredAsteroids = 1000;
-
-    public float AsteroidScale { get; set; }
+    public GameObject AsteroidGameObject { get; set; }
 
     public new HideFlags hideFlags;
 
+    public int desiredAsteroids = 1000;
+
+    public float InnerRadius { get; set; }
+    public float OuterRadius { get; set; }
+    public float AsteroidScale { get; set; }
+
     public void GenerateField()
     {
-        if (innerRadius > outerRadius)
-        {
-            print("Invalid raidus, inner must be smaller than outer radius");
-            return;
-        }
-
         ClearField();
         CreateAsteroids();
     }
@@ -32,23 +26,18 @@ public class AsteroidField : MonoBehaviour
         Quaternion newRot;
         Vector3 newScale = Vector3.one * AsteroidScale;
 
-        if (asteroidGO == null)
-        {
-            print("Asteroid Gameobject is null, creating cubes by default...");
-            asteroidGO = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        }
 
         // Create new asteroids.
         for (int i = 0; i < desiredAsteroids; i++)
         {
-            GameObject newAsteroid = Instantiate(asteroidGO);
+            GameObject newAsteroid = Instantiate(AsteroidGameObject);
 
             newAsteroid.hideFlags = hideFlags;
 
             newAsteroid.transform.parent = gameObject.transform;
             newAsteroid.transform.localScale = newScale;
 
-            newPos = transform.position + Random.onUnitSphere * Random.Range(innerRadius, outerRadius);
+            newPos = transform.position + Random.onUnitSphere * Random.Range(InnerRadius, OuterRadius);
             newRot = Random.rotation;
 
             newAsteroid.transform.SetPositionAndRotation(newPos, newRot);

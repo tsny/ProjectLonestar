@@ -22,7 +22,7 @@ GameObject:
   - component: {fileID: 114537461119958944}
   - component: {fileID: 114932995482058778}
   m_Layer: 0
-  m_Name: pf_gamemanager
+  m_Name: PF_GAMEMANAGER
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -52,11 +52,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e4b043e00be29d4da84e027325baad3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  shipSpawner: {fileID: 114932995482058778}
-  spawnPosition: {x: 0, y: 5, z: 0}
+  playerController: {fileID: 0}
   shipPrefab: {fileID: 1731105088454010, guid: b189f71eeee54d54aaabc7328eaf3faa, type: 2}
+  spawnPosition: {x: 0, y: 5, z: 0}
   playerLoadout: {fileID: 11400000, guid: bfc95fa1331d0f5429934f3335a22017, type: 2}
   playerShip: {fileID: 0}
+  debugMode: 0
+  locationID: 0
   spawnPlayer: 1
 --- !u!114 &114932995482058778
 MonoBehaviour:

@@ -21,7 +21,7 @@ GameObject:
   - component: {fileID: 4301989914115796}
   - component: {fileID: 114461757942843278}
   m_Layer: 0
-  m_Name: PlayerController
+  m_Name: PF_PlayerController
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -57,3 +57,5 @@ MonoBehaviour:
   mouseX: 0
   mouseY: 0
   distanceFromCenter: 0
+  mouseHoldDelay: 0.1
+  controlledShip: {fileID: 0}
