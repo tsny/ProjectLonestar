@@ -25,7 +25,7 @@ GameObject:
   - component: {fileID: 65639780938724506}
   - component: {fileID: 54312656097212582}
   m_Layer: 10
-  m_Name: pf_loot
+  m_Name: PF_Loot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -127,7 +127,6 @@ MonoBehaviour:
   hullHealth: 100
   hullFullHealth: 100
   item: {fileID: 11400000, guid: 8cdb4af4d97ee484aaa94c7d339b79c6, type: 2}
-  rb: {fileID: 54312656097212582}
   target: {fileID: 0}
   beingLooted: 0
   pickupRange: 5

@@ -56,7 +56,7 @@ public class Ship : WorldObject
     {
         base.Awake();
 
-        FindObjectOfType<PlayerController>().ShipPossessed += HandlePossessed;
+        FindObjectOfType<ShipController>().ShipPossessed += HandlePossessed;
 
         hardpointSystem = GetComponentInChildren<HardpointSystem>();
         shipMovement = GetComponent<ShipMovement>();
@@ -86,7 +86,7 @@ public class Ship : WorldObject
         OnTookDamage(false, weapon.hullDamage);
     }
 
-    public void HandlePossessed(PlayerController newController, Ship newShip)
+    public void HandlePossessed(ShipController newController, Ship newShip)
     {
         if (newShip != this)
         {
@@ -102,7 +102,7 @@ public class Ship : WorldObject
         hardpointSystem.shieldHardpoint.gameObject.layer = LayerMask.NameToLayer("Player");
     }
 
-    private void HandleUnpossessed(PlayerController sender, Ship oldShip)
+    private void HandleUnpossessed(ShipController sender, Ship oldShip)
     {
         sender.ShipUnpossessed -= HandleUnpossessed;
         SetName();

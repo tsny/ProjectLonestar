@@ -3,22 +3,22 @@ using System.Collections;
 
 public class ShipUIElement : MonoBehaviour
 {
-    public PlayerController playerController;
+    public ShipController playerController;
     public Ship ship;
 
     protected virtual void Awake()
     {
-        playerController = FindObjectOfType<PlayerController>();
+        playerController = FindObjectOfType<ShipController>();
         playerController.ShipPossessed += HandlePossessed;
         playerController.ShipUnpossessed += HandleUnpossessed;
     }
 
-    protected virtual void HandleUnpossessed(PlayerController sender, Ship oldShip)
+    protected virtual void HandleUnpossessed(ShipController sender, Ship oldShip)
     {
         ship = null;
     }
 
-    protected virtual void HandlePossessed(PlayerController sender, Ship newShip)
+    protected virtual void HandlePossessed(ShipController sender, Ship newShip)
     {
         ship = newShip;
     }

@@ -10,7 +10,7 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
 
-    public PlayerController playerController;
+    public ShipController playerController;
     //public ShipSpawner shipSpawner;
     public GameObject shipPrefab;
     public Vector3 spawnPosition;
@@ -86,7 +86,7 @@ public class GameManager : MonoBehaviour
         SceneManager.activeSceneChanged += HandleNewScene;
 
         //shipSpawner = GetComponent<ShipSpawner>();
-        playerController = FindObjectOfType<PlayerController>();
+        playerController = FindObjectOfType<ShipController>();
 
         AssignKeyCodes();
     }

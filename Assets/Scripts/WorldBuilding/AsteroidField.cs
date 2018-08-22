@@ -4,55 +4,98 @@ using UnityEngine;
 [ExecuteInEditMode]
 public class AsteroidField : MonoBehaviour
 {
+    public struct ScaleInfo
+    {
+        public float scale;
+        public float lowerRange;
+        public float upperRange;
+
+        public ScaleInfo(float lowerRange, float upperRange)
+        {
+            this.lowerRange = lowerRange;
+            this.upperRange = upperRange;
+            scale = 0;
+        }
+
+        public ScaleInfo(float scale)
+        {
+            lowerRange = 0;
+            upperRange = 0;
+            this.scale = Mathf.Abs(scale);
+        }
+    }
+
     public GameObject asteroidGO;
+
     public float innerRadius = 30;
     public float outerRadius = 100;
 
-    public int desiredAsteroids = 1000;
+    public HideFlags asteroidHideFlags = HideFlags.HideInHierarchy;
 
-    public float asteroidScale = 1;
+    public int desiredAsteroids = 100;
 
-    public bool hideAsteroidInHierarchy = true;
+    public bool scaleUsesRange;
 
-    public void GenerateField()
+    public void GenerateField(ScaleInfo scaleInfo)
+    {
+        if (!IsRadiusValid()) return;
+
+        ClearField();
+        ValidateAsteroid();
+
+        for (int i = 0; i < desiredAsteroids; i++)
+        {
+            CreateAsteroid(scaleInfo);
+        }
+    }
+
+    private bool IsRadiusValid()
     {
         if (innerRadius > outerRadius)
         {
             print("Invalid raidus, inner must be smaller than outer radius");
-            return;
+            return false;
         }
 
-        ClearField();
-        CreateAsteroids();
+        return true;
     }
 
-    private void CreateAsteroids()
+    private void ValidateAsteroid()
     {
-        Vector3 newPos;
-        Quaternion newRot;
-        Vector3 newScale = Vector3.one * asteroidScale;
-
         if (asteroidGO == null)
         {
             print("Asteroid Gameobject is null, creating cubes by default...");
             asteroidGO = GameObject.CreatePrimitive(PrimitiveType.Cube);
         }
+    }
 
-        // Create new asteroids.
-        for (int i = 0; i < desiredAsteroids; i++)
+    private void CreateAsteroid(ScaleInfo scaleInfo)
+    {
+        Vector3 position;
+        Quaternion rotation;
+        Vector3 scale = SetScale(scaleInfo);
+
+        GameObject newAsteroid = Instantiate(asteroidGO);
+
+        newAsteroid.hideFlags = asteroidHideFlags;
+
+        newAsteroid.transform.parent = gameObject.transform;
+        newAsteroid.transform.localScale = scale;
+
+        position = transform.position + Random.onUnitSphere * Random.Range(innerRadius, outerRadius);
+        rotation = Random.rotation;
+
+        newAsteroid.transform.SetPositionAndRotation(position, rotation);
+    }
+
+    private Vector3 SetScale(ScaleInfo scaleInfo)
+    {
+        if (scaleInfo.scale == 0)
         {
-            GameObject newAsteroid = Instantiate(asteroidGO);
-
-            if (hideAsteroidInHierarchy) newAsteroid.hideFlags = HideFlags.HideInHierarchy;
-
-            newAsteroid.transform.parent = gameObject.transform;
-            newAsteroid.transform.localScale = newScale;
-
-            newPos = transform.position + Random.onUnitSphere * Random.Range(innerRadius, outerRadius);
-            newRot = Random.rotation;
-
-            newAsteroid.transform.SetPositionAndRotation(newPos, newRot);
+            return Vector3.one * Random.Range(scaleInfo.lowerRange, scaleInfo.upperRange);
         }
+
+        return Vector3.one * scaleInfo.scale;
     }
 
     public void ClearField()

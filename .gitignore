@@ -263,3 +263,19 @@ __pycache__/
 /ProjectSettings
 /Library
 /Assets/3rd Party
+
+# Unity
+*.csproj
+*.sln
+UnityPackageManager/
+Assets/Animations
+Assets/Audio
+Assets/Editor
+Assets/Fonts
+Assets/Materials
+Assets/Meshes
+Assets/Scenes
+Assets/Shaders
+Assets/StreamingAssets
+Assets/Textures
+

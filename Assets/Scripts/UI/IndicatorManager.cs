@@ -28,7 +28,7 @@ public class IndicatorManager : ShipUIElement
         selectedIndicator = newIndicator;
     }
 
-    protected override void HandlePossessed(PlayerController sender, Ship newShip)
+    protected override void HandlePossessed(ShipController sender, Ship newShip)
     {
         base.HandlePossessed(sender, newShip);
 
@@ -42,7 +42,7 @@ public class IndicatorManager : ShipUIElement
         newShip.hardpointSystem.scannerHardpoint.EntryChanged += HandleEntryChanged;
     }
 
-    protected override void HandleUnpossessed(PlayerController sender, Ship oldShip)
+    protected override void HandleUnpossessed(ShipController sender, Ship oldShip)
     {
         base.HandleUnpossessed(sender, oldShip);
         oldShip.hardpointSystem.scannerHardpoint.EntryChanged -= HandleEntryChanged;
@@ -102,18 +102,28 @@ public class IndicatorManager : ShipUIElement
         selectedIndicator = null;
     }
 
-    public void AddIndicator(WorldObject newTarget)
+    public TargetIndicator AddIndicator(WorldObject newTarget)
     {
         TargetIndicator newIndicator = Instantiate(indicatorPrefab, indicatorLayer).GetComponent<TargetIndicator>();
 
         newIndicator.SetTarget(newTarget);
 
         newIndicator.Selected += HandleIndicatorSelected;
-        newIndicator.TargetDestroyed += RemoveIndicator;
+        newIndicator.TargetKilled += RemoveIndicator;
 
         indicators.Add(newIndicator);
 
         indicatorPairs.Add(newTarget, newIndicator);
+
+        return newIndicator;
+    }
+
+    // Testing polymorphism
+    public void AddIndicator(Ship ship)
+    {
+        var newIndicator = AddIndicator(ship as WorldObject);
+
+        print("test");
     }
 
     public void RemoveIndicator(TargetIndicator indicatorToRemove)

@@ -104,7 +104,7 @@ GameObject:
   - component: {fileID: 54008318287557044}
   - component: {fileID: 135582712608864254}
   m_Layer: 8
-  m_Name: pf_projectile_default
+  m_Name: PF_Projectile_Default
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
