@@ -29,17 +29,17 @@ public class ShipCamera : ShipComponent
     public float maxDistance = 10;
 
     private ShipPhysics shipPhysics;
-    public ShipController shipController;
+    public PlayerController pController;
     public Camera shipCam;
     public AudioListener listener;
 
     private void FixedUpdate()
     {
-        if (shipController == null) return;
+        if (pController == null) return;
 
         CalculateOffsets();
 
-        if (shipController.mouseState == MouseState.Held || shipController.mouseState == MouseState.Toggled)
+        if (pController.mouseState == MouseState.Held || pController.mouseState == MouseState.Toggled)
         {
             FollowShip();
         }
@@ -63,12 +63,6 @@ public class ShipCamera : ShipComponent
         enabled = false;
     }
 
-    public void Init(ShipController controller)
-    {
-        enabled = true;
-        shipController = controller;
-    }
-
     private void OnEnable()
     {
         shipCam.enabled = true;
@@ -77,7 +71,7 @@ public class ShipCamera : ShipComponent
 
     private void OnDisable()
     {
-        shipController = null;
+        pController = null;
         shipCam.enabled = false;
         listener.enabled = false;
     }
@@ -102,8 +96,8 @@ public class ShipCamera : ShipComponent
     public void CalculateOffsets()
     {
         distanceOffset = Mathf.Clamp(shipPhysics.speed / speedDivisor, 0, maxDistance);
-        pitchOffset = Mathf.Clamp(shipController.mouseY * pitchModifier, maxLowerPitch, maxUpperPitch);
-        yawOffset = Mathf.Clamp(shipController.mouseX * yawModifier, -maxYaw, maxYaw);
+        pitchOffset = Mathf.Clamp(pController.mouseY * pitchModifier, maxLowerPitch, maxUpperPitch);
+        yawOffset = Mathf.Clamp(pController.mouseX * yawModifier, -maxYaw, maxYaw);
     }
 
     public void FollowShip()

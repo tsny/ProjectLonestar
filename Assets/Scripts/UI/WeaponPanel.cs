@@ -9,7 +9,7 @@ public class WeaponPanel : ShipUIElement
 
     public GameObject weaponPanelButton;
 
-    protected override void HandlePossessed(ShipController sender, Ship newShip)
+    protected override void HandlePossessed(PlayerController sender, Ship newShip)
     {
         base.HandlePossessed(sender, newShip);
 
@@ -19,7 +19,7 @@ public class WeaponPanel : ShipUIElement
         PopulatePanel();
     }
 
-    protected override void HandleUnpossessed(ShipController sender, Ship oldShip)
+    protected override void HandleUnpossessed(PlayerController sender, Ship oldShip)
     {
         base.HandleUnpossessed(sender, oldShip);
 

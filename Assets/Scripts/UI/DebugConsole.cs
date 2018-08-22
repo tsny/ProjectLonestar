@@ -4,14 +4,14 @@ using UnityEngine.UI;
 
 public class DebugConsole : MonoBehaviour
 {
-    public ShipController playerController;
+    public PlayerController playerController;
     public ShipSpawner shipSpawner;
     public VerticalLayoutGroup verticalLayoutGroup;
     public GameObject content;
 
     private void Awake()
     {
-        playerController = FindObjectOfType<ShipController>();
+        playerController = FindObjectOfType<PlayerController>();
         shipSpawner = FindObjectOfType<ShipSpawner>();
     }
 

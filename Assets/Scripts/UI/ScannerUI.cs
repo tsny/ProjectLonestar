@@ -8,7 +8,7 @@ public class ScannerUI : ShipUIElement
     public ScannerHardpoint pairedScanner;
 
 
-    protected override void HandlePossessed(ShipController sender, Ship newShip)
+    protected override void HandlePossessed(PlayerController sender, Ship newShip)
     {
         pairedScanner = newShip.hardpointSystem.scannerHardpoint;
         pairedScanner.EntryChanged += HandleScannerEntryChanged;
@@ -16,7 +16,7 @@ public class ScannerUI : ShipUIElement
         RefreshScannerList();
     }
 
-    protected override void HandleUnpossessed(ShipController sender, Ship oldShip)
+    protected override void HandleUnpossessed(PlayerController sender, Ship oldShip)
     {
         base.HandleUnpossessed(sender, oldShip);
         pairedScanner.EntryChanged -= HandleScannerEntryChanged;

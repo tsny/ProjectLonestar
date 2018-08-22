@@ -71,7 +71,7 @@ public class TargetIndicator : MonoBehaviour
 
     public event SelectionEventHandler Selected;
     public event SelectionEventHandler Deselected;
-    public event TargetDestroyedEventHandler TargetKilled;
+    public event TargetDestroyedEventHandler TargetDestroyed;
 
     private void OnDestroy()
     {
@@ -236,6 +236,6 @@ public class TargetIndicator : MonoBehaviour
 
     public void HandleTargetKilled(WorldObject sender, DeathEventArgs e)
     {
-        if (TargetKilled != null) TargetKilled(this);
+        if (TargetDestroyed != null) TargetDestroyed(this);
     }
 }

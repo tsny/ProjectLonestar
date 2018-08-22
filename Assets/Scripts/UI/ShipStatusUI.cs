@@ -21,14 +21,14 @@ public class ShipStatusUI : ShipUIElement
         shipSpeed.text = "" + (int) shipPhysics.speed;
     }
 
-    protected override void HandlePossessed(ShipController sender, Ship newShip)
+    protected override void HandlePossessed(PlayerController sender, Ship newShip)
     {
         base.HandlePossessed(sender, newShip);
 
         shipPhysics = ship.GetComponent<ShipPhysics>();
     }
 
-    protected override void HandleUnpossessed(ShipController sender, Ship oldShip)
+    protected override void HandleUnpossessed(PlayerController sender, Ship oldShip)
     {
         base.HandleUnpossessed(sender, oldShip);
 
