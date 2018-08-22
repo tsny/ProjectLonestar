@@ -10,9 +10,9 @@ public class AsteroidField : MonoBehaviour
 
     public int desiredAsteroids = 1000;
 
-    public float asteroidScale = 1;
+    public float AsteroidScale { get; set; }
 
-    public bool hideAsteroidInHierarchy = true;
+    public new HideFlags hideFlags;
 
     public void GenerateField()
     {
@@ -30,7 +30,7 @@ public class AsteroidField : MonoBehaviour
     {
         Vector3 newPos;
         Quaternion newRot;
-        Vector3 newScale = Vector3.one * asteroidScale;
+        Vector3 newScale = Vector3.one * AsteroidScale;
 
         if (asteroidGO == null)
         {
@@ -43,7 +43,7 @@ public class AsteroidField : MonoBehaviour
         {
             GameObject newAsteroid = Instantiate(asteroidGO);
 
-            if (hideAsteroidInHierarchy) newAsteroid.hideFlags = HideFlags.HideInHierarchy;
+            newAsteroid.hideFlags = hideFlags;
 
             newAsteroid.transform.parent = gameObject.transform;
             newAsteroid.transform.localScale = newScale;
