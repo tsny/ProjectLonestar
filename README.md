@@ -1,5 +1,4 @@
 <img src="https://img.itch.zone/aW1hZ2UvMjI5NjY2LzExNzUwNjUucG5n/original/XT8z%2B1.png" width="500" height="325" />
-A remake for Freelancer.
 
 # Project Lonestar
 
