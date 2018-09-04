@@ -10,14 +10,18 @@ public class AsteroidFieldEditor : Editor
     public override void OnInspectorGUI()
     {
         base.OnInspectorGUI();
+        EGL.Space();
+
         AsteroidField field = (AsteroidField)target;
 
-        field.AsteroidGameObject = (GameObject) EGL.ObjectField("Asteroid Game Object", field.AsteroidGameObject, typeof(GameObject), false);
+        field.AsteroidGameObject = (GameObject) EGL.ObjectField(new GUIContent("Asteroid Game Object", "The game object that represents the spawned asteroids"), field.AsteroidGameObject, typeof(GameObject), false);
 
-        field.InnerRadius = EGL.FloatField("Inner Radius", field.InnerRadius);
+        field.InnerRadius = EGL.FloatField(new GUIContent("Inner Radius", "The inner radius of the field"), field.InnerRadius);
         field.OuterRadius = EGL.Slider("Outer Radius", field.OuterRadius, field.InnerRadius, 10000 + field.InnerRadius);
 
-        scaleUsesRange = EGL.Toggle("Use range for scale?", scaleUsesRange);
+        EGL.Space();
+
+        scaleUsesRange = EGL.Toggle(new GUIContent("Scale uses range?", "Whether the asteroids spawned should pick a scale from a specified range."), scaleUsesRange);
 
         if (scaleUsesRange)
         {

@@ -11,7 +11,8 @@ public enum WorldObjectType
     Tradelane,
     Star,
     Anomaly,
-    Jumphole
+    Jumphole,
+    AsteroidField
 }
 
 public class WorldObject : MonoBehaviour
@@ -43,10 +44,7 @@ public class WorldObject : MonoBehaviour
         SetName();
     }
 
-    public virtual void SetupTargetIndicator(TargetIndicator indicator)
-    {
-
-    }
+    public virtual void SetupTargetIndicator(TargetIndicator indicator) { }
 
     public virtual void OnTookDamage(bool tookShieldDamage, float damage)
     {

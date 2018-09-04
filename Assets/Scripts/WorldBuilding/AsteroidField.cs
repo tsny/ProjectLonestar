@@ -2,10 +2,12 @@
 using UnityEngine;
 
 [ExecuteInEditMode]
-public class AsteroidField : MonoBehaviour
+public class AsteroidField : WorldObject
 {
     public GameObject AsteroidGameObject { get; set; }
 
+    [Space(10)]
+    [Tooltip("Select 'Hide In Hierarchy' to ensure a cleaner hierarchy")]
     public new HideFlags hideFlags;
 
     public int desiredAsteroids = 1000;

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using System;
@@ -154,6 +155,8 @@ public class GameManager : MonoBehaviour
         {
             playerShip = ShipSpawner.instance.SpawnPlayerShip(shipPrefab, playerLoadout, spawnPosition);
         }
+
+        CalculateMapSize();
     }
 
     private void OnApplicationQuit()
@@ -212,6 +215,19 @@ public class GameManager : MonoBehaviour
     {
         locationID = ID;
         SceneManager.LoadScene(systemToLoad);
+    }
+
+    public void CalculateMapSize()
+    {
+        WorldObject closestObject;
+        WorldObject farthestObject;
+
+        var objects = FindObjectsOfType<WorldObject>();
+
+        closestObject = objects.OrderBy(t => Vector3.Distance(Vector3.zero, t.transform.position)).FirstOrDefault();
+        farthestObject = objects.OrderBy(t => Vector3.Distance(Vector3.zero, t.transform.position)).LastOrDefault();
+
+        objects.ToList().ForEach(i => print(Vector3.Distance(Vector3.zero, i.transform.position) + i.name));
     }
 }
 

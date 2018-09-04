@@ -18,7 +18,7 @@ public class ShipStatusUI : ShipUIElement
 
         SetFillAmounts();
 
-        shipSpeed.text = "" + (int) shipPhysics.speed;
+        shipSpeed.text = "" + (int) shipPhysics.speed + " kph";
     }
 
     protected override void HandlePossessed(PlayerController sender, Ship newShip)
