@@ -141,16 +141,3 @@ public class IndicatorManager : ShipUIElement
     #endregion
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

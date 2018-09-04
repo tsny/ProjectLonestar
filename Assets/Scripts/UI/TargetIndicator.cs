@@ -73,6 +73,16 @@ public class TargetIndicator : MonoBehaviour
     public event SelectionEventHandler Deselected;
     public event TargetDestroyedEventHandler TargetDestroyed;
 
+    public void HandleTargetKilled(WorldObject sender, DeathEventArgs e)
+    {
+        if (TargetDestroyed != null) TargetDestroyed(this);
+    }
+    
+    private void HandleTargetTookDamage(WorldObject sender, DamageEventArgs e)
+    {
+        SetHealthBarFill();
+    }
+
     private void OnDestroy()
     {
         target.TookDamage -= HandleTargetTookDamage;
@@ -208,11 +218,6 @@ public class TargetIndicator : MonoBehaviour
         SetHealthBarFill();
     }
 
-    private void HandleTargetTookDamage(WorldObject sender, DamageEventArgs e)
-    {
-        SetHealthBarFill();
-    }
-
     private void SetButtonColor(Item item)
     {
         buttonImage.color = Item.GetMatchingColor(item);
@@ -232,10 +237,5 @@ public class TargetIndicator : MonoBehaviour
     {
         targetHealth = target.hullHealth;
         healthBarImage.fillAmount = target.hullHealth / target.hullFullHealth;
-    }
-
-    public void HandleTargetKilled(WorldObject sender, DeathEventArgs e)
-    {
-        if (TargetDestroyed != null) TargetDestroyed(this);
     }
 }

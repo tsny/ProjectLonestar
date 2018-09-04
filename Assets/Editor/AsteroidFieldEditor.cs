@@ -5,7 +5,7 @@ using EGL = UnityEditor.EditorGUILayout;
 [CustomEditor(typeof(AsteroidField))]
 public class AsteroidFieldEditor : Editor 
 {
-    public bool usingVariableScale;
+    public bool scaleUsesRange;
 
     public override void OnInspectorGUI()
     {
@@ -17,23 +17,24 @@ public class AsteroidFieldEditor : Editor
         field.InnerRadius = EGL.FloatField("Inner Radius", field.InnerRadius);
         field.OuterRadius = EGL.Slider("Outer Radius", field.OuterRadius, field.InnerRadius, 10000 + field.InnerRadius);
 
-        usingVariableScale = EGL.Toggle("Use range for scale?", usingVariableScale);
+        scaleUsesRange = EGL.Toggle("Use range for scale?", scaleUsesRange);
 
-        if (usingVariableScale)
+        if (scaleUsesRange)
         {
-            field.AsteroidScale = EGL.Slider("Scale", field.AsteroidScale, 0, 5);
+            field.AsteroidLowerScale = EGL.Slider("Lower range", field.AsteroidLowerScale, 0, 20);
+            field.AsteroidUpperScale = EGL.Slider("Upper range", field.AsteroidUpperScale, field.AsteroidLowerScale, field.AsteroidLowerScale + 20);
         }
 
         else
         {
-            field.AsteroidScale = EGL.FloatField("Scale", field.AsteroidScale);
+            field.AsteroidScale = EGL.Slider("Scale", field.AsteroidScale, 0, 20);
         }
 
         using (new EditorGUI.DisabledScope(field.AsteroidGameObject == null))
         {
             if(GUILayout.Button("Generate Field"))
             {
-                field.GenerateField();
+                field.GenerateField(scaleUsesRange);
             }
         }
 

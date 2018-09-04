@@ -13,35 +13,60 @@ public class AsteroidField : MonoBehaviour
     public float InnerRadius { get; set; }
     public float OuterRadius { get; set; }
     public float AsteroidScale { get; set; }
+    public float AsteroidLowerScale { get; set; }
+    public float AsteroidUpperScale { get; set; }
 
-    public void GenerateField()
+    public void GenerateField(bool scaleUsesRange)
     {
         ClearField();
-        CreateAsteroids();
+        CreateAsteroids(scaleUsesRange);
     }
 
-    private void CreateAsteroids()
+    private void CreateAsteroids(bool scaleUsesRange)
+    {
+        if (scaleUsesRange)
+        {
+            for (int i = 0; i < desiredAsteroids; i++)
+            {
+                CreateAsteroid(AsteroidLowerScale, AsteroidUpperScale);
+            }
+        }
+
+        else
+        {
+            for (int i = 0; i < desiredAsteroids; i++)
+            {
+                CreateAsteroid(AsteroidScale);
+            }
+        }
+    }
+
+    private GameObject CreateAsteroid(float scale = 1)
     {
         Vector3 newPos;
         Quaternion newRot;
-        Vector3 newScale = Vector3.one * AsteroidScale;
+        Vector3 newScale = Vector3.one * scale;
 
+        GameObject asteroid = Instantiate(AsteroidGameObject);
 
-        // Create new asteroids.
-        for (int i = 0; i < desiredAsteroids; i++)
-        {
-            GameObject newAsteroid = Instantiate(AsteroidGameObject);
+        asteroid.hideFlags = hideFlags;
 
-            newAsteroid.hideFlags = hideFlags;
+        asteroid.transform.parent = gameObject.transform;
+        asteroid.transform.localScale = newScale;
 
-            newAsteroid.transform.parent = gameObject.transform;
-            newAsteroid.transform.localScale = newScale;
+        newPos = transform.position + Random.onUnitSphere * Random.Range(InnerRadius, OuterRadius);
+        newRot = Random.rotation;
 
-            newPos = transform.position + Random.onUnitSphere * Random.Range(InnerRadius, OuterRadius);
-            newRot = Random.rotation;
+        asteroid.transform.SetPositionAndRotation(newPos, newRot);
 
-            newAsteroid.transform.SetPositionAndRotation(newPos, newRot);
-        }
+        return asteroid;
+    }
+
+    private GameObject CreateAsteroid(float lowerScale = 1, float upperScale = 2)
+    {
+        float randomScale = Random.Range(lowerScale, upperScale);
+
+        return CreateAsteroid(randomScale);
     }
 
     public void ClearField()

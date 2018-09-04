@@ -3,8 +3,8 @@ using System.Collections;
 
 public class ShipUIElement : MonoBehaviour
 {
-    public PlayerController playerController;
-    public Ship ship;
+    protected PlayerController playerController;
+    protected Ship ship;
 
     protected virtual void Awake()
     {
