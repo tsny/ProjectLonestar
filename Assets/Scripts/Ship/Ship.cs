@@ -32,7 +32,7 @@ public class Ship : WorldObject
         }
     }
 
-    private Ship()
+    protected Ship()
     {
         worldObjectType = WorldObjectType.Ship;
     }

@@ -2,7 +2,7 @@
 using UnityEngine;
 
 [ExecuteInEditMode]
-public class AsteroidField : WorldObject
+public class AsteroidField : MonoBehaviour
 {
     public GameObject AsteroidGameObject { get; set; }
 

@@ -4,9 +4,8 @@ using System.Collections;
 
 public class ScannerUI : ShipUIElement
 {
-    public Text text;
-    public ScannerHardpoint pairedScanner;
-
+    public Text scannerText;
+    private ScannerHardpoint pairedScanner;
 
     protected override void HandlePossessed(PlayerController sender, Ship newShip)
     {
@@ -20,6 +19,9 @@ public class ScannerUI : ShipUIElement
     {
         base.HandleUnpossessed(sender, oldShip);
         pairedScanner.EntryChanged -= HandleScannerEntryChanged;
+
+        scannerText.text = "";
+        pairedScanner = null;
     }
 
     private void HandleScannerEntryChanged(WorldObject entry, bool added)
@@ -29,11 +31,11 @@ public class ScannerUI : ShipUIElement
 
     private void RefreshScannerList()
     {
-        text.text = "";
+        scannerText.text = "";
 
         foreach (WorldObject detectedObject in pairedScanner.detectedObjects)
         {
-            text.text += detectedObject.name + "\n";
+            scannerText.text += detectedObject.name + "\n";
         }
     }
 }

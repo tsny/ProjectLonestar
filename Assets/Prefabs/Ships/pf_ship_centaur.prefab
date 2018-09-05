@@ -128,7 +128,7 @@ GameObject:
   - component: {fileID: 33376280266902072}
   - component: {fileID: 23366123148912340}
   - component: {fileID: 114182349002600078}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Tractor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -306,8 +306,10 @@ GameObject:
   - component: {fileID: 54334028879456994}
   - component: {fileID: 114546078585340872}
   - component: {fileID: 114411058820966502}
+  - component: {fileID: 114574082310157688}
+  - component: {fileID: 114254765539148612}
   m_Layer: 0
-  m_Name: pf_ship_centaur
+  m_Name: PF_Ship_Centaur
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -655,7 +657,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1731105088454010}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 35.008934, y: 4.4716, z: 8.244926}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4363359676537772}
@@ -751,7 +753,7 @@ Camera:
     width: 1
     height: 1
   near clip plane: 0.05
-  far clip plane: 1000
+  far clip plane: 10000
   field of view: 60
   orthographic: 0
   orthographic size: 5
@@ -767,7 +769,7 @@ Camera:
   m_AllowMSAA: 1
   m_AllowDynamicResolution: 0
   m_ForceIntoRT: 0
-  m_OcclusionCulling: 1
+  m_OcclusionCulling: 0
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
 --- !u!23 &23009674928615756
@@ -886,7 +888,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 2100000, guid: 7b00ad4295b0f574a9fed9ba6f5edb23, type: 2}
+  - {fileID: 2100000, guid: aee7897680ceddf44be194de5cf7c7ea, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1178,7 +1180,7 @@ MeshFilter:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1098309251163990}
-  m_Mesh: {fileID: 4300004, guid: add769d179a9826498fc063c005d35bd, type: 3}
+  m_Mesh: {fileID: 4300010, guid: add769d179a9826498fc063c005d35bd, type: 3}
 --- !u!33 &33272963615942470
 MeshFilter:
   m_ObjectHideFlags: 1
@@ -1515,7 +1517,7 @@ AudioSource:
   Priority: 128
   DopplerLevel: 1
   MinDistance: 1
-  MaxDistance: 500
+  MaxDistance: 3
   Pan2D: 0
   rolloffMode: 0
   BypassEffects: 0
@@ -2012,11 +2014,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 421dd0b7b6838334f84c5f5f07322a2a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hpSystem: {fileID: 114890172326677854}
-  currentEquipment: {fileID: 0}
+  hardpointSystem: {fileID: 0}
   slot: 6
   rank: 0
-  active: 0
+  active: 1
   audioSource: {fileID: 82539974547494270}
 --- !u!114 &114165425904898910
 MonoBehaviour:
@@ -2029,8 +2030,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 421dd0b7b6838334f84c5f5f07322a2a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hpSystem: {fileID: 114890172326677854}
-  currentEquipment: {fileID: 0}
+  hardpointSystem: {fileID: 0}
   slot: 2
   rank: 0
   active: 1
@@ -2046,13 +2046,32 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26ec0829f007a87429434278c0546be7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hpSystem: {fileID: 114890172326677854}
-  currentEquipment: {fileID: 0}
-  scanner: {fileID: 114924268490386734}
+  hardpointSystem: {fileID: 0}
   tractor: {fileID: 0}
   range: 20
-  tractorTime: 0.5
+  pullForce: 10
   inventory: {fileID: 114843555553186374}
+--- !u!114 &114254765539148612
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1731105088454010}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bb6e46e41cc7ac9419c2c796a4b88657, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ship: {fileID: 0}
+  targetShip: {fileID: 0}
+  targetLoc: {fileID: 0}
+  acceptableDistance: 0
+  aiActive: 0
+  currentState: {fileID: 0}
+  remainState: {fileID: 0}
+  timeInCurrentState: 0
+  nextWaypoint: 0
+  wayPointList: []
 --- !u!114 &114318202317187816
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2064,8 +2083,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 421dd0b7b6838334f84c5f5f07322a2a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hpSystem: {fileID: 114890172326677854}
-  currentEquipment: {fileID: 0}
+  hardpointSystem: {fileID: 0}
   slot: 1
   rank: 0
   active: 1
@@ -2085,6 +2103,8 @@ MonoBehaviour:
   cruiseEffect: {fileID: 1794774825933662}
   throttleChangeIncrement: 0.1
   turnSpeed: 2
+  throttle: 0
+  strafe: 0
   cruiseDisrupted: 0
   cruiseChargeDuration: 5
   cruiseChargeSource: {fileID: 0}
@@ -2109,6 +2129,27 @@ MonoBehaviour:
   mass: 5
   speed: 0
   maxSpeed: 40
+--- !u!114 &114574082310157688
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1731105088454010}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bb6e46e41cc7ac9419c2c796a4b88657, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ship: {fileID: 0}
+  targetShip: {fileID: 0}
+  targetLoc: {fileID: 0}
+  acceptableDistance: 0
+  aiActive: 0
+  currentState: {fileID: 0}
+  remainState: {fileID: 0}
+  timeInCurrentState: 0
+  nextWaypoint: 0
+  wayPointList: []
 --- !u!114 &114681986092633008
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2120,8 +2161,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f539068853ed88144816f64bfff8e096, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hpSystem: {fileID: 114890172326677854}
-  currentEquipment: {fileID: 0}
+  hardpointSystem: {fileID: 0}
   charge: 100
   afterburner: {fileID: 0}
   engaged: 0
@@ -2139,8 +2179,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 421dd0b7b6838334f84c5f5f07322a2a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hpSystem: {fileID: 114890172326677854}
-  currentEquipment: {fileID: 0}
+  hardpointSystem: {fileID: 0}
   slot: 5
   rank: 0
   active: 1
@@ -2156,11 +2195,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 421dd0b7b6838334f84c5f5f07322a2a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hpSystem: {fileID: 114890172326677854}
-  currentEquipment: {fileID: 0}
+  hardpointSystem: {fileID: 0}
   slot: 3
   rank: 0
-  active: 0
+  active: 1
   audioSource: {fileID: 82317354978225804}
 --- !u!114 &114843555553186374
 MonoBehaviour:
@@ -2173,8 +2211,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df72afb057fef994d9db90c34ca0452f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  items: []
-  lootPrefab: {fileID: 0}
+  items:
+  - {fileID: 11400000, guid: f75bed335905d284e9b4bd5493cede60, type: 2}
+  lootPrefab: {fileID: 1601505678792048, guid: b8a49763792a4c84c8abf04f433533b9, type: 2}
 --- !u!114 &114843565123289172
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2187,30 +2226,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   invulnerable: 0
-  pilotName: LawerenceLeite
+  hullHealth: 100
+  hullFullHealth: 100
   shipName: Centaur
   shipClass: 0
   faction: 1
-  hullHealth: 100
-  hullFullHealth: 100
   cargoHoldCapacity: 30
-  shipComponents:
-  - {fileID: 114546078585340872}
-  - {fileID: 114411058820966502}
-  - {fileID: 114921829818448814}
-  - {fileID: 114890172326677854}
-  - {fileID: 114318202317187816}
-  - {fileID: 114165425904898910}
-  - {fileID: 114763845051631152}
-  - {fileID: 114681986092633008}
-  - {fileID: 114992891233242000}
-  - {fileID: 114924268490386734}
-  - {fileID: 114182349002600078}
-  - {fileID: 114843555553186374}
   hardpointSystem: {fileID: 114890172326677854}
   AimPosition: {x: 0, y: 0, z: 0}
   stats: {fileID: 0}
   shipMovement: {fileID: 114411058820966502}
+  inventory: {fileID: 0}
   dustParticleSystem: {fileID: 198993074573449122}
 --- !u!114 &114890172326677854
 MonoBehaviour:
@@ -2249,9 +2275,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 421dd0b7b6838334f84c5f5f07322a2a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hpSystem: {fileID: 114890172326677854}
-  currentEquipment: {fileID: 0}
-  slot: 45
+  hardpointSystem: {fileID: 0}
+  slot: 4
   rank: 0
   active: 1
   audioSource: {fileID: 82061525696926652}
@@ -2261,7 +2286,7 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1842610132850410}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4fa9cb008f76f474ba34a0e91b1b16f8, type: 3}
   m_Name: 
@@ -2291,12 +2316,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7d516cd45b05ce41a5be3e19d36eb92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hpSystem: {fileID: 114890172326677854}
-  currentEquipment: {fileID: 0}
+  hardpointSystem: {fileID: 0}
   tractor: {fileID: 114182349002600078}
   detectedObjects:
   - {fileID: 0}
   scanner: {fileID: 0}
+  scanFrequency: 10
 --- !u!114 &114992891233242000
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2308,8 +2333,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 410c1d85b8513ca4799b6cd02354ddfa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hpSystem: {fileID: 114890172326677854}
-  currentEquipment: {fileID: 0}
+  hardpointSystem: {fileID: 0}
   capacity: 0
   health: 0
   regenRate: 0

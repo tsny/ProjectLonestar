@@ -22,7 +22,7 @@ GameObject:
   - component: {fileID: 198618744714824082}
   - component: {fileID: 199197445877389858}
   m_Layer: 0
-  m_Name: Energy Discharge
+  m_Name: PF_VFX_EnergyDischarge
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

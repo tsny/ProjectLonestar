@@ -94,6 +94,7 @@ public class GameManager : MonoBehaviour
 
     private void HandleNewScene(Scene arg0, Scene arg1)
     {
+
     }
 
     private void SingletonInit()
@@ -156,7 +157,7 @@ public class GameManager : MonoBehaviour
             playerShip = ShipSpawner.instance.SpawnPlayerShip(shipPrefab, playerLoadout, spawnPosition);
         }
 
-        CalculateMapSize();
+        //CalculateMapSize();
     }
 
     private void OnApplicationQuit()
@@ -182,7 +183,6 @@ public class GameManager : MonoBehaviour
     {
         BinaryFormatter bf = new BinaryFormatter();
         FileStream file = File.Open(Application.persistentDataPath + "/playerSave.dat", FileMode.Create);
-
         PlayerInfo playerInfo = new PlayerInfo();
 
         bf.Serialize(file, playerInfo);

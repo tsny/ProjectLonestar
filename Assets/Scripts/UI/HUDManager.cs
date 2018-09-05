@@ -9,11 +9,22 @@ public class HUDManager : ShipUIElement
     public MouseState mouseState;
     public EngineState engineState;
 
-    private void Start()
+    protected override void HandlePossessed(PlayerController sender, Ship newShip)
     {
+        base.HandlePossessed(sender, newShip);
+
         mouseFlightText.text = "";
         cruiseText.text = "";
         cruiseText.text = "Engines Nominal";
+    }
+
+    protected override void HandleUnpossessed(PlayerController sender, Ship oldShip)
+    {
+        base.HandleUnpossessed(sender, oldShip);
+
+        mouseFlightText.text = "";
+        cruiseText.text = "";
+        cruiseText.text = "";
     }
 
     private void Update()
