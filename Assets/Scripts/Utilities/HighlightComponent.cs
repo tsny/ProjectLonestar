@@ -2,32 +2,24 @@
 using System.Collections;
 using UnityEngine.EventSystems;
 
-public class HighlightComponent : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+public class HighlightComponent : MonoBehaviour
 {
-    private Material material;
-    public Material highlightMaterial;
+    public new Renderer renderer;
     public Shader highlightShader;
     public Shader standardShader;
 
-    private void Awake()
-    {
-        material = GetComponent<Material>();
-        print("test");
-    }
+    //private void Awake()
+    //{
+    //    renderer = GetComponent<Renderer>();
+    //}
 
     private void OnMouseEnter()
     {
-        print("more"); 
+        renderer.material.shader = highlightShader;
     }
 
-    public void OnPointerEnter(PointerEventData eventData)
+    private void OnMouseExit()
     {
-        material.shader = highlightShader;
-        print("enter");
-    }
-
-    public void OnPointerExit(PointerEventData eventData)
-    {
-        material.shader = standardShader;
+        renderer.material.shader = standardShader;
     }
 }

@@ -8,12 +8,14 @@ LICENSE
     Free as in speech, and free as in beer.
 
 FEATURES
-    WASD/Arrows:    Movement
-              Q:    Climb
-              E:    Drop
-              Shift:    Move faster
-              Control:    Move slower
-              F:    Toggle cursor locking to screen (you can also press Ctrl+P to toggle play mode on and off).
+
+WASD/Arrows:    Movement
+Q:              Climb
+E:              Drop
+Shift:          Move faster
+Control:        Move slower
+F:              Toggle cursor locking to screen (you can also press Ctrl+P to toggle play mode on and off).
+
 */
 using UnityEngine;
 using System.Collections;
@@ -21,7 +23,7 @@ using System.Collections;
 [RequireComponent(typeof(Camera), typeof(AudioListener))]
 public class ExtendedFlycam : MonoBehaviour
 {
-    public float cameraSensitivity = 90;
+    public float cameraSensitivity = 150;
     public float climbSpeed = 4;
     public float normalMoveSpeed = 10;
     public float slowMoveFactor = 0.25f;

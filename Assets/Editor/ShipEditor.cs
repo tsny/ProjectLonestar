@@ -1,4 +1,5 @@
-﻿using UnityEditor;
+﻿using System;
+using UnityEditor;
 using UnityEngine;
 
 [CustomEditor(typeof(Ship))]
@@ -15,28 +16,17 @@ public class ShipEditor : Editor
     public override void OnInspectorGUI()
     {
         base.OnInspectorGUI();
-
         ship = target as Ship;
-
-        if (playerController.controlledShip != ship)
-        {
-            ShowInspectorPossessionControls();
-        }
-
-        else
-        {
-            ShowInspectorUnpossessionControls();
-        }
+        TogglePossessionButtonVisibility();
     }
 
     void OnSceneGUI()
     {
         ship = target as Ship;
 
-        if (playerController.controlledShip != ship)
-        {
-            ShowPossessionHandle();
-        }
+        if (!Application.isPlaying) return;
+
+        if (playerController.controlledShip != ship) ShowPossessionHandle();
     }
 
     private void ShowPossessionHandle()
@@ -47,19 +37,24 @@ public class ShipEditor : Editor
         }
     }
 
-    private void ShowInspectorPossessionControls()
+    private void TogglePossessionButtonVisibility()
     {
-        if (GUILayout.Button("Possess"))
-        {
-            playerController.Possess(ship);
-        }
-    }
+        if (!Application.isPlaying) return;
 
-    private void ShowInspectorUnpossessionControls()
-    {
-        if (GUILayout.Button("Unpossess"))
+        if (playerController.controlledShip != ship)
         {
-            playerController.UnPossess();
+            if (GUILayout.Button("Possess"))
+            {
+                playerController.Possess(ship);
+            }
+        }
+
+        else
+        {
+            if (GUILayout.Button("Unpossess"))
+            {
+                playerController.UnPossess();
+            }
         }
     }
 }

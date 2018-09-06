@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody)), RequireComponent(typeof(ShipMovement))]
+//[RequireComponent(typeof(Rigidbody)), RequireComponent(typeof(ShipMovement))]
 public class ShipPhysics : ShipComponent
 {
     [Header("--- Movement ---")]
@@ -20,8 +20,8 @@ public class ShipPhysics : ShipComponent
     [Space(5), ReadOnly]
     public float speed;
 
-    private Rigidbody rb;
-    private ShipMovement shipMovement;
+    public Rigidbody rb;
+    public ShipMovement shipMovement;
     public float maxSpeed = 100f;
 
     public bool AtMaxSpeed
