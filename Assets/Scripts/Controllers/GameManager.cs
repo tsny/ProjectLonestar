@@ -100,6 +100,11 @@ public class GameManager : MonoBehaviour
             playerShip = ShipSpawner.instance.SpawnPlayerShip(shipPrefab, playerLoadout, spawnPosition);
         }
 
+        else
+        {
+            SpawnFlyCam(Vector3.zero);
+        }
+
         //CalculateMapSize();
     }
 
@@ -109,16 +114,26 @@ public class GameManager : MonoBehaviour
         // Otherwise: Destroy the current flyCam
         if (args.newShip == null)
         {
-            var flyCam = new GameObject().AddComponent<ExtendedFlycam>();
-            flyCam.transform.position = args.oldShip.transform.position + new Vector3(0, 10, 0);
-            flyCam.name = "FLYCAM";
+            SpawnFlyCam(args.oldShip.transform.position);
         }
 
         else
         {
-            var flyCam = FindObjectOfType<ExtendedFlycam>();
-            if (flyCam != null) Destroy(flyCam.gameObject);
+            RemoveFlyCamFromScene();
         }
+    }
+
+    private void SpawnFlyCam(Vector3 pos)
+    {
+        var flyCam = new GameObject().AddComponent<ExtendedFlycam>();
+        flyCam.transform.position = pos + new Vector3(0, 10, 0);
+        flyCam.name = "FLYCAM";
+    }
+
+    private void RemoveFlyCamFromScene()
+    {
+        var flyCam = FindObjectOfType<ExtendedFlycam>();
+        if (flyCam != null) Destroy(flyCam.gameObject);
     }
 
     private void HandleNewScene(Scene arg0, Scene arg1)

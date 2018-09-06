@@ -53,9 +53,13 @@ public class PlayerController : MonoBehaviour
 
     public void UnPossess()
     {
+        if (controlledShip == null) return;
+
         var oldShip = controlledShip;
         playerCamera.enabled = false;
         controlledShip = null;
+
+        mouseState = MouseState.Off;
 
         if (Possession != null) Possession(new PossessionEventArgs(this, oldShip));
     }

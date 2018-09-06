@@ -18,7 +18,7 @@ FEATURES
 using UnityEngine;
 using System.Collections;
 
-[RequireComponent(typeof(Camera))]
+[RequireComponent(typeof(Camera), typeof(AudioListener))]
 public class ExtendedFlycam : MonoBehaviour
 {
     public float cameraSensitivity = 90;

@@ -4,8 +4,8 @@ using UnityEngine.UI;
 
 public class DebugConsole : MonoBehaviour
 {
-    public PlayerController playerController;
-    public ShipSpawner shipSpawner;
+    private PlayerController playerController;
+    private ShipSpawner shipSpawner;
     public VerticalLayoutGroup verticalLayoutGroup;
     public GameObject content;
 
@@ -52,5 +52,10 @@ public class DebugConsole : MonoBehaviour
     public void PopulateMethodList()
     {
 
+    }
+
+    public void UnPossess()
+    {
+        playerController.UnPossess();
     }
 }
