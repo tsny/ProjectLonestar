@@ -85,14 +85,18 @@ public class TargetIndicator : MonoBehaviour
 
     private void OnDestroy()
     {
+        enabled = false;
         target.TookDamage -= HandleTargetTookDamage;
         target.Killed -= HandleTargetKilled;
     }
 
+    private void Awake()
+    {
+        enabled = false;
+    }
+
     private void Update()
     {
-        if (HasTarget == false) return;
-
         RangeCheck();
 
         CalculatePosition();
@@ -216,6 +220,8 @@ public class TargetIndicator : MonoBehaviour
 
         name = target.name;
         SetHealthBarFill();
+
+        enabled = true;
     }
 
     private void SetButtonColor(Item item)

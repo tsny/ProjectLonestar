@@ -8,15 +8,24 @@ public class AsteroidField : MonoBehaviour
 
     [Space(10)]
     [Tooltip("Select 'Hide In Hierarchy' to ensure a cleaner hierarchy")]
-    public new HideFlags hideFlags;
+    public new HideFlags hideFlags = HideFlags.HideInHierarchy;
 
     public int desiredAsteroids = 1000;
 
-    public float InnerRadius { get; set; }
+    public float InnerRadius { get; set; } 
     public float OuterRadius { get; set; }
     public float AsteroidScale { get; set; }
     public float AsteroidLowerScale { get; set; }
     public float AsteroidUpperScale { get; set; }
+
+    public AsteroidField()
+    {
+        InnerRadius = 200;
+        OuterRadius = 500;
+        AsteroidScale = 1;
+        AsteroidLowerScale = 1;
+        AsteroidUpperScale = 4;
+    }
 
     public void GenerateField(bool scaleUsesRange)
     {
@@ -51,6 +60,14 @@ public class AsteroidField : MonoBehaviour
 
         GameObject asteroid = Instantiate(AsteroidGameObject);
 
+        var collider = asteroid.GetComponent<Collider>();
+
+        if (collider == null)
+        {
+            var sphereCollider = asteroid.AddComponent<SphereCollider>();
+            sphereCollider.radius = scale;
+        }
+
         asteroid.hideFlags = hideFlags;
 
         asteroid.transform.parent = gameObject.transform;
@@ -58,6 +75,15 @@ public class AsteroidField : MonoBehaviour
 
         newPos = transform.position + Random.onUnitSphere * Random.Range(InnerRadius, OuterRadius);
         newRot = Random.rotation;
+
+
+        for (int i = 0; i < 50; i++)
+        {
+            if (!Physics.CheckSphere(newPos, collider.bounds.size.magnitude)) break;
+
+            newPos = transform.position + Random.onUnitSphere * Random.Range(InnerRadius, OuterRadius);
+            newRot = Random.rotation;
+        }
 
         asteroid.transform.SetPositionAndRotation(newPos, newRot);
 

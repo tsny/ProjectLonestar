@@ -14,7 +14,9 @@ public class AsteroidFieldEditor : Editor
 
         AsteroidField field = (AsteroidField)target;
 
-        field.AsteroidGameObject = (GameObject) EGL.ObjectField(new GUIContent("Asteroid Game Object", "The game object that represents the spawned asteroids"), field.AsteroidGameObject, typeof(GameObject), false);
+        var newAsteroidGameObject = (GameObject) EGL.ObjectField(new GUIContent("Asteroid Game Object", "The game object that represents the spawned asteroids"), field.AsteroidGameObject, typeof(GameObject), false);
+
+        field.AsteroidGameObject = newAsteroidGameObject ?? field.AsteroidGameObject;
 
         field.InnerRadius = EGL.FloatField(new GUIContent("Inner Radius", "The inner radius of the field"), field.InnerRadius);
         field.OuterRadius = EGL.Slider("Outer Radius", field.OuterRadius, field.InnerRadius, 10000 + field.InnerRadius);

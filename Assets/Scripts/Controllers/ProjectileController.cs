@@ -52,11 +52,8 @@ public class ProjectileController : MonoBehaviour
         Destroy(rb);
         Destroy(collider);
 
-        //Ship hitShip = collision.gameObject.GetComponent<Ship>(); 
-        //if (hitShip != null) hitShip.TakeDamage(weapon);
-
         WorldObject hitObject = collision.gameObject.GetComponent<WorldObject>();
-        hitObject.TakeDamage(weapon);
+        if (hitObject != null) hitObject.TakeDamage(weapon);
 
         mainEffect.SetActive(false);
         impactEffect.SetActive(true);

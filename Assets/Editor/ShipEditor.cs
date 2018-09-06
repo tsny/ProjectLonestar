@@ -17,7 +17,7 @@ public class ShipEditor : Editor
     {
         base.OnInspectorGUI();
         ship = target as Ship;
-        TogglePossessionButtonVisibility();
+        DecidePossessionButtonVisibility();
     }
 
     void OnSceneGUI()
@@ -37,7 +37,7 @@ public class ShipEditor : Editor
         }
     }
 
-    private void TogglePossessionButtonVisibility()
+    private void DecidePossessionButtonVisibility()
     {
         if (!Application.isPlaying) return;
 

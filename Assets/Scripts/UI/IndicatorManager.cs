@@ -5,25 +5,16 @@ using UnityEngine.UI;
 
 public class IndicatorManager : ShipUIElement
 {
-    #region Fields
-
     public GameObject indicatorPrefab;
     public Transform indicatorLayer;
-    public List<TargetIndicator> indicators;
-    public Dictionary<WorldObject, TargetIndicator> indicatorPairs;
+    public List<TargetIndicator> indicators = new List<TargetIndicator>();
+    public Dictionary<WorldObject, TargetIndicator> indicatorPairs = new Dictionary<WorldObject, TargetIndicator>();
 
     public TargetIndicator selectedIndicator;
 
-    #endregion
-
-    #region Event Handlers
-
     private void HandleIndicatorSelected(TargetIndicator newIndicator)
     {
-        if (selectedIndicator != null)
-        {
-            selectedIndicator.Deselect();
-        }
+        if (selectedIndicator != null) selectedIndicator.Deselect();
 
         selectedIndicator = newIndicator;
     }
@@ -52,39 +43,14 @@ public class IndicatorManager : ShipUIElement
 
     private void HandleEntryChanged(WorldObject entry, bool added)
     {
-        if (added)
-        {
-            AddIndicator(entry);
-        }
+        if (added) AddIndicator(entry);
 
-        else
-        {
-            RemoveIndicator(entry);
-        }
+        else RemoveIndicator(entry);
     }
-
-    #endregion
-
-    #region Unity Messages
-
-    protected override void Awake()
-    {
-        base.Awake();
-
-        indicators = new List<TargetIndicator>();
-        indicatorPairs = new Dictionary<WorldObject, TargetIndicator>();
-    }
-
-    #endregion
-
-    #region Methods
 
     public void ClearIndicators()
     {
-        foreach (TargetIndicator indicator in indicators)
-        {
-            RemoveIndicator(indicator);
-        }
+        foreach (TargetIndicator indicator in indicators) RemoveIndicator(indicator);
 
         indicatorPairs.Clear();
         indicators.Clear();
@@ -95,10 +61,7 @@ public class IndicatorManager : ShipUIElement
 
     public void DeselectCurrentIndicator()
     {
-        if (selectedIndicator != null)
-        {
-            selectedIndicator.Deselect();
-        }
+        if (selectedIndicator != null) selectedIndicator.Deselect();
 
         selectedIndicator = null;
     }
@@ -121,10 +84,7 @@ public class IndicatorManager : ShipUIElement
     {
         if (indicatorToRemove == null) return;
 
-        if (indicatorToRemove == selectedIndicator)
-        {
-            DeselectCurrentIndicator();
-        }
+        if (indicatorToRemove == selectedIndicator) DeselectCurrentIndicator();
         
         Destroy(indicatorToRemove.gameObject);
     }
@@ -133,12 +93,6 @@ public class IndicatorManager : ShipUIElement
     {
         TargetIndicator pairedIndicator;
 
-        if (indicatorPairs.TryGetValue(worldObject, out pairedIndicator))
-        {
-            RemoveIndicator(pairedIndicator);
-        }
+        if (indicatorPairs.TryGetValue(worldObject, out pairedIndicator)) RemoveIndicator(pairedIndicator);
     }
-
-    #endregion
-
 }

@@ -28,7 +28,7 @@ public class ShipCamera : ShipComponent
     public float maxLowerPitch = -10;
     public float maxDistance = 10;
 
-    private ShipPhysics shipPhysics;
+    public ShipPhysics shipPhysics;
     public PlayerController pController;
     public Camera shipCam;
     public AudioListener listener;
@@ -85,10 +85,7 @@ public class ShipCamera : ShipComponent
 
         Physics.Raycast(ray, out hitInfo, Mathf.Infinity, ~LayerMask.GetMask("Player"));
 
-        if (hitInfo.collider != null)
-        {
-            return hitInfo.collider.transform.position;
-        }
+        if (hitInfo.collider != null) return hitInfo.collider.transform.position;
 
         return ray.GetPoint(10000);
     }

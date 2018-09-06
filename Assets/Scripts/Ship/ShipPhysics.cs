@@ -35,7 +35,7 @@ public class ShipPhysics : ShipComponent
     protected override void Awake()
     {
         base.Awake();
-        rb = GetComponent<Rigidbody>();
+        //rb = GetComponent<Rigidbody>();
         shipMovement = owningShip.GetComponent<ShipMovement>();
     }
 

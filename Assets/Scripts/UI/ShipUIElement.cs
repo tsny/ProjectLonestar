@@ -11,6 +11,16 @@ public class ShipUIElement : MonoBehaviour
         playerController = FindObjectOfType<PlayerController>();
         playerController.Possession += HandlePossession;
         enabled = false;
+
+        if (playerController.controlledShip != null)
+        {
+            HandlePossession(new PossessionEventArgs(playerController.controlledShip, null, playerController));
+        }
+    }
+
+    protected void OnDestroy()
+    {
+        playerController.Possession -= HandlePossession;
     }
 
     private void HandlePossession(PossessionEventArgs args)

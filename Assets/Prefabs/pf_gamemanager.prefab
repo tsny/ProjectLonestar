@@ -57,9 +57,10 @@ MonoBehaviour:
   spawnPosition: {x: 0, y: 5, z: 0}
   playerLoadout: {fileID: 11400000, guid: bfc95fa1331d0f5429934f3335a22017, type: 2}
   playerShip: {fileID: 0}
-  debugMode: 0
-  locationID: 0
+  debugMode: 1
   spawnPlayer: 1
+  shipHUD: {fileID: 0}
+  flyCamHUD: {fileID: 0}
 --- !u!114 &114932995482058778
 MonoBehaviour:
   m_ObjectHideFlags: 1

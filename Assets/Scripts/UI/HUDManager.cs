@@ -16,6 +16,7 @@ public class HUDManager : ShipUIElement
         mouseFlightText.text = "";
         cruiseText.text = "";
         cruiseText.text = "Engines Nominal";
+        enabled = true;
     }
 
     protected override void HandleUnpossessed(PlayerController sender, Ship oldShip)
@@ -25,12 +26,11 @@ public class HUDManager : ShipUIElement
         mouseFlightText.text = "";
         cruiseText.text = "";
         cruiseText.text = "";
+        enabled = false;
     }
 
     private void Update()
     {
-        if (ship == null) return;
-
         SetMouseFlightText();
         SetCruiseText();
     }

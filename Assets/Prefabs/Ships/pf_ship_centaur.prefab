@@ -57,7 +57,6 @@ GameObject:
   - component: {fileID: 23530859083189918}
   - component: {fileID: 114992891233242000}
   - component: {fileID: 82268639196682970}
-  - component: {fileID: 65662096682511868}
   m_Layer: 2
   m_Name: Shield
   m_TagString: Untagged
@@ -76,7 +75,6 @@ GameObject:
   - component: {fileID: 33182394269467546}
   - component: {fileID: 23264389537427692}
   - component: {fileID: 64237280639488028}
-  - component: {fileID: 114850391222217890}
   m_Layer: 0
   m_Name: Mesh
   m_TagString: Untagged
@@ -308,6 +306,7 @@ GameObject:
   - component: {fileID: 54334028879456994}
   - component: {fileID: 114546078585340872}
   - component: {fileID: 114411058820966502}
+  - component: {fileID: 114430950398397468}
   m_Layer: 0
   m_Name: PF_Ship_Centaur
   m_TagString: Untagged
@@ -657,7 +656,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1731105088454010}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -8.8, y: 4.4716, z: 8.244926}
+  m_LocalPosition: {x: -14.31, y: 4.4716, z: 8.244926}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4363359676537772}
@@ -1252,18 +1251,6 @@ MeshCollider:
   m_CookingOptions: 14
   m_SkinWidth: 0.01
   m_Mesh: {fileID: 4300010, guid: add769d179a9826498fc063c005d35bd, type: 3}
---- !u!65 &65662096682511868
-BoxCollider:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1060488022511960}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 0
-  serializedVersion: 2
-  m_Size: {x: 0.13, y: 0.036053687, z: 0.16654003}
-  m_Center: {x: 0, y: 0.008188205, z: 0.023932513}
 --- !u!81 &81121883126093136
 AudioListener:
   m_ObjectHideFlags: 1
@@ -2101,6 +2088,20 @@ MonoBehaviour:
   cruiseDisrupted: 0
   cruiseChargeDuration: 5
   cruiseChargeSource: {fileID: 0}
+--- !u!114 &114430950398397468
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1731105088454010}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e080e51d18eb764d94a9cf0e07d0c52, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  renderer: {fileID: 23264389537427692}
+  highlightShader: {fileID: 4800000, guid: 229a0b822033b3f4ca94ba3349e72d7b, type: 3}
+  standardShader: {fileID: 46, guid: 0000000000000000f000000000000000, type: 0}
 --- !u!114 &114546078585340872
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2121,6 +2122,8 @@ MonoBehaviour:
   drag: 5
   mass: 5
   speed: 0
+  rb: {fileID: 54334028879456994}
+  shipMovement: {fileID: 114411058820966502}
   maxSpeed: 40
 --- !u!114 &114681986092633008
 MonoBehaviour:
@@ -2210,19 +2213,6 @@ MonoBehaviour:
   shipMovement: {fileID: 114411058820966502}
   inventory: {fileID: 0}
   dustParticleSystem: {fileID: 198993074573449122}
---- !u!114 &114850391222217890
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1098309251163990}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e080e51d18eb764d94a9cf0e07d0c52, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  highlightShader: {fileID: 4800000, guid: 229a0b822033b3f4ca94ba3349e72d7b, type: 3}
-  standardShader: {fileID: 46, guid: 0000000000000000f000000000000000, type: 0}
 --- !u!114 &114890172326677854
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2238,6 +2228,9 @@ MonoBehaviour:
   - {fileID: 114318202317187816}
   - {fileID: 114165425904898910}
   - {fileID: 114763845051631152}
+  - {fileID: 114898708139772632}
+  - {fileID: 114750398125826666}
+  - {fileID: 114153537171405082}
   - {fileID: 114681986092633008}
   - {fileID: 114992891233242000}
   - {fileID: 114924268490386734}
@@ -2287,6 +2280,7 @@ MonoBehaviour:
   maxUpperPitch: 0
   maxLowerPitch: -10
   maxDistance: 10
+  shipPhysics: {fileID: 0}
   pController: {fileID: 0}
   shipCam: {fileID: 20452498980098602}
   listener: {fileID: 81121883126093136}

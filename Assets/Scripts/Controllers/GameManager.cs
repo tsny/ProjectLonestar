@@ -9,18 +9,29 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
+    [Space(5)]
     public static GameManager instance;
-
     public PlayerController playerController;
+
+    [Header("Ship Details")]
     public GameObject shipPrefab;
     public Vector3 spawnPosition;
     public Loadout playerLoadout;
     public Ship playerShip;
 
+    [Space(5)]
+
     public bool debugMode;
-    public int locationID;
     public bool spawnPlayer;
     private bool paused;
+
+    [Space(5)]
+    public GameObject shipHUD;
+    public GameObject flyCamHUD;
+
+    private GameObject currentHUD;
+
+    //public int locationID;
 
     #region properties
     public KeyCode ThrottleUp { get; set; }
@@ -98,12 +109,10 @@ public class GameManager : MonoBehaviour
         if (spawnPlayer)
         {
             playerShip = ShipSpawner.instance.SpawnPlayerShip(shipPrefab, playerLoadout, spawnPosition);
+            RemoveFlyCamFromScene();
         }
 
-        else
-        {
-            SpawnFlyCam(Vector3.zero);
-        }
+        else SpawnFlyCam(Vector3.zero);
 
         //CalculateMapSize();
     }
@@ -112,15 +121,10 @@ public class GameManager : MonoBehaviour
     {
         // If unpossessing without possessing new ship: spawn a flyCam
         // Otherwise: Destroy the current flyCam
-        if (args.newShip == null)
-        {
-            SpawnFlyCam(args.oldShip.transform.position);
-        }
 
-        else
-        {
-            RemoveFlyCamFromScene();
-        }
+        if (args.newShip == null) SpawnFlyCam(args.oldShip.transform.position);
+
+        else RemoveFlyCamFromScene();
     }
 
     private void SpawnFlyCam(Vector3 pos)
@@ -128,12 +132,25 @@ public class GameManager : MonoBehaviour
         var flyCam = new GameObject().AddComponent<ExtendedFlycam>();
         flyCam.transform.position = pos + new Vector3(0, 10, 0);
         flyCam.name = "FLYCAM";
+
+        SwapHUD(flyCamHUD);
     }
 
     private void RemoveFlyCamFromScene()
     {
         var flyCam = FindObjectOfType<ExtendedFlycam>();
         if (flyCam != null) Destroy(flyCam.gameObject);
+
+        SwapHUD(shipHUD);
+    }
+
+    private void SwapHUD(GameObject newHUD)
+    {
+        if (newHUD == null) return;
+
+        if (currentHUD != null && currentHUD.activeSelf) currentHUD.SetActive(false);
+        currentHUD = newHUD;
+        currentHUD.SetActive(true);
     }
 
     private void HandleNewScene(Scene arg0, Scene arg1)
@@ -236,15 +253,13 @@ public class GameManager : MonoBehaviour
 
     public void DeleteSave()
     {
-        if (File.Exists(Application.persistentDataPath + "/playerSave.dat"))
-        {
-            File.Delete(Application.persistentDataPath + "/playerSave.dat");
-        }
+        var playerSavePath = Application.persistentDataPath + "/playerSave.dat";
+        if (File.Exists(playerSavePath)) File.Delete(playerSavePath);
     }
 
     public void LoadNewSystem(string systemToLoad, int ID = 0)
     {
-        locationID = ID;
+        //locationID = ID;
         SceneManager.LoadScene(systemToLoad);
     }
 

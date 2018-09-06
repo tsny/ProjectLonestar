@@ -12,6 +12,8 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    public InputManager inputManager;
+
     [Header("--- Input ---")]
     public bool canPause = true;
     public bool inputAllowed = true;
@@ -33,6 +35,11 @@ public class PlayerController : MonoBehaviour
     public delegate void PossessionEventHandler(PossessionEventArgs args);
     public event PossessionEventHandler Possession;
 
+    private void Awake()
+    {
+        enabled = false;
+    }
+
     public void Possess(Ship newShip)
     {
         if (controlledShip != null) UnPossess();
@@ -46,7 +53,8 @@ public class PlayerController : MonoBehaviour
 
         playerCamera.enabled = true;
         playerCamera.pController = this;
-        //
+
+        enabled = true;
 
         if (Possession != null) Possession(new PossessionEventArgs(newShip, oldShip, this));
     }
@@ -61,14 +69,14 @@ public class PlayerController : MonoBehaviour
 
         mouseState = MouseState.Off;
 
+        enabled = false;
+
         if (Possession != null) Possession(new PossessionEventArgs(this, oldShip));
     }
 
     // TODO: Moves these first checks within Updates to some kind of on enabled check
     private void FixedUpdate()
     {
-        if (PossessingPawn == false) return;
-
         switch (mouseState)
         {
             case MouseState.Off:
@@ -85,7 +93,7 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        if (PossessingPawn == false) return;
+        if (PossessingPawn == false) enabled = false;
 
         GetMousePosition();
 
@@ -142,20 +150,14 @@ public class PlayerController : MonoBehaviour
 
             if(Input.GetKeyDown(GameManager.instance.ManualMouseFlight))
             {
-                if(mouseState == MouseState.Off)
-                {
-                    StartCoroutine("ManualMouseFlightCoroutine");
-                }
+                if(mouseState == MouseState.Off) StartCoroutine("ManualMouseFlightCoroutine");
             }
 
             if(Input.GetKeyUp(GameManager.instance.ManualMouseFlight))
             {
                 StopAllCoroutines();
 
-                if (mouseState == MouseState.Held)
-                {
-                    mouseState = MouseState.Off;
-                }
+                if (mouseState == MouseState.Held) mouseState = MouseState.Off;
             }
 
             if(Input.GetKey(KeyCode.LeftShift) && Input.GetKeyDown(KeyCode.W))
