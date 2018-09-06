@@ -30,36 +30,37 @@ public class PlayerController : MonoBehaviour
 
     public Ship controlledShip;
 
-    public delegate void PossessedShipHandler(PlayerController sender, Ship newShip);
-    public delegate void UnpossessedShipHandler(PlayerController sender, Ship oldShip);
-    public event PossessedShipHandler ShipPossessed;
-    public event UnpossessedShipHandler ShipUnpossessed;
+    public delegate void PossessionEventHandler(PossessionEventArgs args);
+    public event PossessionEventHandler Possession;
 
     public void Possess(Ship newShip)
     {
-        if (controlledShip != null)
-        {
-            UnPossess();
-        }
+        if (controlledShip != null) UnPossess();
 
+        var oldShip = controlledShip;
         controlledShip = newShip;
 
+        // TODO: Moves these responsibilities somewhere else
         playerCamera = controlledShip.GetComponentInChildren<ShipCamera>(true);
         shipMovement = controlledShip.GetComponent<ShipMovement>();
 
         playerCamera.enabled = true;
         playerCamera.pController = this;
+        //
 
-        if (ShipPossessed != null) ShipPossessed(this, newShip);
+        if (Possession != null) Possession(new PossessionEventArgs(newShip, oldShip, this));
     }
 
     public void UnPossess()
     {
+        var oldShip = controlledShip;
         playerCamera.enabled = false;
-        if (ShipUnpossessed != null) ShipUnpossessed(this, controlledShip);
         controlledShip = null;
+
+        if (Possession != null) Possession(new PossessionEventArgs(this, oldShip));
     }
 
+    // TODO: Moves these first checks within Updates to some kind of on enabled check
     private void FixedUpdate()
     {
         if (PossessingPawn == false) return;
@@ -255,7 +256,7 @@ public class PlayerController : MonoBehaviour
         Vector2 center = new Vector2(width / 2, height / 2);
         Vector3 mousePosition = Input.mousePosition;
 
-        // shifts the origin of the screen to be in the middle instead of the bottom left corner
+        // Shifts the origin of the screen to be in the middle instead of the bottom left corner
 
         mouseX = mousePosition.x - center.x;
         mouseY = mousePosition.y - center.y;
@@ -276,12 +277,28 @@ public class PlayerController : MonoBehaviour
 
 public class PossessionEventArgs : EventArgs
 {
+    public PlayerController playerController;
     public Ship newShip;
     public Ship oldShip;
 
-    public PossessionEventArgs(Ship newShip, Ship oldShip)
+    public bool PossessingNewShip
+    {
+        get
+        {
+            return newShip != null;
+        }
+    }
+
+    public PossessionEventArgs(Ship newShip, Ship oldShip, PlayerController playerController)
     {
         this.newShip = newShip;
+        this.oldShip = oldShip;
+        this.playerController = playerController;
+    }
+
+    public PossessionEventArgs(PlayerController playerController, Ship oldShip)
+    {
+        this.playerController = playerController;
         this.oldShip = oldShip;
     }
 }

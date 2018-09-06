@@ -45,6 +45,7 @@ public class IndicatorManager : ShipUIElement
     protected override void HandleUnpossessed(PlayerController sender, Ship oldShip)
     {
         base.HandleUnpossessed(sender, oldShip);
+
         oldShip.hardpointSystem.scannerHardpoint.EntryChanged -= HandleEntryChanged;
         ClearIndicators();
     }

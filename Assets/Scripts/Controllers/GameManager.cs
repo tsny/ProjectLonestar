@@ -12,7 +12,6 @@ public class GameManager : MonoBehaviour
     public static GameManager instance;
 
     public PlayerController playerController;
-    //public ShipSpawner shipSpawner;
     public GameObject shipPrefab;
     public Vector3 spawnPosition;
     public Loadout playerLoadout;
@@ -86,10 +85,40 @@ public class GameManager : MonoBehaviour
 
         SceneManager.activeSceneChanged += HandleNewScene;
 
-        //shipSpawner = GetComponent<ShipSpawner>();
         playerController = FindObjectOfType<PlayerController>();
 
         AssignKeyCodes();
+    }
+
+    private void Start()
+    {
+        //LoadPlayerInfo();
+        playerController.Possession += HandlePossession;
+
+        if (spawnPlayer)
+        {
+            playerShip = ShipSpawner.instance.SpawnPlayerShip(shipPrefab, playerLoadout, spawnPosition);
+        }
+
+        //CalculateMapSize();
+    }
+
+    private void HandlePossession(PossessionEventArgs args)
+    {
+        // If unpossessing without possessing new ship: spawn a flyCam
+        // Otherwise: Destroy the current flyCam
+        if (args.newShip == null)
+        {
+            var flyCam = new GameObject().AddComponent<ExtendedFlycam>();
+            flyCam.transform.position = args.oldShip.transform.position + new Vector3(0, 10, 0);
+            flyCam.name = "FLYCAM";
+        }
+
+        else
+        {
+            var flyCam = FindObjectOfType<ExtendedFlycam>();
+            if (flyCam != null) Destroy(flyCam.gameObject);
+        }
     }
 
     private void HandleNewScene(Scene arg0, Scene arg1)
@@ -148,18 +177,6 @@ public class GameManager : MonoBehaviour
         JoinFormation = GetKeycode("JoinFormKey", "F4");
     }
 
-    private void Start()
-    {
-        //LoadPlayerInfo();
-
-        if (spawnPlayer)
-        {
-            playerShip = ShipSpawner.instance.SpawnPlayerShip(shipPrefab, playerLoadout, spawnPosition);
-        }
-
-        //CalculateMapSize();
-    }
-
     private void OnApplicationQuit()
     {
         SavePlayerInfo();
@@ -170,13 +187,12 @@ public class GameManager : MonoBehaviour
         return (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString(keyName, defaultName));
     }
 
+    // TODO: Also disable player input
     public void TogglePause()
     {
         paused = !paused;
 
-        if(paused) Time.timeScale = 0.0f;
-
-        else Time.timeScale = 1.0f;
+        Time.timeScale = paused ? 0.0f : 1.0f;
     }
 
     public void SavePlayerInfo()

@@ -44,7 +44,7 @@ public class Ship : WorldObject
         indicator.targetShield = hardpointSystem.shieldHardpoint.health;
     }
 
-    protected override void SetName()
+    protected override void GenerateName()
     {
         pilotFirstName = NameGenerator.Generate(Gender.Male).First;
         pilotLastName = NameGenerator.Generate(Gender.Male).Last;
@@ -56,13 +56,33 @@ public class Ship : WorldObject
     {
         base.Awake();
 
-        FindObjectOfType<PlayerController>().ShipPossessed += HandlePossessed;
+        FindObjectOfType<PlayerController>().Possession += HandlePossession;
 
         hardpointSystem = GetComponentInChildren<HardpointSystem>();
         shipMovement = GetComponent<ShipMovement>();
         inventory = GetComponentInChildren<Inventory>();
 
         hullHealth = hullFullHealth;
+    }
+
+    private void HandlePossession(PossessionEventArgs args)
+    {
+        if (args.newShip == this)
+        {
+            name = "PLAYER SHIP - " + shipName;
+            tag = "Player";
+
+            dustParticleSystem.gameObject.SetActive(true);
+            hardpointSystem.shieldHardpoint.gameObject.layer = LayerMask.NameToLayer("Player");
+        }
+
+        else if (args.oldShip == this)
+        {
+            GenerateName();
+            tag = "Untagged";
+            dustParticleSystem.gameObject.SetActive(false);
+            hardpointSystem.shieldHardpoint.gameObject.layer = 0;
+        }
     }
 
     public override void TakeDamage(Weapon weapon)
@@ -84,32 +104,6 @@ public class Ship : WorldObject
         }
 
         OnTookDamage(false, weapon.hullDamage);
-    }
-
-    public void HandlePossessed(PlayerController newController, Ship newShip)
-    {
-        if (newShip != this)
-        {
-            return;
-        }
-
-        newController.ShipUnpossessed += HandleUnpossessed;
-
-        name = "Player Ship - " + shipName;
-        tag = "Player";
-
-        dustParticleSystem.gameObject.SetActive(true);
-        hardpointSystem.shieldHardpoint.gameObject.layer = LayerMask.NameToLayer("Player");
-    }
-
-    private void HandleUnpossessed(PlayerController sender, Ship oldShip)
-    {
-        sender.ShipUnpossessed -= HandleUnpossessed;
-        SetName();
-
-        dustParticleSystem.gameObject.SetActive(false);
-        tag = "Untagged";
-        hardpointSystem.shieldHardpoint.gameObject.layer = 0;
     }
 }
 

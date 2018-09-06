@@ -9,9 +9,21 @@ public class ShipUIElement : MonoBehaviour
     protected virtual void Awake()
     {
         playerController = FindObjectOfType<PlayerController>();
-        playerController.ShipPossessed += HandlePossessed;
-        playerController.ShipUnpossessed += HandleUnpossessed;
+        playerController.Possession += HandlePossession;
         enabled = false;
+    }
+
+    private void HandlePossession(PossessionEventArgs args)
+    {
+        if (args.PossessingNewShip)
+        {
+            HandlePossessed(args.playerController, args.newShip);
+        }
+
+        else
+        {
+            HandleUnpossessed(args.playerController, args.oldShip);
+        }
     }
 
     protected virtual void HandleUnpossessed(PlayerController sender, Ship oldShip)

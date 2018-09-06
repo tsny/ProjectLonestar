@@ -34,14 +34,14 @@ public class WorldObject : MonoBehaviour
         if (Killed != null) Killed(this, new DeathEventArgs());
     }
 
-    protected virtual void SetName()
+    protected virtual void GenerateName()
     {
         name = "World Object";
     }
 
     protected virtual void Awake()
     {
-        SetName();
+        GenerateName();
     }
 
     public virtual void SetupTargetIndicator(TargetIndicator indicator) { }

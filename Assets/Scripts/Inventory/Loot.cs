@@ -19,7 +19,7 @@ public class Loot : WorldObject
         worldObjectType = WorldObjectType.Loot;
     }
 
-    protected override void SetName()
+    protected override void GenerateName()
     {
         name = "loot_" + item.name + " x" + item.quantity;
     }
