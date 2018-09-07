@@ -12,7 +12,6 @@ public class TargetIndicator : MonoBehaviour
             return Camera.main.WorldToScreenPoint(target.transform.position);
         }
     }
-
     public bool IsOnscreen
     {
         get
@@ -21,7 +20,6 @@ public class TargetIndicator : MonoBehaviour
             return targetViewportPoint.z > 0;
         }
     }
-
     public bool HasTarget
     {
         get
@@ -29,7 +27,6 @@ public class TargetIndicator : MonoBehaviour
             return target != null;
         }
     }
-
     public bool TargetIsInRange
     {
         get
@@ -77,6 +74,7 @@ public class TargetIndicator : MonoBehaviour
     {
         target.TookDamage -= HandleTargetTookDamage;
         target.Killed -= HandleTargetKilled;
+
         if (TargetDestroyed != null) TargetDestroyed(this);
     }
     
@@ -102,8 +100,8 @@ public class TargetIndicator : MonoBehaviour
     private void Start()
     {
         content.SetActive(false);
-        ShowHealthBar(false);
-        ShowName(false);
+        ToggleHealthBar(false);
+        ToggleNameText(false);
     }
 
     public void Select()
@@ -112,8 +110,8 @@ public class TargetIndicator : MonoBehaviour
 
         selected = true;
 
-        ShowHealthBar(true);
-        ShowName(true);
+        ToggleHealthBar(true);
+        ToggleNameText(true);
         buttonImage.raycastTarget = false;
 
         animator.Play("TargetGrow");
@@ -127,8 +125,8 @@ public class TargetIndicator : MonoBehaviour
 
         selected = false;
 
-        ShowHealthBar(false);
-        ShowName(false);
+        ToggleHealthBar(false);
+        ToggleNameText(false);
         buttonImage.raycastTarget = true;
 
         animator.Play("TargetShrink");
@@ -213,23 +211,26 @@ public class TargetIndicator : MonoBehaviour
         target.Killed += HandleTargetKilled;
         target.TookDamage += HandleTargetTookDamage;
 
+        var lootTarget = newTarget as Loot;
+        if (lootTarget != null) SetupLootIndicator(lootTarget);
+
         name = target.name;
         SetHealthBarFill();
 
         enabled = true;
     }
 
-    private void SetButtonColor(Item item)
+    private void SetupLootIndicator(Loot loot)
     {
-        buttonImage.color = Item.GetMatchingColor(item);
+        buttonImage.color = Item.GetMatchingColor(loot.item);
     }
 
-    private void ShowHealthBar(bool value)
+    private void ToggleHealthBar(bool value)
     {
         healthObject.SetActive(value);
     }
 
-    private void ShowName(bool value)
+    private void ToggleNameText(bool value)
     {
         header.gameObject.SetActive(value);
     }

@@ -11,6 +11,8 @@ public enum Rarity
     Rare,
     Unique,
     Alien,
+    Artifact,
+    Blueprint,
     Solar
 }
 

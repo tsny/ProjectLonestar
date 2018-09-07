@@ -32,11 +32,6 @@ public class Ship : WorldObject
         }
     }
 
-    protected Ship()
-    {
-        worldObjectType = WorldObjectType.Ship;
-    }
-
     public override void SetupTargetIndicator(TargetIndicator indicator)
     {
         indicator.header.text = pilotLastName + " " + faction;

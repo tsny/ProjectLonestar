@@ -12,6 +12,7 @@ public class ShipUIElement : MonoBehaviour
         playerController.Possession += HandlePossession;
         enabled = false;
 
+        // If this object is not created during a possession, run the handlePossession method for the existing ship
         if (playerController.controlledShip != null)
         {
             HandlePossession(new PossessionEventArgs(playerController.controlledShip, null, playerController));
@@ -25,15 +26,9 @@ public class ShipUIElement : MonoBehaviour
 
     private void HandlePossession(PossessionEventArgs args)
     {
-        if (args.PossessingNewShip)
-        {
-            HandlePossessed(args.playerController, args.newShip);
-        }
+        if (args.PossessingNewShip) HandlePossessed(args.playerController, args.newShip);
 
-        else
-        {
-            HandleUnpossessed(args.playerController, args.oldShip);
-        }
+        else HandleUnpossessed(args.playerController, args.oldShip);
     }
 
     protected virtual void HandleUnpossessed(PlayerController sender, Ship oldShip)

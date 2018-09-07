@@ -2,17 +2,16 @@
 
 public class ProjectileController : MonoBehaviour
 {
+    public float distanceTraveled = 0f;
+
     public Weapon weapon;
-    private Rigidbody rb;
-
-    private new Collider collider;
-
+    public Vector3 target;
     public GameObject mainEffect;
     public GameObject impactEffect;
 
+    private new Collider collider;
+    private Rigidbody rb;
     private Vector3 startPosition;
-    public float distanceTraveled = 0f;
-    public Vector3 target;
 
     private void Awake()
     {

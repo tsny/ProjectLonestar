@@ -1,24 +1,8 @@
 ﻿using System;
 using UnityEngine;
 
-public enum WorldObjectType
-{
-    Ship,
-    Station,
-    Loot,
-    Wreck,
-    Jumpgate,
-    Tradelane,
-    Star,
-    Anomaly,
-    Jumphole,
-    AsteroidField
-}
-
 public class WorldObject : MonoBehaviour
 {
-    protected WorldObjectType worldObjectType;
-
     public bool invulnerable;
     public float hullHealth = 100;
     public float hullFullHealth = 100;

@@ -28,15 +28,17 @@ public class ShipCamera : ShipComponent
     public float maxLowerPitch = -10;
     public float maxDistance = 10;
 
+    [Header("Other")]
+    [Space(5)]
+    public float aimRaycastDistance = 10000;
+
     public ShipPhysics shipPhysics;
     public PlayerController pController;
     public Camera shipCam;
-    public AudioListener listener;
+    public AudioListener audioListener;
 
     private void FixedUpdate()
     {
-        if (pController == null) return;
-
         CalculateOffsets();
 
         if (pController.mouseState == MouseState.Held || pController.mouseState == MouseState.Toggled)
@@ -55,9 +57,8 @@ public class ShipCamera : ShipComponent
     {
         base.Awake();
 
-        shipCam = GetComponentInChildren<Camera>(true);
-        listener = GetComponent<AudioListener>();
-
+        shipCam = GetComponent<Camera>();
+        audioListener = GetComponent<AudioListener>();
         shipPhysics = owningShip.GetComponentInParent<ShipPhysics>();
 
         enabled = false;
@@ -66,14 +67,14 @@ public class ShipCamera : ShipComponent
     private void OnEnable()
     {
         shipCam.enabled = true;
-        listener.enabled = true;
+        audioListener.enabled = true;
     }
 
     private void OnDisable()
     {
         pController = null;
         shipCam.enabled = false;
-        listener.enabled = false;
+        audioListener.enabled = false;
     }
 
     public Vector3 GetAimPosition()
@@ -83,7 +84,7 @@ public class ShipCamera : ShipComponent
 
         Debug.DrawRay(ray.origin, ray.direction * 100);
 
-        Physics.Raycast(ray, out hitInfo, Mathf.Infinity, ~LayerMask.GetMask("Player"));
+        Physics.Raycast(ray, out hitInfo, aimRaycastDistance, ~LayerMask.GetMask("Player"));
 
         if (hitInfo.collider != null) return hitInfo.collider.transform.position;
 

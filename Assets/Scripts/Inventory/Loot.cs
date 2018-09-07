@@ -14,11 +14,6 @@ public class Loot : WorldObject
     [Range(0, 1)]
     public float pullForce = .5f;
 
-    private Loot()
-    {
-        worldObjectType = WorldObjectType.Loot;
-    }
-
     protected override void GenerateName()
     {
         name = "loot_" + item.name + " x" + item.quantity;
@@ -30,6 +25,7 @@ public class Loot : WorldObject
 
         indicator.name = item.name + " x" + item.quantity;
         indicator.header.text = indicator.name;
+        indicator.buttonImage.color = Color.red;
     }
 
     public void SetTarget(Transform newTarget, float pullForce)

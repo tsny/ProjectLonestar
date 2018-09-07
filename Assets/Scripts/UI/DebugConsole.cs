@@ -1,18 +1,24 @@
 ﻿using UnityEngine;
-using System.Collections;
 using UnityEngine.UI;
+using System.Reflection;
+using System.Collections;
+using System.Collections.Generic;
 
 public class DebugConsole : MonoBehaviour
 {
-    private PlayerController playerController;
-    private ShipSpawner shipSpawner;
     public VerticalLayoutGroup verticalLayoutGroup;
     public GameObject content;
+    public GameObject debugMethodButtonPrefab;
+
+    private PlayerController playerController;
+    private ShipSpawner shipSpawner;
 
     private void Awake()
     {
         playerController = FindObjectOfType<PlayerController>();
         shipSpawner = FindObjectOfType<ShipSpawner>();
+
+        PopulateDebugConsole(GetDebugMethods());
     }
 
     private void Start()
@@ -25,6 +31,33 @@ public class DebugConsole : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.BackQuote) && GameManager.instance.debugMode)
         {
             content.SetActive(!content.activeSelf);
+        }
+    }
+
+    private MethodInfo[] GetDebugMethods()
+    {
+        var methodInfo = typeof(DebugConsole).GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+
+        List<MethodInfo> debugMethods = new List<MethodInfo>();
+
+        foreach (var method in methodInfo)
+        {
+            if (method.ReturnType == typeof(void) && method.GetParameters().Length == 0)
+            {
+                debugMethods.Add(method);
+            }
+        }
+
+        return debugMethods.ToArray();
+    }
+
+    private void PopulateDebugConsole(MethodInfo[] methodInfo)
+    {
+        foreach (var method in methodInfo)
+        {
+            var currButton = Instantiate(debugMethodButtonPrefab, verticalLayoutGroup.transform).GetComponent<Button>();
+            currButton.onClick.AddListener(() => Invoke(method.Name, 0));
+            currButton.GetComponentInChildren<Text>().text = method.Name;
         }
     }
 
@@ -47,11 +80,6 @@ public class DebugConsole : MonoBehaviour
     public void NoThrusterDrain()
     {
         playerController.controlledShip.hardpointSystem.afterburnerHardpoint.drain = 0;
-    }
-
-    public void PopulateMethodList()
-    {
-
     }
 
     public void UnPossess()

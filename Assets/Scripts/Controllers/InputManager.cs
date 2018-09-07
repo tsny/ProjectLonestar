@@ -81,6 +81,7 @@ public class InputManager : MonoBehaviour
     private void Awake()
     {
         SingletonInit();
+        AssignKeyCodes();
     }
 
     private void AssignKeyCodes()
