@@ -24,7 +24,6 @@ GameObject:
   - component: {fileID: 33929187564424822}
   - component: {fileID: 65639780938724506}
   - component: {fileID: 54312656097212582}
-  - component: {fileID: 114687604045646432}
   m_Layer: 10
   m_Name: PF_LootContainer
   m_TagString: Untagged
@@ -39,7 +38,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1601505678792048}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -35.91205, y: -24.819218, z: -108.23778}
+  m_LocalPosition: {x: -38.482048, y: -22.919218, z: -108.23778}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -134,17 +133,3 @@ MonoBehaviour:
   outOfBoundsRange: 100
   distanceToTarget: 0
   pullForce: 0.5
---- !u!114 &114687604045646432
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1601505678792048}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e080e51d18eb764d94a9cf0e07d0c52, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  renderer: {fileID: 23001952901693026}
-  highlightShader: {fileID: 4800000, guid: 229a0b822033b3f4ca94ba3349e72d7b, type: 3}
-  standardShader: {fileID: 46, guid: 0000000000000000f000000000000000, type: 0}

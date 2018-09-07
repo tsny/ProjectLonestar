@@ -21,34 +21,40 @@ using UnityEngine;
 using System.Collections;
 
 [RequireComponent(typeof(Camera), typeof(AudioListener))]
-public class ExtendedFlycam : MonoBehaviour
+public class Flycam : MonoBehaviour
 {
-    public float cameraSensitivity = 150;
+    [Header("Rotation")]
+    public float pitchSensitivity = 2;
+    public float yawSensitivity = 2;
+    public float minPitch = -90;
+    public float maxPitch = 90;
+
+    [Range(0, 1)]
+    public float rotSmoothFactor = .85f;
+
+    [Header("Movement")]
     public float climbSpeed = 4;
     public float normalMoveSpeed = 10;
+
     public float slowMoveFactor = 0.25f;
     public float fastMoveFactor = 3;
 
-    private float rotationX = 0.0f;
-    private float rotationY = 0.0f;
+    Vector3 currRot;
+    Vector3 targetRot;
 
     private void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
     }
 
-    void Update()
+    private void Update()
     {
-        if (Cursor.lockState == CursorLockMode.Locked)
-        {
-            rotationX += Input.GetAxis("Mouse X") * cameraSensitivity * Time.deltaTime;
-            rotationY += Input.GetAxis("Mouse Y") * cameraSensitivity * Time.deltaTime;
-            rotationY = Mathf.Clamp(rotationY, -90, 90);
+        Movement();
+        if (Cursor.lockState == CursorLockMode.Locked) Rotate();
+    }
 
-            transform.localRotation = Quaternion.AngleAxis(rotationX, Vector3.up);
-            transform.localRotation *= Quaternion.AngleAxis(rotationY, Vector3.left);
-        }
-
+    void Movement()
+    {
         if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
         {
             transform.position += transform.forward * (normalMoveSpeed * fastMoveFactor) * Input.GetAxis("Vertical") * Time.deltaTime;
@@ -73,5 +79,16 @@ public class ExtendedFlycam : MonoBehaviour
         {
             Cursor.lockState = Cursor.lockState == CursorLockMode.None ? CursorLockMode.Locked : CursorLockMode.None;
         }
+    }
+
+    void Rotate()
+    {
+        targetRot = new Vector3(
+            Mathf.Clamp(targetRot.x + -Input.GetAxis("Mouse Y") * pitchSensitivity, minPitch, maxPitch),
+            targetRot.y + Input.GetAxis("Mouse X") * yawSensitivity
+            );
+
+        currRot = Vector3.Lerp(currRot, targetRot, rotSmoothFactor);
+        transform.rotation = Quaternion.Euler(currRot);
     }
 }

@@ -147,8 +147,8 @@ MonoBehaviour:
   header: {fileID: 114837309495818290}
   content: {fileID: 1707065497456520}
   target: {fileID: 0}
-  healthBarImage: {fileID: 114181989298412344}
   healthObject: {fileID: 1204156465961740}
+  healthBarImage: {fileID: 114181989298412344}
   targetHealth: 0
   targetShield: 0
   distanceFromTarget: 0
@@ -244,7 +244,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: 746469aae1abc934bb8dc09f6df2162b, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 7550cc0a75539f34f9b28d53f6b0cd93, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

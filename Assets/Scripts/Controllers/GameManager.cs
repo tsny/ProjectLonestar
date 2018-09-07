@@ -6,6 +6,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using System;
 using UnityEngine.SceneManagement;
+using UnityEngine.Networking;
 
 public class GameManager : MonoBehaviour
 {
@@ -129,7 +130,7 @@ public class GameManager : MonoBehaviour
 
     private void SpawnFlyCam(Vector3 pos)
     {
-        var flyCam = new GameObject().AddComponent<ExtendedFlycam>();
+        var flyCam = new GameObject().AddComponent<Flycam>();
         flyCam.transform.position = pos + new Vector3(0, 10, 0);
         flyCam.name = "FLYCAM";
 
@@ -138,7 +139,7 @@ public class GameManager : MonoBehaviour
 
     private void RemoveFlyCamFromScene()
     {
-        var flyCam = FindObjectOfType<ExtendedFlycam>();
+        var flyCam = FindObjectOfType<Flycam>();
         if (flyCam != null) Destroy(flyCam.gameObject);
 
         SwapHUD(shipHUD);

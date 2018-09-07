@@ -75,19 +75,14 @@ public class TargetIndicator : MonoBehaviour
 
     public void HandleTargetKilled(WorldObject sender, DeathEventArgs e)
     {
+        target.TookDamage -= HandleTargetTookDamage;
+        target.Killed -= HandleTargetKilled;
         if (TargetDestroyed != null) TargetDestroyed(this);
     }
     
     private void HandleTargetTookDamage(WorldObject sender, DamageEventArgs e)
     {
         SetHealthBarFill();
-    }
-
-    private void OnDestroy()
-    {
-        enabled = false;
-        target.TookDamage -= HandleTargetTookDamage;
-        target.Killed -= HandleTargetKilled;
     }
 
     private void Awake()

@@ -100,6 +100,7 @@ public class Ship : WorldObject
 
         if (hullHealth <= 0)
         {
+            FindObjectOfType<PlayerController>().Possession -= HandlePossession;
             Die();
         }
 
