@@ -1,15 +1,27 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
 using System.Collections;
+using System.IO;
 
 public class VersionChecker : MonoBehaviour
 {
-    private void Start()
+    private string cloudVersion;
+    private string localVersion;
+
+    public bool localVersionIsLive
     {
-        StartCoroutine(GetVersion());
+        get
+        {
+            return cloudVersion == localVersion;
+        }
     }
 
-    IEnumerator GetVersion()
+    private void Start()
+    {
+        StartCoroutine(VersionCheck());
+    }
+
+    private IEnumerator VersionCheck()
     {
         var url = "https://itch.io/api/1/x/wharf/latest?target=tsny/project-lonestar&channel_name=win";
 
@@ -22,9 +34,30 @@ public class VersionChecker : MonoBehaviour
             else
             {
                 var json = JsonUtility.FromJson<ButlerInfo>(www.downloadHandler.text);
-                print(json.latest);
+                cloudVersion = json.latest;
+                localVersion = GetLocalVersion();
+                print("Note: Local version " + (localVersionIsLive ? "is live" : "isn't live"));
             }
         }
+    }
+
+    private string GetLocalVersion()
+    {
+        var path = @"buildversion.txt";
+        string versionString = "";
+
+        try 
+        {
+            var file = new StreamReader(path);
+            versionString = file.ReadLine();
+        }
+
+        catch (FileNotFoundException)
+        {
+            print("Couldn't find buildversion");
+        }
+
+        return versionString;
     }
 
     public class ButlerInfo
