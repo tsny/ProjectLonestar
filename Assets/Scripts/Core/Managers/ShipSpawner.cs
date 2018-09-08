@@ -32,9 +32,9 @@ public class ShipSpawner : MonoBehaviour
         return loadout;
     }
 
-    public void SpawnDefaultShip()
+    public Ship SpawnDefaultShip()
     {
-        Instantiate(defaultShip);
+        return Instantiate(defaultShip).GetComponent<Ship>();
     }
 
     public Ship SpawnPlayerShip(GameObject shipPrefab, Loadout loadout, Vector3 spawnPosition)

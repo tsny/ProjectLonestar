@@ -72,12 +72,12 @@ public class DebugConsole : MonoBehaviour
         shipSpawner.SpawnDefaultShip();
     }
 
-    public void NoEnergyDrain()
+    public void UnlimitedEnergy()
     {
         playerController.controlledShip.hardpointSystem.EnableInfiniteEnergy();
     }
 
-    public void NoThrusterDrain()
+    public void UnlimitedAfterburner()
     {
         playerController.controlledShip.hardpointSystem.afterburnerHardpoint.drain = 0;
     }
@@ -85,5 +85,16 @@ public class DebugConsole : MonoBehaviour
     public void UnPossess()
     {
         playerController.UnPossess();
+    }
+
+    public void SpawnNewPlayerShip()
+    {
+        var newShip = shipSpawner.SpawnDefaultShip();
+        playerController.Possess(newShip);
+    }
+
+    public void Quit()
+    {
+        Application.Quit();
     }
 }
