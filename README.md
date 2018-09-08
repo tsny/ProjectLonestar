@@ -1,5 +1,9 @@
 # Project Lonestar
 
+## Note
+
+This probably won't bother many but this code won't always be updated after a certain point. That point being if this project were to make it onto Steam or something.
+
 ## Description
 
 This repo will simply serve to house some of the scripts I use in my Unity project that emulates the original Freelancer.
