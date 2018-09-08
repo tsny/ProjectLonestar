@@ -5,14 +5,14 @@ using System.IO;
 
 public class VersionChecker : MonoBehaviour
 {
-    private string cloudVersion;
-    private string localVersion;
+    public string CloudVersion { get; set; }
+    public string LocalVersion { get; set; }
 
     public bool localVersionIsLive
     {
         get
         {
-            return cloudVersion == localVersion;
+            return CloudVersion == LocalVersion;
         }
     }
 
@@ -34,8 +34,8 @@ public class VersionChecker : MonoBehaviour
             else
             {
                 var json = JsonUtility.FromJson<ButlerInfo>(www.downloadHandler.text);
-                cloudVersion = json.latest;
-                localVersion = GetLocalVersion();
+                CloudVersion = json.latest;
+                LocalVersion = GetLocalVersion();
                 print("Note: Local version " + (localVersionIsLive ? "is live" : "isn't live"));
             }
         }

@@ -6,14 +6,29 @@ using System;
 using System.Reflection;
 using System.Linq;
 
-public class BuildVersionUI : MonoBehaviour
+public class BuildVersionUI : ShipUIElement
 {
     private Text text;
+    private VersionChecker versionChecker;
 
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
+        versionChecker = FindObjectOfType<VersionChecker>();
         text = GetComponent<Text>();
-        text.text = "Lonestar " + DateTime.Today.ToShortDateString();
+    }
+
+    protected void Start()
+    {
+        text.text = "Fetching build info...";
+        Invoke("SetText", 1);
+    }
+
+    private void SetText()
+    {
+        text.text = "Local version: " + versionChecker.LocalVersion;
+        text.text += "\nCloud version: " + versionChecker.CloudVersion;
+        text.text += "\nLonestar " + DateTime.Today.ToShortDateString();
         text.text += "\nTaylor Snyder";
     }
 }
