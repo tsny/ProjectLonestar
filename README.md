@@ -9,7 +9,9 @@ I've been working on this project for quite sometime, about 2 years ago I began 
 
 ## Development
 
-You can now check out my progress and my self-management on the project's [Trello board](https://trello.com/b/tgyAz2pZ)!
+#### [Trello board](https://trello.com/b/tgyAz2pZ)
+
+#### [Youtube Devblog Playlist](https://www.youtube.com/embed/videoseries?list=PLJBwf54kzZ-DsLQSUhFRbUjZXIO6FOq_4)
 
 ## [Builds (itch.io)](https://tsny.itch.io/project-lonestar)
 
@@ -20,9 +22,6 @@ In its current state there is no story or gameplay.
 ## What the project used to look like 
 
 Originally the project was worked on in Unreal and looked pretty great like I mentioned above...
-Here's a really pretty video of it
 
-<a href="http://www.youtube.com/watch?feature=player_embedded&ATOh75c0bQc
-" target="_blank"><img src="http://img.youtube.com/vi/ATOh75c0bQc/0.jpg" 
-alt="IMAGE ALT TEXT HERE" width="240" height="180" border="10" /></a>
+[Here's a really pretty video of it](https://www.youtube.com/watch?v=ATOh75c0bQc&index=19&list=PLJBwf54kzZ-DsLQSUhFRbUjZXIO6FOq_4&t=0s)
 
