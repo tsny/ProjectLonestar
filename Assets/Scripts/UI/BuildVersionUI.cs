@@ -15,13 +15,18 @@ public class BuildVersionUI : ShipUIElement
     {
         base.Awake();
         versionChecker = FindObjectOfType<VersionChecker>();
+        versionChecker.UpdateFound += HandleUpdateChecked;
         text = GetComponent<Text>();
+    }
+
+    private void HandleUpdateChecked(VersionChecker sender)
+    {
+        SetText();
     }
 
     protected void Start()
     {
         text.text = "Fetching build info...";
-        Invoke("SetText", 1);
     }
 
     private void SetText()

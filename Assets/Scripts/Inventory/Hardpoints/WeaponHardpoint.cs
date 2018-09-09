@@ -49,6 +49,6 @@ public class WeaponHardpoint : Hardpoint
 
         audioSource.PlayOneShot(weapon.clip);
 
-        OnCooldown = true;
+        StartCooldown();
     }
 }

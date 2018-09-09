@@ -1,44 +1,38 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 public class AfterburnerHardpoint : Hardpoint
 {
-    public float charge = 100;
     public Afterburner afterburner;
-    public bool engaged;
-    public float regenRate;
-    public float thrust;
-    public float drain;
+
+    public float charge = 100;
+    public float regenRate = 1;
+    public float thrust = 1;
+    public float drain = 1;
+
+    public bool canAfterburn;
+    public bool burning;
+
+    private IEnumerator chargeCoroutine;
+    private IEnumerator burnCoroutine;
 
     public AfterburnerHardpoint()
     {
         associatedEquipmentType = typeof(Afterburner);
     }
 
-    private void Update()
-    {
-        if (engaged)
-        {
-            if (charge > 0) charge -= (drain * Time.deltaTime);
-
-            else
-            {
-                Disable();
-                OnCooldown = true;
-            }
-
-        }
-
-        else
-        {
-            charge = Mathf.MoveTowards(charge, 100, regenRate * Time.deltaTime);
-        }
-    }
-
     protected override void Awake()
     {
         base.Awake();
 
+        owningShip.shipEngine.CruiseChanged += HandleCruiseChange;
+        HandleCruiseChange(owningShip.shipEngine);
         hardpointSystem.afterburnerHardpoint = this;
+    }
+
+    private void HandleCruiseChange(ShipEngine sender)
+    {
+        canAfterburn = !(sender.engineState == EngineState.Charging || sender.engineState == EngineState.Cruise);
     }
 
     public override void Mount(Equipment newEquipment)
@@ -50,18 +44,54 @@ public class AfterburnerHardpoint : Hardpoint
         regenRate = afterburner.regenRate;
         thrust = afterburner.thrust;
         drain = afterburner.drain;
+
+        charge = 100;
     }
 
-    public void Enable()
+    public void Activate()
     {
-        if(!OnCooldown && afterburner != null)
-        {
-            engaged = true;
-        }
+        if (OnCooldown || afterburner == null || !canAfterburn || burning) return;
+
+        if (chargeCoroutine != null) StopCoroutine(chargeCoroutine);
+        burnCoroutine = Burn();
+        StartCoroutine(burnCoroutine);
     }
 
     public void Disable()
     {
-        engaged = false;
+        if (!burning) return;
+
+        if (burnCoroutine != null) StopCoroutine(burnCoroutine);
+        chargeCoroutine = Charge();
+        StartCoroutine(chargeCoroutine);
+    }
+
+    private IEnumerator Charge()
+    {
+        burning = false;
+
+        for(; ;)
+        {
+            charge = Mathf.MoveTowards(charge, 100, regenRate * Time.deltaTime);
+            if (charge >= 100) break;
+
+            yield return null;
+        }
+    }
+
+    private IEnumerator Burn()
+    {
+        burning = true;
+
+        for(; ;)
+        {
+            charge = Mathf.MoveTowards(charge, 0, drain * Time.deltaTime);
+            if (charge <= 0) break;
+
+            yield return null;
+        }
+
+        StartCooldown();
+        Disable();
     }
 }

@@ -28,7 +28,7 @@ public class PlayerController : MonoBehaviour
     public float mouseHoldDelay = .1f;
 
     private ShipCamera playerCamera;
-    private ShipMovement shipMovement;
+    private ShipEngine shipMovement;
 
     public Ship controlledShip;
 
@@ -49,7 +49,7 @@ public class PlayerController : MonoBehaviour
 
         // TODO: Moves these responsibilities somewhere else
         playerCamera = controlledShip.GetComponentInChildren<ShipCamera>(true);
-        shipMovement = controlledShip.GetComponent<ShipMovement>();
+        shipMovement = controlledShip.GetComponent<ShipEngine>();
 
         playerCamera.enabled = true;
         playerCamera.pController = this;
@@ -142,7 +142,7 @@ public class PlayerController : MonoBehaviour
                 controlledShip.hardpointSystem.ToggleAfterburner(true);
             }
             
-            if(Input.GetKeyUp(InputManager.instance.Afterburner))
+            else if(Input.GetKeyUp(InputManager.instance.Afterburner))
             {
                 controlledShip.hardpointSystem.ToggleAfterburner(false);
             }

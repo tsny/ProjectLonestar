@@ -21,7 +21,7 @@ public class ShipPhysics : ShipComponent
     public float speed;
 
     public Rigidbody rb;
-    public ShipMovement shipMovement;
+    public ShipEngine shipMovement;
     public float maxSpeed = 100f;
 
     public bool AtMaxSpeed
@@ -36,7 +36,7 @@ public class ShipPhysics : ShipComponent
     {
         base.Awake();
         //rb = GetComponent<Rigidbody>();
-        shipMovement = owningShip.GetComponent<ShipMovement>();
+        shipMovement = owningShip.GetComponent<ShipEngine>();
     }
 
     private void UpdateRigidbody()
@@ -116,7 +116,7 @@ public class ShipPhysics : ShipComponent
     {
         if (owningShip.hardpointSystem.afterburnerHardpoint == null) return;
 
-        if (owningShip.hardpointSystem.afterburnerHardpoint.engaged)
+        if (owningShip.hardpointSystem.afterburnerHardpoint.burning)
         {
             rb.AddForce(rb.transform.forward * afterburnerPower * owningShip.hardpointSystem.afterburnerHardpoint.thrust);
         }

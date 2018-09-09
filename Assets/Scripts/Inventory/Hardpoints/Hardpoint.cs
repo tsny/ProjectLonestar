@@ -7,7 +7,6 @@ public class Hardpoint : ShipComponent
 {
     public HardpointSystem hardpointSystem;
 
-    private Equipment currentEquipment;
     public Type associatedEquipmentType = typeof(Equipment);
 
     public delegate void MountedEventHandler(Hardpoint sender);
@@ -25,22 +24,7 @@ public class Hardpoint : ShipComponent
     {
         get
         {
-            return onCooldown;
-        }
-
-        set
-        {
-            if (value)
-            {
-                StopAllCoroutines();
-                StartCoroutine(CooldownCoroutine());
-            }
-
-            else
-            {
-                StopCoroutine(CooldownCoroutine());
-                onCooldown = false;
-            }
+            return cooldownCoroutine != null;
         }
     }
 
@@ -57,12 +41,26 @@ public class Hardpoint : ShipComponent
         }
     }
 
-    protected bool onCooldown;
+    private IEnumerator cooldownCoroutine;
+
+    private Equipment currentEquipment;
 
     protected override void Awake()
     {
         base.Awake();
         hardpointSystem = GetComponentInParent<HardpointSystem>();
+    }
+
+    protected virtual void StartCooldown()
+    {
+        cooldownCoroutine = Cooldown(currentEquipment.cooldownDuration);
+        StartCoroutine(cooldownCoroutine);
+    }
+
+    protected virtual void EndCooldown()
+    {
+        StopCoroutine(cooldownCoroutine);
+        cooldownCoroutine = null;
     }
 
     public virtual void Mount(Equipment newEquipment)
@@ -73,7 +71,6 @@ public class Hardpoint : ShipComponent
         {
             currentEquipment = newEquipment;
             if (Mounted != null) Mounted(this);
-            return;
         }
 
         else
@@ -88,11 +85,10 @@ public class Hardpoint : ShipComponent
         if (Demounted != null) Demounted(this);
     }
 
-    protected IEnumerator CooldownCoroutine()
+    protected IEnumerator Cooldown(float seconds)
     {
-        onCooldown = true;
-        yield return new WaitForSeconds(currentEquipment.cooldownDuration);
-        onCooldown = false;
+        yield return new WaitForSeconds(seconds);
+        cooldownCoroutine = null;
     }
 }
 

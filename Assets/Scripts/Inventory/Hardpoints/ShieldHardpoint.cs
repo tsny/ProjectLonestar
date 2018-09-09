@@ -77,6 +77,6 @@ public class ShieldHardpoint : Hardpoint, IDamageable
             health = 0;
         }
 
-        OnCooldown = true;
+        StartCooldown();
     }
 }

@@ -41,13 +41,12 @@ public class GameManager : MonoBehaviour
         SceneManager.activeSceneChanged += HandleNewScene;
 
         playerController = FindObjectOfType<PlayerController>();
+        playerController.Possession += HandlePossession;
     }
 
     private void Start()
     {
         //LoadPlayerInfo();
-        playerController.Possession += HandlePossession;
-
         if (spawnPlayer)
         {
             playerShip = ShipSpawner.instance.SpawnPlayerShip(shipPrefab, playerLoadout, spawnPosition);
@@ -165,13 +164,10 @@ public class GameManager : MonoBehaviour
 
     public void CalculateMapSize()
     {
-        WorldObject closestObject;
-        WorldObject farthestObject;
-
         var objects = FindObjectsOfType<WorldObject>();
 
-        closestObject = objects.OrderBy(t => Vector3.Distance(Vector3.zero, t.transform.position)).FirstOrDefault();
-        farthestObject = objects.OrderBy(t => Vector3.Distance(Vector3.zero, t.transform.position)).LastOrDefault();
+        var closestObject = objects.OrderBy(t => Vector3.Distance(Vector3.zero, t.transform.position)).FirstOrDefault();
+        var farthestObject = objects.OrderBy(t => Vector3.Distance(Vector3.zero, t.transform.position)).LastOrDefault();
 
         objects.ToList().ForEach(i => print(Vector3.Distance(Vector3.zero, i.transform.position) + i.name));
     }

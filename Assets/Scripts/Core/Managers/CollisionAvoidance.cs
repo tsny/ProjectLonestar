@@ -9,7 +9,7 @@ public class CollisionAvoidance : ShipComponent
     public bool obstacleDetected;
     public float obstacleDetectedTime;
 
-    public ShipMovement shipMovement;
+    public ShipEngine shipMovement;
     
     private void Update()
     {

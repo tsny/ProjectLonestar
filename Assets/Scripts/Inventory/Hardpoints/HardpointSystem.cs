@@ -78,15 +78,8 @@ public class HardpointSystem : ShipComponent
 
     public void ToggleAfterburner(bool toggle)
     {
-        if (!toggle)
-        {
-            afterburnerHardpoint.Disable();
-            return;
-        }
-
-        if (!owningShip.shipMovement.CanAfterburn) return;
-
-        afterburnerHardpoint.Enable();
+        if (toggle) afterburnerHardpoint.Activate();
+        else afterburnerHardpoint.Disable();
     }
 
     private void Update()

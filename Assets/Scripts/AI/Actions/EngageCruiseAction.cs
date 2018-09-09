@@ -6,7 +6,7 @@ public class EngageCruiseAction : FLAction
 {
     public override void Act(StateController controller)
     {
-        if (!(controller.ship.shipMovement.IsChargingCruise || controller.ship.shipMovement.IsCruising))
+        if (!(controller.ship.shipEngine.IsChargingCruise || controller.ship.shipEngine.IsCruising))
         {
             EngageCruise(controller);
         }
@@ -14,6 +14,6 @@ public class EngageCruiseAction : FLAction
 
     private void EngageCruise(StateController controller)
     {
-        controller.ship.shipMovement.StartChargingCruise(false);
+        controller.ship.shipEngine.StartChargingCruise(false);
     }
 }

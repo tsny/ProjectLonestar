@@ -37,9 +37,9 @@ public class HUDManager : ShipUIElement
 
     private void SetCruiseText()
     {
-        if (playerController.controlledShip.shipMovement.engineState != engineState)
+        if (playerController.controlledShip.shipEngine.engineState != engineState)
         {
-            engineState = playerController.controlledShip.shipMovement.engineState;
+            engineState = playerController.controlledShip.shipEngine.engineState;
 
             switch (engineState)
             {

@@ -19,7 +19,7 @@ public class Ship : WorldObject
     public Vector3 AimPosition;
     public ShipStats stats;
 
-    public ShipMovement shipMovement;
+    public ShipEngine shipEngine;
     public Inventory inventory;
 
     public ParticleSystem dustParticleSystem;
@@ -28,7 +28,7 @@ public class Ship : WorldObject
     {
         get
         {
-            return !(shipMovement.engineState == EngineState.Charging || shipMovement.engineState == EngineState.Cruise);
+            return !(shipEngine.engineState == EngineState.Charging || shipEngine.engineState == EngineState.Cruise);
         }
     }
 
@@ -54,7 +54,7 @@ public class Ship : WorldObject
         FindObjectOfType<PlayerController>().Possession += HandlePossession;
 
         hardpointSystem = GetComponentInChildren<HardpointSystem>();
-        shipMovement = GetComponent<ShipMovement>();
+        shipEngine = GetComponent<ShipEngine>();
         inventory = GetComponentInChildren<Inventory>();
 
         hullHealth = hullFullHealth;

@@ -6,7 +6,7 @@ public class ThrottleDownAction : FLAction
 {
     public override void Act(StateController controller)
     {
-        if (controller.ship.shipMovement.throttle > 0)
+        if (controller.ship.shipEngine.throttle > 0)
         {
             ThrottleDown(controller);
         }
@@ -14,6 +14,6 @@ public class ThrottleDownAction : FLAction
 
     private void ThrottleDown(StateController controller)
     {
-        controller.ship.shipMovement.ThrottleDown();
+        controller.ship.shipEngine.ThrottleDown();
     }
 }

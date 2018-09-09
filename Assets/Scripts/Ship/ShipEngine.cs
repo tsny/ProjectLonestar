@@ -1,12 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
 
 [RequireComponent(typeof(Ship))]
-public class ShipMovement : ShipComponent
+public class ShipEngine : ShipComponent
 {
     public EngineState engineState;
-
-    public GameObject cruiseEffect;
 
     [Range(0.01f, 0.05f)]
     public float throttleChangeIncrement = .1f;
@@ -22,10 +21,11 @@ public class ShipMovement : ShipComponent
 
     [Header("Cruise")]
     [Space(5)]
-    private Timer cruiseChargeTimer;
     public bool cruiseDisrupted;
     public float cruiseChargeDuration = 5f;
     public AudioSource cruiseChargeSource;
+
+    private IEnumerator cruiseChargeCoroutine;
 
     public bool CanAfterburn
     {
@@ -98,6 +98,22 @@ public class ShipMovement : ShipComponent
         }
     }
 
+    public event EngineEventHandler EngineStateChanged;
+    public event EngineEventHandler CruiseChanged;
+
+    public delegate void EngineEventHandler(ShipEngine sender);
+
+    private void OnEngineUpdate()
+    {
+        if (EngineStateChanged != null) EngineStateChanged(this);
+    }
+
+    private void OnCruiseChange(EngineState newState)
+    {
+        engineState = newState;
+        if (CruiseChanged != null) CruiseChanged(this);
+    }
+
     public void ToggleCruiseEngines()
     {
         if (IsCruising) StopCruising();
@@ -146,77 +162,40 @@ public class ShipMovement : ShipComponent
         strafe = 0;
     }
 
-    public void StartChargingCruise(bool skipCharge)
+    public void StartChargingCruise(bool skipCharge = false)
     {
         if (skipCharge)
         {
-            BeginCruising();
+            OnCruiseChange(EngineState.Cruise);
             return;
         }
 
-        if (cruiseEffect != null)
-        {
-            cruiseEffect.SetActive(true);
-        }
-
-        owningShip.hardpointSystem.afterburnerHardpoint.Disable();
-
-        throttle = 1;
-        engineState = EngineState.Charging;
-
-        cruiseChargeTimer = gameObject.AddComponent<Timer>();
-        cruiseChargeTimer.Initialize(cruiseChargeDuration, this, "BeginCruising");
+        cruiseChargeCoroutine = CruiseChargeCoroutine();
+        StartCoroutine(cruiseChargeCoroutine);
     }
 
     public void StopChargingCruise()
     {
-        engineState = EngineState.Normal;
-
-        if (cruiseChargeTimer != null)
-        {
-            Destroy(cruiseChargeTimer);
-        }
-
-        if (cruiseEffect != null)
-        {
-            cruiseEffect.SetActive(false);
-        }
-    }
-
-    public void BeginCruising()
-    {
-        engineState = EngineState.Cruise;
-
-        if (cruiseEffect != null)
-        {
-            cruiseEffect.SetActive(false);
-        }
+        OnCruiseChange(EngineState.Normal);
+        StopCoroutine(cruiseChargeCoroutine);
     }
 
     public void StopCruising()
     {
-        engineState = EngineState.Normal;
+        OnCruiseChange(EngineState.Normal);
     }
 
     public void StopAnyCruise()
     {
-        if (IsCruising)
-        {
-            StopCruising();
-            return;
-        }
+        if (IsCruising) StopCruising();
 
-        if (IsChargingCruise)
-        {
-            StopChargingCruise();
-            return;
-        }
+        else if (IsChargingCruise) StopChargingCruise();
     }
 
     public void Drift()
     {
         StopAnyCruise();
-        engineState = EngineState.Drifting;
+        OnCruiseChange(EngineState.Drifting);
     }
 
     public void LerpYawToNeutral()
@@ -252,9 +231,28 @@ public class ShipMovement : ShipComponent
         transform.Rotate(new Vector3(0, 0, turnSpeed * amount));
     }
 
+    // make coroutine
     public void RotateTowardsTarget(Transform target)
     {
         Quaternion newRot = Quaternion.LookRotation(target.position - transform.position);
         transform.rotation = Quaternion.Lerp(transform.rotation, newRot, turnSpeed * Time.deltaTime);
     }
+
+    private IEnumerator CruiseChargeCoroutine(bool skipCharge = false)
+    {
+        OnCruiseChange(EngineState.Charging);
+        throttle = 1;
+
+        var chargeTime = 0f;
+
+        for (;;)
+        {
+            chargeTime += Time.deltaTime;
+            if (chargeTime > cruiseChargeDuration) break;
+            yield return null;
+        }
+
+        OnCruiseChange(EngineState.Cruise);
+    }
+
 }
