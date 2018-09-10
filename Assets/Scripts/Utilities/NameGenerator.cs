@@ -50,6 +50,14 @@ public class NameGenerator : MonoBehaviour
 
         return null;
     }    
+
+    public static string GenerateFullName(Gender gender = Gender.Male)
+    {
+        var firstName = Generate(gender).First;
+        var lastName = Generate(gender).Last;
+
+        return firstName + " " + lastName;
+    }
 }
 
 public enum Gender

@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-public class ShieldHardpoint : Hardpoint, IDamageable
+public class ShieldHardpoint : Hardpoint
 {
     private AudioSource hitSource;
 
@@ -72,10 +72,7 @@ public class ShieldHardpoint : Hardpoint, IDamageable
         health -= Damage.CalculateShieldDamage(weapon, shield.type);
         hitSource.Play();
 
-        if (health <= 0)
-        {
-            health = 0;
-        }
+        if (health <= 0) health = 0;
 
         StartCooldown();
     }

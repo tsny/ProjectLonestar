@@ -2,20 +2,21 @@
 using UnityEngine.Networking;
 using System.Collections;
 using System.IO;
+using System.Reflection;
 
 public class VersionChecker : MonoBehaviour
 {
     public delegate void EventHandler(VersionChecker sender);
     public event EventHandler UpdateFound;
 
-    public string CloudVersion { get; set; }
+    public string LiveVersion { get; set; }
     public string LocalVersion { get; set; }
 
     public bool LocalVersionIsLive
     {
         get
         {
-            return CloudVersion == LocalVersion;
+            return LiveVersion == LocalVersion;
         }
     }
 
@@ -32,37 +33,22 @@ public class VersionChecker : MonoBehaviour
         {
             yield return www.SendWebRequest();
 
-            if (www.isNetworkError || www.isHttpError) print("error");
+            if (www.isNetworkError || www.isHttpError)
+            {
+                print("Couldn't find Version at specified URL...");
+                yield break;
+            }
 
             else
             {
                 var json = JsonUtility.FromJson<ButlerInfo>(www.downloadHandler.text);
-                CloudVersion = json.latest;
-                LocalVersion = GetLocalVersion();
+                LiveVersion = json.latest;
+                LocalVersion = Application.version;
 
                 if (UpdateFound != null) UpdateFound(this);
-                //print("Note: Local version " + (localVersionIsLive ? "is live" : "isn't live"));
+                print("Note: Local version " + (LocalVersionIsLive ? "is live" : "isn't live"));
             }
         }
-    }
-
-    private string GetLocalVersion()
-    {
-        var path = @"buildversion.txt";
-        string versionString = "";
-
-        try 
-        {
-            var file = new StreamReader(path);
-            versionString = file.ReadLine();
-        }
-
-        catch (FileNotFoundException)
-        {
-            print("Couldn't find buildversion");
-        }
-
-        return versionString;
     }
 
     public class ButlerInfo

@@ -61,9 +61,10 @@ public class IndicatorManager : ShipUIElement
 
     public void DeselectCurrentIndicator()
     {
+        selectedIndicator = null;
+
         if (selectedIndicator != null) selectedIndicator.Deselect();
 
-        selectedIndicator = null;
     }
 
     public void AddIndicator(WorldObject newTarget)
@@ -85,6 +86,9 @@ public class IndicatorManager : ShipUIElement
         if (indicatorToRemove == null) return;
 
         if (indicatorToRemove == selectedIndicator) DeselectCurrentIndicator();
+
+        indicatorToRemove.Selected -= HandleIndicatorSelected;
+        indicatorToRemove.TargetDestroyed -= RemoveIndicator;
         
         Destroy(indicatorToRemove.gameObject);
     }

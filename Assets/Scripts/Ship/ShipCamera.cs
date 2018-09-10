@@ -37,9 +37,17 @@ public class ShipCamera : ShipComponent
     public Camera shipCam;
     public AudioListener audioListener;
 
+    protected override void HandlePossession(Ship sender, bool possessed)
+    {
+        base.HandlePossession(sender, possessed);
+
+        enabled = possessed;
+    }
+
     private void FixedUpdate()
     {
         CalculateOffsets();
+        owningShip.AimPosition = GetAimPosition();
 
         if (pController.mouseState == MouseState.Held || pController.mouseState == MouseState.Toggled)
         {
@@ -82,13 +90,18 @@ public class ShipCamera : ShipComponent
         Ray ray = shipCam.ScreenPointToRay(Input.mousePosition);
         RaycastHit hitInfo;
 
-        Debug.DrawRay(ray.origin, ray.direction * 100);
+        Debug.DrawRay(ray.origin, ray.direction * aimRaycastDistance);
 
         Physics.Raycast(ray, out hitInfo, aimRaycastDistance, ~LayerMask.GetMask("Player"));
 
-        if (hitInfo.collider != null) return hitInfo.collider.transform.position;
-
-        return ray.GetPoint(10000);
+        if (hitInfo.collider != null)
+        {
+            return hitInfo.collider.transform.position;
+        }
+        else
+        {
+            return ray.GetPoint(aimRaycastDistance);
+        }
     }
 
     public void CalculateOffsets()

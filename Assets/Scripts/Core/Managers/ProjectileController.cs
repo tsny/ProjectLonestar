@@ -17,12 +17,9 @@ public class ProjectileController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         collider = GetComponent<Collider>();
-
         gameObject.hideFlags = HideFlags.HideInHierarchy;
-
         distanceTraveled = 0f;
         target = Vector3.zero;
-
         startPosition = transform.position;
     }
 
@@ -35,8 +32,8 @@ public class ProjectileController : MonoBehaviour
 
         target = owner.AimPosition;
 
-        transform.LookAt(target, Vector3.up);
-        rb.AddRelativeForce(transform.forward * weapon.thrust, ForceMode.Impulse);
+        transform.LookAt(target);
+        rb.AddForce(transform.forward * weapon.thrust, ForceMode.Impulse);
     }
 
     private void LateUpdate()

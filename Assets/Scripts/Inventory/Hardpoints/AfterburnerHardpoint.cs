@@ -24,10 +24,13 @@ public class AfterburnerHardpoint : Hardpoint
     protected override void Awake()
     {
         base.Awake();
+        hardpointSystem.afterburnerHardpoint = this;
+    }
 
+    protected void Start()
+    {
         owningShip.shipEngine.CruiseChanged += HandleCruiseChange;
         HandleCruiseChange(owningShip.shipEngine);
-        hardpointSystem.afterburnerHardpoint = this;
     }
 
     private void HandleCruiseChange(ShipEngine sender)

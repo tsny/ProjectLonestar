@@ -44,6 +44,7 @@ public class Flycam : MonoBehaviour
 
     private void Start()
     {
+        name = "FLYCAM";
         Cursor.lockState = CursorLockMode.Locked;
     }
 

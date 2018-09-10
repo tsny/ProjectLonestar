@@ -26,6 +26,7 @@ public class ShipEngine : ShipComponent
     public AudioSource cruiseChargeSource;
 
     private IEnumerator cruiseChargeCoroutine;
+    private IEnumerator rotateCoroutine;
 
     public bool CanAfterburn
     {
@@ -231,11 +232,27 @@ public class ShipEngine : ShipComponent
         transform.Rotate(new Vector3(0, 0, turnSpeed * amount));
     }
 
-    // make coroutine
     public void RotateTowardsTarget(Transform target)
     {
-        Quaternion newRot = Quaternion.LookRotation(target.position - transform.position);
-        transform.rotation = Quaternion.Lerp(transform.rotation, newRot, turnSpeed * Time.deltaTime);
+        rotateCoroutine = RotateTowardsTargetCoroutine(target);
+        StartCoroutine(rotateCoroutine);
+    }
+
+    public void StopRotating()
+    {
+        if (rotateCoroutine == null) return;
+        StopCoroutine(rotateCoroutine);
+    }
+
+    private IEnumerator RotateTowardsTargetCoroutine(Transform target)
+    {
+        for (; ;)
+        {
+            Quaternion newRot = Quaternion.LookRotation(target.position - transform.position);
+            transform.rotation = Quaternion.Lerp(transform.rotation, newRot, turnSpeed * Time.deltaTime);
+
+            yield return null;
+        }
     }
 
     private IEnumerator CruiseChargeCoroutine(bool skipCharge = false)

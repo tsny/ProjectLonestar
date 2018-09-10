@@ -6,8 +6,12 @@ using System;
 using System.Reflection;
 using System.Linq;
 
+[RequireComponent(typeof(VersionChecker))]
 public class BuildVersionUI : ShipUIElement
 {
+    public string LiveVersion { get; set; }
+    public string LocalVersion { get; set; }
+
     private Text text;
     private VersionChecker versionChecker;
 
@@ -19,20 +23,20 @@ public class BuildVersionUI : ShipUIElement
         text = GetComponent<Text>();
     }
 
-    private void HandleUpdateChecked(VersionChecker sender)
-    {
-        SetText();
-    }
-
     protected void Start()
     {
         text.text = "Fetching build info...";
     }
 
+    private void HandleUpdateChecked(VersionChecker sender)
+    {
+        SetText();
+    }
+
     private void SetText()
     {
         text.text = "Local version: " + versionChecker.LocalVersion;
-        text.text += "\nCloud version: " + versionChecker.CloudVersion;
+        text.text += "\nLive version: " + versionChecker.LiveVersion;
         text.text += "\nLonestar " + DateTime.Today.ToShortDateString();
         text.text += "\nTaylor Snyder";
     }

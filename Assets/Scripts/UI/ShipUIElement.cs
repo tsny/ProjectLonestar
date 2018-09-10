@@ -8,9 +8,12 @@ public class ShipUIElement : MonoBehaviour
 
     protected virtual void Awake()
     {
-        playerController = FindObjectOfType<PlayerController>();
-        playerController.Possession += HandlePossession;
         enabled = false;
+        playerController = FindObjectOfType<PlayerController>();
+
+        if (playerController == null) return;
+
+        playerController.Possession += HandlePossession;
 
         // If this object is not created during a possession, run the handlePossession method for the existing ship
         if (playerController.controlledShip != null)
@@ -21,7 +24,10 @@ public class ShipUIElement : MonoBehaviour
 
     protected void OnDestroy()
     {
-        playerController.Possession -= HandlePossession;
+        if (playerController != null)
+        {
+            playerController.Possession -= HandlePossession;
+        }
     }
 
     private void HandlePossession(PossessionEventArgs args)

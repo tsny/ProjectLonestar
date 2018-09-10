@@ -13,6 +13,7 @@ public class GameManager : MonoBehaviour
     [Space(5)]
     public static GameManager instance;
     public PlayerController playerController;
+    public MonoBehaviour[] requiredSceneObjects;
 
     [Header("Ship Details")]
     public GameObject shipPrefab;
@@ -29,24 +30,17 @@ public class GameManager : MonoBehaviour
     [Space(5)]
     public GameObject shipHUD;
     public GameObject flyCamHUD;
+    public GameObject flycamPrefab;
 
     private GameObject currentHUD;
-
-    //public int locationID;
 
     private void Awake()
     {
         SingletonInit();
-
-        SceneManager.activeSceneChanged += HandleNewScene;
-
-        playerController = FindObjectOfType<PlayerController>();
-        playerController.Possession += HandlePossession;
     }
 
-    private void Start()
+    private void HandleNewScene(Scene arg0, Scene arg1)
     {
-        //LoadPlayerInfo();
         if (spawnPlayer)
         {
             playerShip = ShipSpawner.instance.SpawnPlayerShip(shipPrefab, playerLoadout, spawnPosition);
@@ -54,15 +48,12 @@ public class GameManager : MonoBehaviour
         }
 
         else SpawnFlyCam(Vector3.zero);
-
-        //CalculateMapSize();
     }
 
+    // If unpossessing without possessing new ship: spawn a flyCam
+    // Otherwise: Destroy the current flyCam
     private void HandlePossession(PossessionEventArgs args)
     {
-        // If unpossessing without possessing new ship: spawn a flyCam
-        // Otherwise: Destroy the current flyCam
-
         if (args.newShip == null) SpawnFlyCam(args.oldShip.transform.position);
 
         else RemoveFlyCamFromScene();
@@ -70,10 +61,8 @@ public class GameManager : MonoBehaviour
 
     private void SpawnFlyCam(Vector3 pos)
     {
-        var flyCam = new GameObject().AddComponent<Flycam>();
+        var flyCam = Instantiate(flycamPrefab);
         flyCam.transform.position = pos + new Vector3(0, 10, 0);
-        flyCam.name = "FLYCAM";
-
         SwapHUD(flyCamHUD);
     }
 
@@ -94,20 +83,21 @@ public class GameManager : MonoBehaviour
         currentHUD.SetActive(true);
     }
 
-    private void HandleNewScene(Scene arg0, Scene arg1)
-    {
-
-    }
-
     private void SingletonInit()
     {
         if (instance == null)
         {
             DontDestroyOnLoad(gameObject);
             instance = this;
+
+            // Only do these things once
+            SceneManager.activeSceneChanged += HandleNewScene;
         }
 
         else if (instance != this) Destroy(gameObject);
+
+        playerController = FindObjectOfType<PlayerController>();
+        playerController.Possession += HandlePossession;
     }
 
     private void OnApplicationQuit()
@@ -170,6 +160,11 @@ public class GameManager : MonoBehaviour
         var farthestObject = objects.OrderBy(t => Vector3.Distance(Vector3.zero, t.transform.position)).LastOrDefault();
 
         objects.ToList().ForEach(i => print(Vector3.Distance(Vector3.zero, i.transform.position) + i.name));
+    }
+
+    public static void ChangeScene(string scene)
+    {
+        SceneManager.LoadScene(scene);
     }
 }
 

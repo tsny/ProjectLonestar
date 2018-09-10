@@ -14,18 +14,16 @@ public class Loot : WorldObject
     [Range(0, 1)]
     public float pullForce = .5f;
 
-    protected override void GenerateName()
+    protected override void Awake()
     {
-        name = "loot_" + item.name + " x" + item.quantity;
+        base.Awake();
+        enabled = false;
     }
 
-    public override void SetupTargetIndicator(TargetIndicator indicator)
+    protected override void GenerateName()
     {
-        indicator.targetHealth = hullHealth;
-
-        indicator.name = item.name + " x" + item.quantity;
-        indicator.header.text = indicator.name;
-        indicator.buttonImage.color = Color.red;
+        if (item == null) return;
+        name = "loot_" + item.name + " x" + item.quantity;
     }
 
     public void SetTarget(Transform newTarget, float pullForce)
@@ -35,12 +33,14 @@ public class Loot : WorldObject
         this.pullForce = pullForce;
 
         distanceToTarget = Vector3.Distance(transform.position, target.transform.position);
+        enabled = true;
     }
 
     public void ClearTarget()
     {
         target = null;
         beingLooted = false;
+        enabled = false;
     }
 
     public void GravitateTowardsLooter()
@@ -73,15 +73,12 @@ public class Loot : WorldObject
 
     private void LateUpdate()
     {
-        if (beingLooted && target != null)
-        {
-            GravitateTowardsLooter();
-        }
+        if (beingLooted && target != null) GravitateTowardsLooter();
     }
 
     public override void TakeDamage(Weapon weapon)
     {
-        if (invulnerable) return;
+        base.TakeDamage(weapon);
 
         hullHealth -= weapon.hullDamage;
 

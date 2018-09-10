@@ -37,12 +37,11 @@ public class StateController : MonoBehaviour
     public void Setup()
     {
 
-    }
+    } 
 
     private void Update()
     {
-        if (!aiActive)
-            return;
+        if (!aiActive) return;
 
         currentState.UpdateState(this);
         timeInCurrentState += Time.deltaTime;

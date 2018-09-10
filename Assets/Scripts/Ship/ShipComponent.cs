@@ -10,5 +10,8 @@ public class ShipComponent : MonoBehaviour
     protected virtual void Awake()
     {
         owningShip = GetComponentInParent<Ship>();
+        owningShip.Possession += HandlePossession;
     }
+
+    protected virtual void HandlePossession(Ship sender, bool possessed) { }
 }

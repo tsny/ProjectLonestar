@@ -1,5 +1,16 @@
 # Project Lonestar Changelog
 
+## 09/08/18
+
+* Placeholder ambient background audio
+* Engine effects
+	* Cruise engine effects!
+* Quit and restart debug commands
+* Refactoring and speed improvements
+	* Should be less stuttering if any was experienced before
+
+Made possessing easier to improve and more modular on my end
+
 ## 09/07/18
 
 * Changelog begins

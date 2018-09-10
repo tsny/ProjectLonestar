@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Ship : WorldObject
+public class Ship : WorldObject, IPossessable
 {
     [Header("Details")]
-    protected string pilotFirstName = "Pilot First Name";
-    protected string pilotLastName = "Pilot Last Name";
+    protected string pilotFirstName = "First Name";
+    protected string pilotLastName = "Last Name";
     public string shipName = "TestShip";
     public ShipClass shipClass = ShipClass.Light;
     public Faction faction = Faction.LibertyNavy;
@@ -32,26 +32,12 @@ public class Ship : WorldObject
         }
     }
 
-    public override void SetupTargetIndicator(TargetIndicator indicator)
-    {
-        indicator.header.text = pilotLastName + " " + faction;
-        indicator.targetHealth = hullHealth;
-        indicator.targetShield = hardpointSystem.shieldHardpoint.health;
-    }
-
-    protected override void GenerateName()
-    {
-        pilotFirstName = NameGenerator.Generate(Gender.Male).First;
-        pilotLastName = NameGenerator.Generate(Gender.Male).Last;
-
-        name =  pilotLastName + " - " + shipName + " - " + faction; 
-    }
+    public delegate void PossessionEventHandler(Ship sender, bool possessed);
+    public event PossessionEventHandler Possession;
 
     protected override void Awake()
     {
         base.Awake();
-
-        FindObjectOfType<PlayerController>().Possession += HandlePossession;
 
         hardpointSystem = GetComponentInChildren<HardpointSystem>();
         shipEngine = GetComponent<ShipEngine>();
@@ -60,24 +46,34 @@ public class Ship : WorldObject
         hullHealth = hullFullHealth;
     }
 
-    private void HandlePossession(PossessionEventArgs args)
+    public void Possessed(PlayerController sender)
     {
-        if (args.newShip == this)
-        {
-            name = "PLAYER SHIP - " + shipName;
-            tag = "Player";
+        name = "PLAYER SHIP - " + shipName;
+        tag = "Player";
 
-            dustParticleSystem.gameObject.SetActive(true);
-            hardpointSystem.shieldHardpoint.gameObject.layer = LayerMask.NameToLayer("Player");
+        foreach(Transform transform in transform)
+        {
+            transform.gameObject.layer = LayerMask.NameToLayer("Player");
         }
 
-        else if (args.oldShip == this)
+        OnPossession(true);
+    }
+
+    public void UnPossessed(PlayerController sender)
+    {
+        GenerateName();
+        tag = "Untagged";
+        foreach(Transform transform in transform)
         {
-            GenerateName();
-            tag = "Untagged";
-            dustParticleSystem.gameObject.SetActive(false);
-            hardpointSystem.shieldHardpoint.gameObject.layer = 0;
+            transform.gameObject.layer = 0;
         }
+
+        OnPossession(false);
+    }
+
+    protected void OnPossession(bool possessed)
+    {
+        if (Possession != null) Possession(this, possessed);
     }
 
     public override void TakeDamage(Weapon weapon)
@@ -93,14 +89,19 @@ public class Ship : WorldObject
 
         hullHealth -= weapon.hullDamage;
 
-        if (hullHealth <= 0)
-        {
-            FindObjectOfType<PlayerController>().Possession -= HandlePossession;
-            Die();
-        }
+        if (hullHealth <= 0) Die();
 
         OnTookDamage(false, weapon.hullDamage);
     }
+
+    protected override void GenerateName()
+    {
+        pilotFirstName = NameGenerator.Generate(Gender.Male).First;
+        pilotLastName = NameGenerator.Generate(Gender.Male).Last;
+
+        name =  pilotLastName + " - " + shipName + " - " + faction; 
+    }
+
 }
 
 

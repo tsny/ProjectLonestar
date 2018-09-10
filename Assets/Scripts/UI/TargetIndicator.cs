@@ -43,15 +43,15 @@ public class TargetIndicator : MonoBehaviour
     [Header("Target")]
 
     public WorldObject target;
+
     public GameObject healthObject;
+    public GameObject shieldObject;
     public Image healthBarImage;
+    public Image shieldBarImage;
 
     public float targetHealth;
     public float targetShield;
-
     public float distanceFromTarget;
-
-    private bool wasOnScreenLastFrame;
 
     [Header("Scaling")]
 
@@ -59,6 +59,8 @@ public class TargetIndicator : MonoBehaviour
     public float maxScale = .5f;
 
     public float maxRange = 500;
+
+    private bool wasOnScreenLastFrame;
 
     public Animator animator;
     public Image buttonImage;
@@ -70,26 +72,14 @@ public class TargetIndicator : MonoBehaviour
     public event SelectionEventHandler Deselected;
     public event TargetDestroyedEventHandler TargetDestroyed;
 
-    public void HandleTargetKilled(WorldObject sender, DeathEventArgs e)
-    {
-        target.TookDamage -= HandleTargetTookDamage;
-        target.Killed -= HandleTargetKilled;
-
-        if (TargetDestroyed != null) TargetDestroyed(this);
-    }
-    
-    private void HandleTargetTookDamage(WorldObject sender, DamageEventArgs e)
-    {
-        SetHealthBarFill();
-    }
-
-    private void Awake()
+    protected void Awake()
     {
         enabled = false;
     }
 
     private void Update()
     {
+        //if (HasTarget == false) enabled = false;
         RangeCheck();
 
         CalculatePosition();
@@ -99,9 +89,31 @@ public class TargetIndicator : MonoBehaviour
 
     private void Start()
     {
+        ShowHealthBar(false);
+        ShowName(false);
+    }
+
+    private void OnDisable()
+    {
         content.SetActive(false);
-        ToggleHealthBar(false);
-        ToggleNameText(false);
+    }
+
+    private void OnDestroy()
+    {
+        target.TookDamage -= HandleTargetTookDamage;
+        target.Killed -= HandleTargetKilled;
+    }
+
+    public void HandleTargetKilled(WorldObject sender, DeathEventArgs e)
+    {
+        if (TargetDestroyed != null) TargetDestroyed(this);
+        Destroy(gameObject);
+    }
+    
+    private void HandleTargetTookDamage(WorldObject sender, DamageEventArgs e)
+    {
+        SetHealthBarFill();
+        SetShieldBarFill();
     }
 
     public void Select()
@@ -110,8 +122,8 @@ public class TargetIndicator : MonoBehaviour
 
         selected = true;
 
-        ToggleHealthBar(true);
-        ToggleNameText(true);
+        ShowHealthBar(true);
+        ShowName(true);
         buttonImage.raycastTarget = false;
 
         animator.Play("TargetGrow");
@@ -125,8 +137,8 @@ public class TargetIndicator : MonoBehaviour
 
         selected = false;
 
-        ToggleHealthBar(false);
-        ToggleNameText(false);
+        ShowHealthBar(false);
+        ShowName(false);
         buttonImage.raycastTarget = true;
 
         animator.Play("TargetShrink");
@@ -206,31 +218,31 @@ public class TargetIndicator : MonoBehaviour
 
     public void SetTarget(WorldObject newTarget)
     {
-        newTarget.SetupTargetIndicator(this);
         target = newTarget;
+
         target.Killed += HandleTargetKilled;
         target.TookDamage += HandleTargetTookDamage;
 
-        var lootTarget = newTarget as Loot;
-        if (lootTarget != null) SetupLootIndicator(lootTarget);
-
         name = target.name;
+
         SetHealthBarFill();
+        SetShieldBarFill();
 
         enabled = true;
     }
 
-    private void SetupLootIndicator(Loot loot)
+    private void SetButtonColor(Item item)
     {
-        buttonImage.color = Item.GetMatchingColor(loot.item);
+        buttonImage.color = Item.GetMatchingColor(item);
     }
 
-    private void ToggleHealthBar(bool value)
+    private void ShowHealthBar(bool value)
     {
         healthObject.SetActive(value);
+        shieldObject.SetActive(value);
     }
 
-    private void ToggleNameText(bool value)
+    private void ShowName(bool value)
     {
         header.gameObject.SetActive(value);
     }
@@ -239,5 +251,19 @@ public class TargetIndicator : MonoBehaviour
     {
         targetHealth = target.hullHealth;
         healthBarImage.fillAmount = target.hullHealth / target.hullFullHealth;
+    }
+
+    private void SetShieldBarFill()
+    {
+        var ship = target as Ship;
+
+        if (ship == null || ship.hardpointSystem.shieldHardpoint.IsMounted == false)
+        {
+            shieldBarImage.fillAmount = 0;
+            return;
+        }
+
+        var shield = ship.hardpointSystem.shieldHardpoint;
+        shieldBarImage.fillAmount = shield.health / shield.capacity;
     }
 }

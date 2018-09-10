@@ -82,6 +82,7 @@ public class HardpointSystem : ShipComponent
         else afterburnerHardpoint.Disable();
     }
 
+    // This can be an enumerator
     private void Update()
     {
         RechargeEnergy();

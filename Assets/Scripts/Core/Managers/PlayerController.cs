@@ -27,7 +27,7 @@ public class PlayerController : MonoBehaviour
     // determines the player is trying to switch to manual mouse flight
     public float mouseHoldDelay = .1f;
 
-    private ShipCamera playerCamera;
+    private ShipCamera shipCamera;
     private ShipEngine shipMovement;
 
     public Ship controlledShip;
@@ -38,6 +38,7 @@ public class PlayerController : MonoBehaviour
     private void Awake()
     {
         enabled = false;
+        name = "PLAYER CONTROLLER";
     }
 
     public void Possess(Ship newShip)
@@ -48,14 +49,15 @@ public class PlayerController : MonoBehaviour
         controlledShip = newShip;
 
         // TODO: Moves these responsibilities somewhere else
-        playerCamera = controlledShip.GetComponentInChildren<ShipCamera>(true);
+        shipCamera = controlledShip.GetComponentInChildren<ShipCamera>(true);
         shipMovement = controlledShip.GetComponent<ShipEngine>();
 
-        playerCamera.enabled = true;
-        playerCamera.pController = this;
+        shipCamera.enabled = true;
+        shipCamera.pController = this;
 
         enabled = true;
 
+        newShip.Possessed(this);
         if (Possession != null) Possession(new PossessionEventArgs(newShip, oldShip, this));
     }
 
@@ -64,17 +66,19 @@ public class PlayerController : MonoBehaviour
         if (controlledShip == null) return;
 
         var oldShip = controlledShip;
-        playerCamera.enabled = false;
+        oldShip.UnPossessed(this);
+
+        shipCamera.enabled = false;
+        shipCamera = null;
         controlledShip = null;
 
-        mouseState = MouseState.Off;
 
+        mouseState = MouseState.Off;
         enabled = false;
 
         if (Possession != null) Possession(new PossessionEventArgs(this, oldShip));
     }
 
-    // TODO: Moves these first checks within Updates to some kind of on enabled check
     private void FixedUpdate()
     {
         switch (mouseState)
@@ -93,25 +97,17 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        if (PossessingPawn == false)
-        {
-            enabled = false;
-            return;
-        }
-
-        GetMousePosition();
-
-        controlledShip.AimPosition = playerCamera.GetAimPosition();
+        SetMousePosition();
 
         if(inputAllowed)
         {
             #region movement
-            if(Input.GetKey(InputManager.instance.ThrottleUp))
+            if(Input.GetKey(InputManager.instance.ThrottleUp) || Input.GetAxis("Mouse ScrollWheel") > 0f)
             {
                 shipMovement.ThrottleUp();
             }
 
-            if(Input.GetKey(InputManager.instance.ThrottleDown))
+            if(Input.GetKey(InputManager.instance.ThrottleDown) || Input.GetAxis("Mouse ScrollWheel") < 0f)
             {
                 shipMovement.ThrottleDown();
             }
@@ -258,7 +254,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    public void GetMousePosition()
+    public void SetMousePosition()
     {
         int width = Screen.width;
         int height = Screen.height;
