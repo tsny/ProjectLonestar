@@ -1,4 +1,4 @@
-# Project Lonestar
+![Logo](https://puu.sh/BtrYV/757fce6420.png)
 
 ## Note
 
