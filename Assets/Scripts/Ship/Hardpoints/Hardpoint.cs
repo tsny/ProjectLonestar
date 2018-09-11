@@ -48,7 +48,14 @@ public class Hardpoint : ShipComponent
     protected override void Awake()
     {
         base.Awake();
+
         hardpointSystem = GetComponentInParent<HardpointSystem>();
+
+        if (hardpointSystem == null)
+        {
+            print(name + " could not find hardpointSystem on owning ship, destroying self...");
+            Destroy(gameObject);
+        }
     }
 
     protected virtual void StartCooldown()

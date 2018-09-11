@@ -35,6 +35,9 @@ public class PlayerController : MonoBehaviour
     public delegate void PossessionEventHandler(PossessionEventArgs args);
     public event PossessionEventHandler Possession;
 
+    public delegate void MouseStateEventHandler(MouseState state);
+    public event MouseStateEventHandler MouseStateChanged;
+
     private void Awake()
     {
         enabled = false;
@@ -252,6 +255,8 @@ public class PlayerController : MonoBehaviour
                 mouseState = MouseState.Toggled;
                 break;
         }
+
+        if (MouseStateChanged != null) MouseStateChanged(mouseState);
     }
 
     public void SetMousePosition()

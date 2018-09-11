@@ -13,6 +13,13 @@ public class FLTerminal : Terminal
         name = "TERMINAL";
         playerController = FindObjectOfType<PlayerController>();
         shipSpawner = FindObjectOfType<ShipSpawner>();
+
+        if (playerController == null)
+        {
+            print(name + " couldn't find player controller...");
+            Destroy(gameObject);
+        }
+
         PopulateDebugConsole();
     }
 

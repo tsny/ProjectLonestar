@@ -128,7 +128,7 @@ public class ShipEngine : ShipComponent
     {
         if (engineState == EngineState.Drifting)
         {
-            engineState = EngineState.Normal;
+            OnCruiseChange(EngineState.Normal);
         }
 
         if (value != 0)
@@ -145,7 +145,7 @@ public class ShipEngine : ShipComponent
         StopAnyCruise();
 
         throttle = Mathf.MoveTowards(throttle, 0, throttleChangeIncrement);
-        engineState = EngineState.Normal;
+        OnCruiseChange(EngineState.Normal);
     }
 
     public void Rotate(float yaw, float pitch)

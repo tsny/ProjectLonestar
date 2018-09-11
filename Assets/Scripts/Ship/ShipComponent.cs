@@ -10,6 +10,13 @@ public class ShipComponent : MonoBehaviour
     protected virtual void Awake()
     {
         owningShip = GetComponentInParent<Ship>();
+
+        if (owningShip == null)
+        {
+            print("Could not find owning ship, destroying self...");
+            Destroy(gameObject);
+        }
+
         owningShip.Possession += HandlePossession;
     }
 

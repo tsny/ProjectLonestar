@@ -139,7 +139,7 @@ public class InputManager : MonoBehaviour
             {
                 var currentKey = (KeyCode)prop.GetValue(this, null);
                 keyDictionary.Add(prop.Name, currentKey);
-                print(prop.Name + " : " + currentKey);
+                //print(prop.Name + " : " + currentKey);
             }
         }
     }

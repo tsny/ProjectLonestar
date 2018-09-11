@@ -125,7 +125,7 @@ public class GameManager : MonoBehaviour
 
         if (hudManager == null)
         {
-            Instantiate(shipHUDPrefab);
+            hudManager = Instantiate(shipHUDPrefab).GetComponent<HUDManager>();
         }
 
         return hudManager;
@@ -136,10 +136,14 @@ public class GameManager : MonoBehaviour
         SavePlayerInfo();
     }
 
-    // TODO: Also disable player input
     public void TogglePause()
     {
         Paused = !Paused;
+    }
+
+    public void SetPause(bool pause)
+    {
+        Paused = pause;
     }
 
     public void SavePlayerInfo()

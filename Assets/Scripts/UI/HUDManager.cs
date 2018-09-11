@@ -9,79 +9,88 @@ public class HUDManager : ShipUIElement
     public MouseState mouseState;
     public EngineState engineState;
 
+    private ShipEngine engine;
+
+    protected override void Awake()
+    {
+        base.Awake();
+        name = "SHIP HUD";
+    }
+
     protected override void HandlePossessed(PlayerController sender, Ship newShip)
     {
         base.HandlePossessed(sender, newShip);
 
+        engine = newShip.shipEngine;
+        engine.CruiseChanged += HandleCruiseChange;
+
+        playerController.MouseStateChanged += HandleMouseStateChange;
+
+        SetCruiseText(engine.engineState);
+        SetMouseFlightText(playerController.mouseState);
+
         mouseFlightText.text = "";
-        cruiseText.text = "";
-        cruiseText.text = "Engines Nominal";
-        enabled = true;
+    }
+
+    private void HandleMouseStateChange(MouseState state)
+    {
+        SetMouseFlightText(state);
     }
 
     protected override void HandleUnpossessed(PlayerController sender, Ship oldShip)
     {
         base.HandleUnpossessed(sender, oldShip);
 
+        engine.CruiseChanged -= HandleCruiseChange;
+        engine = null;
+
         mouseFlightText.text = "";
         cruiseText.text = "";
-        cruiseText.text = "";
-        enabled = false;
     }
 
-    private void Update()
+    private void HandleCruiseChange(ShipEngine sender)
     {
-        SetMouseFlightText();
-        SetCruiseText();
+        SetCruiseText(sender.engineState);
     }
 
-    private void SetCruiseText()
+    private void SetCruiseText(EngineState engineState)
     {
-        if (playerController.controlledShip.shipEngine.engineState != engineState)
+        switch (engineState)
         {
-            engineState = playerController.controlledShip.shipEngine.engineState;
-
-            switch (engineState)
-            {
-                case EngineState.Normal:
-                    cruiseText.text = "Engines Nominal";
-                    break;
-                case EngineState.Charging:
-                    cruiseText.text = "Charging Cruise...";
-                    break;
-                case EngineState.Cruise:
-                    cruiseText.text = "Cruising";
-                    break;
-                case EngineState.Drifting:
-                    cruiseText.text = "Drifting";
-                    break;
-                case EngineState.Reversing:
-                    cruiseText.text = "Reversing";
-                    break;
-            }
+            case EngineState.Normal:
+                cruiseText.text = "Engines Nominal";
+                break;
+            case EngineState.Charging:
+                cruiseText.text = "Charging Cruise...";
+                break;
+            case EngineState.Cruise:
+                cruiseText.text = "Cruising";
+                break;
+            case EngineState.Drifting:
+                cruiseText.text = "Drifting";
+                break;
+            case EngineState.Reversing:
+                cruiseText.text = "Reversing";
+                break;
         }
     }
 
-    private void SetMouseFlightText()
+    private void SetMouseFlightText(MouseState mouseState)
     {
-        if (playerController.mouseState != mouseState)
+        switch (mouseState)
         {
-            mouseState = playerController.mouseState;
+            case MouseState.Held:
+                mouseFlightText.text = "MANUAL MOUSE FLIGHT";
+                break;
 
-            switch (mouseState)
-            {
-                case MouseState.Held:
-                    mouseFlightText.text = "MANUAL MOUSE FLIGHT";
-                    break;
+            case MouseState.Off:
+                mouseFlightText.text = "";
+                break;
 
-                case MouseState.Off:
-                    mouseFlightText.text = "";
-                    break;
-
-                case MouseState.Toggled:
-                    mouseFlightText.text = "MOUSE FLIGHT TOGGLED";
-                    break;
-            }
+            case MouseState.Toggled:
+                mouseFlightText.text = "MOUSE FLIGHT TOGGLED";
+                break;
         }
     }
 }
+

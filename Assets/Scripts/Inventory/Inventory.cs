@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [Serializable]
-public class Inventory : ShipComponent
+public class Inventory : MonoBehaviour
 {
     public int Capacity { get { return items.Capacity; } }
     public int CurrentVolume { get { return items.Count; } }
