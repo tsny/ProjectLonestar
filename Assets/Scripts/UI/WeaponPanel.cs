@@ -17,6 +17,8 @@ public class WeaponPanel : ShipUIElement
 
         ClearPanel();
         PopulatePanel();
+
+        gameObject.SetActive(true);
     }
 
     protected override void HandleUnpossessed(PlayerController sender, Ship oldShip)
@@ -26,6 +28,8 @@ public class WeaponPanel : ShipUIElement
         hardpointSystem = null;
 
         ClearPanel();
+
+        gameObject.SetActive(false);
     }
 
     private void PopulatePanel()

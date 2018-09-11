@@ -4,24 +4,30 @@ using System.Collections;
 
 public class ScannerUI : ShipUIElement
 {
-    public Text scannerText;
+    public GameObject scannerButtonPrefab;
+    public VerticalLayoutGroup buttonVLG;
+
     private ScannerHardpoint pairedScanner;
 
     protected override void HandlePossessed(PlayerController sender, Ship newShip)
     {
+        base.HandlePossessed(sender, newShip);
+
         pairedScanner = newShip.hardpointSystem.scannerHardpoint;
         pairedScanner.EntryChanged += HandleScannerEntryChanged;
 
         RefreshScannerList();
+
+        gameObject.SetActive(true);
     }
 
     protected override void HandleUnpossessed(PlayerController sender, Ship oldShip)
     {
         base.HandleUnpossessed(sender, oldShip);
         pairedScanner.EntryChanged -= HandleScannerEntryChanged;
-
-        scannerText.text = "";
         pairedScanner = null;
+
+        gameObject.SetActive(false);
     }
 
     private void HandleScannerEntryChanged(WorldObject entry, bool added)
@@ -31,11 +37,10 @@ public class ScannerUI : ShipUIElement
 
     private void RefreshScannerList()
     {
-        scannerText.text = "";
-
-        foreach (WorldObject detectedObject in pairedScanner.detectedObjects)
+        foreach (var obj in pairedScanner.detectedObjects)
         {
-            scannerText.text += detectedObject.name + "\n";
+            var newButton = Instantiate(scannerButtonPrefab, buttonVLG.transform).GetComponent<ScannerPanelButton>();
+            newButton.Setup(obj, ship);
         }
     }
 }

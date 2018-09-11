@@ -39,6 +39,7 @@ public class PlayerController : MonoBehaviour
     {
         enabled = false;
         name = "PLAYER CONTROLLER";
+        FindInputManager();
     }
 
     public void Possess(Ship newShip)
@@ -71,7 +72,6 @@ public class PlayerController : MonoBehaviour
         shipCamera.enabled = false;
         shipCamera = null;
         controlledShip = null;
-
 
         mouseState = MouseState.Off;
         enabled = false;
@@ -278,6 +278,16 @@ public class PlayerController : MonoBehaviour
         yield return new WaitForSeconds(mouseHoldDelay);
 
         mouseState = MouseState.Held;
+    }
+
+    private void FindInputManager()
+    {
+        inputManager = FindObjectOfType<InputManager>();
+
+        if (inputManager == null)
+        {
+            inputManager = new GameObject().AddComponent<InputManager>();
+        }
     }
 }
 

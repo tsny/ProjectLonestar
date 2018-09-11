@@ -20,10 +20,15 @@ public class Loot : WorldObject
         enabled = false;
     }
 
-    protected override void GenerateName()
+    protected override void SetHierarchyName()
     {
         if (item == null) return;
         name = "loot_" + item.name + " x" + item.quantity;
+    }
+
+    public override string ToStringForScannerEntry()
+    {
+        return item.name + " x" + item.quantity;
     }
 
     public void SetTarget(Transform newTarget, float pullForce)
@@ -65,6 +70,7 @@ public class Loot : WorldObject
 
             targetInventory.AddItem(item);
             Die();
+            return;
         }
 
         transform.LookAt(target.transform);

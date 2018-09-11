@@ -15,14 +15,18 @@ public class TractorHardpoint : Hardpoint
         associatedEquipmentType = typeof(TractorBeam);
     }
 
+    protected override void Awake()
+    {
+        base.Awake();
+        hardpointSystem.tractorHardpoint = this;
+    }
+
     public override void Mount(Equipment newEquipment)
     {
         base.Mount(newEquipment);
 
         tractor = newEquipment as TractorBeam;
         range = tractor.range;
-
-        hardpointSystem.tractorHardpoint = this;
     }
 
     public void TractorAllLoot()

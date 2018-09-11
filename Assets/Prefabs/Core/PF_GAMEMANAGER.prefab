@@ -23,6 +23,8 @@ GameObject:
   - component: {fileID: 114932995482058778}
   - component: {fileID: 114489436076986538}
   - component: {fileID: 82125154626100412}
+  - component: {fileID: 114344184178960314}
+  - component: {fileID: 114033715064941076}
   m_Layer: 0
   m_Name: PF_GAMEMANAGER
   m_TagString: Untagged
@@ -138,6 +140,46 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 0
+--- !u!114 &114033715064941076
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1822489588369288}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6493864f70df547428b7724076e82759, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &114344184178960314
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1822489588369288}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1ebc806b1d6428498177a2f3030e2bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MaxHeight: 0.7
+  SmallTerminalRatio: 0.4
+  ToggleSpeed: 700
+  ToggleHotkey: '`'
+  ToggleFullHotkey: '#`'
+  BufferSize: 512
+  ConsoleFont: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+  InputCaret: '>'
+  ShowGUIButtons: 0
+  RightAlignButtons: 0
+  InputContrast: 0.649
+  InputAlpha: 0.5
+  BackgroundColor: {r: 0, g: 0, b: 0, a: 1}
+  ForegroundColor: {r: 1, g: 1, b: 1, a: 1}
+  ShellColor: {r: 1, g: 1, b: 1, a: 1}
+  InputColor: {r: 0, g: 1, b: 1, a: 1}
+  WarningColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  ErrorColor: {r: 1, g: 0, b: 0, a: 1}
 --- !u!114 &114489436076986538
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -161,15 +203,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerController: {fileID: 0}
-  requiredSceneObjects: []
   shipPrefab: {fileID: 1731105088454010, guid: b189f71eeee54d54aaabc7328eaf3faa, type: 2}
   spawnPosition: {x: 0, y: 5, z: 0}
   playerLoadout: {fileID: 11400000, guid: bfc95fa1331d0f5429934f3335a22017, type: 2}
   playerShip: {fileID: 0}
   debugMode: 1
-  spawnPlayer: 1
-  shipHUD: {fileID: 0}
-  flyCamHUD: {fileID: 0}
+  spawnPlayerAsShip: 1
+  shipHUDPrefab: {fileID: 1807413504512844, guid: 31f77a210ffc5c4408210a2178e595a1,
+    type: 2}
   flycamPrefab: {fileID: 1798929207329510, guid: 11641fafd558ff2488be4bf8612205e2,
     type: 2}
 --- !u!114 &114932995482058778

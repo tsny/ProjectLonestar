@@ -5,9 +5,10 @@
 using System.IO;
 using UnityEditor;
 using UnityEditor.Build;
+using UnityEditor.Build.Reporting;
 
 [InitializeOnLoad]
-public class VersionIncrementor : IPreprocessBuild
+public class VersionIncrementor : IPreprocessBuildWithReport
 {
     public int callbackOrder
     {
@@ -68,7 +69,7 @@ public class VersionIncrementor : IPreprocessBuild
         IncrementVersion(0, 0, 1);
     }
 
-    public void OnPreprocessBuild(BuildTarget target, string path)
+    public void OnPreprocessBuild(BuildReport report)
     {
         IncreaseBuild();
     }

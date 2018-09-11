@@ -92,4 +92,9 @@ public class Flycam : MonoBehaviour
         currRot = Vector3.Lerp(currRot, targetRot, rotSmoothFactor);
         transform.rotation = Quaternion.Euler(currRot);
     }
+
+    private void OnDestroy()
+    {
+        Cursor.lockState = CursorLockMode.None;
+    }
 }

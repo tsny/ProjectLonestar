@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CommandTerminal;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -46,6 +47,16 @@ public class Ship : WorldObject, IPossessable
         hullHealth = hullFullHealth;
     }
 
+    public override string ToStringForScannerEntry()
+    {
+        return pilotFirstName + " - " + shipName;
+    }
+
+    public TargetIndicator SetupTargetIndicator(TargetIndicator indicator)
+    {
+        return indicator;
+    }
+
     public void Possessed(PlayerController sender)
     {
         name = "PLAYER SHIP - " + shipName;
@@ -61,7 +72,7 @@ public class Ship : WorldObject, IPossessable
 
     public void UnPossessed(PlayerController sender)
     {
-        GenerateName();
+        SetHierarchyName();
         tag = "Untagged";
         foreach(Transform transform in transform)
         {
@@ -94,7 +105,7 @@ public class Ship : WorldObject, IPossessable
         OnTookDamage(false, weapon.hullDamage);
     }
 
-    protected override void GenerateName()
+    protected override void SetHierarchyName()
     {
         pilotFirstName = NameGenerator.Generate(Gender.Male).First;
         pilotLastName = NameGenerator.Generate(Gender.Male).Last;

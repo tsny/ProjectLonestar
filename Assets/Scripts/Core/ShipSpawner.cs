@@ -40,9 +40,6 @@ public class ShipSpawner : MonoBehaviour
     public Ship SpawnPlayerShip(GameObject shipPrefab, Loadout loadout, Vector3 spawnPosition)
     {
         Ship playerShip = SpawnShip(shipPrefab, loadout, spawnPosition);
-
-        FindObjectOfType<PlayerController>().Possess(playerShip);
-
         return playerShip;
     }
 

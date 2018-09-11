@@ -22,15 +22,12 @@ public class ShipPhysics : ShipComponent
 
     public Rigidbody rb;
     public ShipEngine shipMovement;
-    public float maxSpeed = 100f;
 
-    public bool AtMaxSpeed
-    {
-        get
-        {
-            return (rb.velocity.magnitude > maxSpeed);
-        }
-    }
+    public float maxNormalSpeed = 20;
+    public float maxAfterburnerSpeed = 50;
+    public float maxDriftingSpeed = 50;
+    public float maxCruiseSpeed = 100;
+    public float maxTotalSpeed = 300;
 
     protected override void Awake()
     {
@@ -83,12 +80,35 @@ public class ShipPhysics : ShipComponent
 
         ApplyAfterburnerForces();
 
-        if (AtMaxSpeed)
-        {
-            rb.velocity = rb.velocity.normalized * maxSpeed;
-        }
+        ClampSpeed();
 
         speed = Vector3.Dot(rb.velocity, transform.forward);
+    }
+
+    private void ClampSpeed()
+    {
+        var currentMaxSpeed = maxTotalSpeed;
+
+        switch (owningShip.shipEngine.engineState)
+        {
+            case (EngineState.Charging):
+            case (EngineState.Normal):
+            case (EngineState.Reversing):
+                currentMaxSpeed = maxNormalSpeed;
+                break;
+            case (EngineState.Cruise):
+                currentMaxSpeed = maxCruiseSpeed;
+                break;
+            case (EngineState.Drifting):
+                currentMaxSpeed = maxDriftingSpeed;
+                break;
+        }
+        
+        //rb.velocity = rb.velocity.normalized * currentMaxSpeed;
+        if (rb.velocity.magnitude > currentMaxSpeed)
+        {
+            rb.velocity = rb.velocity.normalized * currentMaxSpeed;
+        }
     }
 
     private void ApplyCruiseForces()

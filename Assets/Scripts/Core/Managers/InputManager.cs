@@ -82,6 +82,7 @@ public class InputManager : MonoBehaviour
     {
         SingletonInit();
         AssignKeyCodes();
+        name = "INPUT MANAGER";
     }
 
     private void AssignKeyCodes()

@@ -7,13 +7,13 @@ using System.IO;
 using System;
 using UnityEngine.SceneManagement;
 using UnityEngine.Networking;
+using CommandTerminal;
 
 public class GameManager : MonoBehaviour
 {
     [Space(5)]
     public static GameManager instance;
     public PlayerController playerController;
-    public MonoBehaviour[] requiredSceneObjects;
 
     [Header("Ship Details")]
     public GameObject shipPrefab;
@@ -23,31 +23,39 @@ public class GameManager : MonoBehaviour
 
     [Space(5)]
 
-    public bool debugMode;
-    public bool spawnPlayer;
-    private bool paused;
+    public bool spawnPlayerAsShip;
 
     [Space(5)]
-    public GameObject shipHUD;
-    public GameObject flyCamHUD;
+    public GameObject shipHUDPrefab;
     public GameObject flycamPrefab;
 
+    private GameObject flyCamHUD;
+    private GameObject shipHUD;
+
     private GameObject currentHUD;
+    private bool paused;
 
     private void Awake()
     {
         SingletonInit();
     }
 
-    private void HandleNewScene(Scene arg0, Scene arg1)
+    private void HandleNewScene(Scene arg0, LoadSceneMode arg1)
     {
-        if (spawnPlayer)
-        {
-            playerShip = ShipSpawner.instance.SpawnPlayerShip(shipPrefab, playerLoadout, spawnPosition);
-            RemoveFlyCamFromScene();
-        }
+        CreatePlayerController();
 
+        if (spawnPlayerAsShip) SpawnPlayer();
         else SpawnFlyCam(Vector3.zero);
+
+        new GameObject().AddComponent<FLTerminal>();
+    }
+
+    public void SpawnPlayer()
+    {
+        playerShip = ShipSpawner.instance.SpawnPlayerShip(shipPrefab, playerLoadout, spawnPosition);
+        playerController.Possess(playerShip);
+        RemoveFlycamFromScene();
+        CreateHUD();
     }
 
     // If unpossessing without possessing new ship: spawn a flyCam
@@ -55,32 +63,20 @@ public class GameManager : MonoBehaviour
     private void HandlePossession(PossessionEventArgs args)
     {
         if (args.newShip == null) SpawnFlyCam(args.oldShip.transform.position);
-
-        else RemoveFlyCamFromScene();
     }
 
-    private void SpawnFlyCam(Vector3 pos)
+    // Can only be one fly cam in the scene
+    public void SpawnFlyCam(Vector3 pos)
     {
+        RemoveFlycamFromScene();
         var flyCam = Instantiate(flycamPrefab);
         flyCam.transform.position = pos + new Vector3(0, 10, 0);
-        SwapHUD(flyCamHUD);
     }
 
-    private void RemoveFlyCamFromScene()
+    public void RemoveFlycamFromScene()
     {
         var flyCam = FindObjectOfType<Flycam>();
         if (flyCam != null) Destroy(flyCam.gameObject);
-
-        SwapHUD(shipHUD);
-    }
-
-    private void SwapHUD(GameObject newHUD)
-    {
-        if (newHUD == null) return;
-
-        if (currentHUD != null && currentHUD.activeSelf) currentHUD.SetActive(false);
-        currentHUD = newHUD;
-        currentHUD.SetActive(true);
     }
 
     private void SingletonInit()
@@ -91,13 +87,36 @@ public class GameManager : MonoBehaviour
             instance = this;
 
             // Only do these things once
-            SceneManager.activeSceneChanged += HandleNewScene;
+            SceneManager.sceneLoaded += HandleNewScene;
         }
 
         else if (instance != this) Destroy(gameObject);
+    }
 
+    private PlayerController CreatePlayerController()
+    {
         playerController = FindObjectOfType<PlayerController>();
+
+        if (playerController == null)
+        {
+            playerController = new GameObject().AddComponent<PlayerController>();
+        }
+
         playerController.Possession += HandlePossession;
+
+        return playerController;
+    }
+
+    private HUDManager CreateHUD()
+    {
+        var hudManager = FindObjectOfType<HUDManager>();
+
+        if (hudManager == null)
+        {
+            Instantiate(shipHUDPrefab);
+        }
+
+        return hudManager;
     }
 
     private void OnApplicationQuit()
@@ -144,27 +163,6 @@ public class GameManager : MonoBehaviour
     {
         var playerSavePath = Application.persistentDataPath + "/playerSave.dat";
         if (File.Exists(playerSavePath)) File.Delete(playerSavePath);
-    }
-
-    public void LoadNewSystem(string systemToLoad, int ID = 0)
-    {
-        //locationID = ID;
-        SceneManager.LoadScene(systemToLoad);
-    }
-
-    public void CalculateMapSize()
-    {
-        var objects = FindObjectsOfType<WorldObject>();
-
-        var closestObject = objects.OrderBy(t => Vector3.Distance(Vector3.zero, t.transform.position)).FirstOrDefault();
-        var farthestObject = objects.OrderBy(t => Vector3.Distance(Vector3.zero, t.transform.position)).LastOrDefault();
-
-        objects.ToList().ForEach(i => print(Vector3.Distance(Vector3.zero, i.transform.position) + i.name));
-    }
-
-    public static void ChangeScene(string scene)
-    {
-        SceneManager.LoadScene(scene);
     }
 }
 
