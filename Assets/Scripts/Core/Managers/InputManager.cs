@@ -2,70 +2,75 @@
 using System.Reflection;
 using System.Collections;
 using System.Linq;
+using System.Collections.Generic;
+using System;
 
 public class InputManager : MonoBehaviour
 {
     public static InputManager instance;
     public MouseState mouseState;
 
+    // ATM, keycodes must be the EXACT same name as their pref in playerprefs
     #region properties
 
-    public KeyCode ThrottleUp { get; set; }
-    public KeyCode ThrottleDown { get; set; }
-    public KeyCode Reverse { get; set; }
+    public KeyCode ThrottleUpKey { get; set; }
+    public KeyCode ThrottleDownKey { get; set; }
+    public KeyCode ReverseKey { get; set; }
 
-    public KeyCode StrafeRight { get; set; }
-    public KeyCode StrafeLeft { get; set; }
+    public KeyCode StrafeRightKey { get; set; }
+    public KeyCode StrafeLeftKey { get; set; }
 
-    public KeyCode ToggleMouseFlight { get; set; }
-    public KeyCode ToggleCruise { get; set; }
-    public KeyCode Afterburner { get; set; }
-    public KeyCode KillEngines { get; set; }
+    public KeyCode ToggleMouseFlightKey { get; set; }
+    public KeyCode ToggleCruiseKey { get; set; }
+    public KeyCode AfterburnerKey { get; set; }
+    public KeyCode KillEnginesKey { get; set; }
 
-    public KeyCode ManualMouseFlight { get; set; }
-    public KeyCode Fire { get; set; }
+    public KeyCode ManualMouseFlightKey { get; set; }
+    public KeyCode FireKey { get; set; }
 
-    public KeyCode Nanobots { get; set; }
-    public KeyCode ShieldBots { get; set; }
+    public KeyCode NanobotsKey { get; set; }
+    public KeyCode ShieldBotsKey { get; set; }
 
-    public KeyCode Hardpoint1 { get; set; }
-    public KeyCode Hardpoint2 { get; set; }
-    public KeyCode Hardpoint3 { get; set; }
-    public KeyCode Hardpoint4 { get; set; }
-    public KeyCode Hardpoint5 { get; set; }
-    public KeyCode Hardpoint6 { get; set; }
-    public KeyCode Hardpoint7 { get; set; }
-    public KeyCode Hardpoint8 { get; set; }
-    public KeyCode Hardpoint9 { get; set; }
-    public KeyCode Hardpoint10 { get; set; }
+    public KeyCode Hardpoint1Key { get; set; }
+    public KeyCode Hardpoint2Key { get; set; }
+    public KeyCode Hardpoint3Key { get; set; }
+    public KeyCode Hardpoint4Key { get; set; }
+    public KeyCode Hardpoint5Key { get; set; }
+    public KeyCode Hardpoint6Key { get; set; }
+    public KeyCode Hardpoint7Key { get; set; }
+    public KeyCode Hardpoint8Key { get; set; }
+    public KeyCode Hardpoint9Key { get; set; }
+    public KeyCode Hardpoint10Key { get; set; }
 
-    public KeyCode LootAll { get; set; }
+    public KeyCode LootAllKey { get; set; }
 
-    public KeyCode FireMineDropper { get; set; }
-    public KeyCode FireCountermeasure { get; set; }
-    public KeyCode FireMissiles { get; set; }
+    public KeyCode FireMineDropperKey { get; set; }
+    public KeyCode FireCountermeasureKey { get; set; }
+    public KeyCode FireMissilesKey { get; set; }
 
-    public KeyCode NearestEnemy { get; set; }
-    public KeyCode NextTarget { get; set; }
-    public KeyCode ClearTarget { get; set; }
-    public KeyCode PrevTarget { get; set; }
+    public KeyCode NearestEnemyKey { get; set; }
+    public KeyCode NextTargetKey { get; set; }
+    public KeyCode ClearTargetKey { get; set; }
+    public KeyCode PrevTargetKey { get; set; }
 
-    public KeyCode PauseGame { get; set; }
+    public KeyCode PauseGameKey { get; set; }
 
-    public KeyCode RequestDock { get; set; }
-    public KeyCode GoToTarget { get; set; }
-    public KeyCode JoinFormation { get; set; }
-    public KeyCode FreeFlight { get; set; }
+    public KeyCode RequestDockKey { get; set; }
+    public KeyCode GoToTargetKey { get; set; }
+    public KeyCode JoinFormationKey { get; set; }
+    public KeyCode FreeFlightKey { get; set; }
 
-    public KeyCode StoryStar { get; set; }
-    public KeyCode NavMap { get; set; }
-    public KeyCode Inventory { get; set; }
-    public KeyCode Reputation { get; set; }
-    public KeyCode Information { get; set; }
-    public KeyCode MinimizeHUD { get; set; }
-    public KeyCode SwitchCamera { get; set; }
+    public KeyCode StoryStarKey { get; set; }
+    public KeyCode NavMapKey { get; set; }
+    public KeyCode InventoryKey { get; set; }
+    public KeyCode ReputationKey { get; set; }
+    public KeyCode InformationKey { get; set; }
+    public KeyCode MinimizeHUDKey { get; set; }
+    public KeyCode SwitchCameraKey { get; set; }
 
     #endregion
+
+    public Dictionary<string, KeyCode> keyDictionary;
 
     private void SingletonInit()
     {
@@ -81,52 +86,66 @@ public class InputManager : MonoBehaviour
     private void Awake()
     {
         SingletonInit();
-        AssignKeyCodes();
+        GetKeycodesFromPrefs();
         name = "INPUT MANAGER";
     }
 
-    private void AssignKeyCodes()
+    private void GetKeycodesFromPrefs()
     {
-        ThrottleUp = GetKeycode("ThrottleUpKey", "W");
-        ThrottleDown = GetKeycode("ThrottleDown", "S");
-        StrafeRight = GetKeycode("StrafeRightKey", "D");
-        StrafeLeft = GetKeycode("StrafeLeftKey", "A");
-        Reverse = GetKeycode("Reverse", "X");
-        Afterburner = GetKeycode("AfterburnerKey", "Tab");
-        KillEngines = GetKeycode("KillEnginesKey", "Z");
-        ToggleMouseFlight = GetKeycode("ToggleMouseFlightKey", "Space");
+        keyDictionary = new Dictionary<string, KeyCode>();
 
-        ManualMouseFlight = GetKeycode("ManualMouseFlightKey", "Mouse0");
-        Fire = GetKeycode("FireKey", "Mouse1");
+        ThrottleUpKey = GetKeycode("ThrottleUpKey", "W");
+        ThrottleDownKey = GetKeycode("ThrottleDown", "S");
+        StrafeRightKey = GetKeycode("StrafeRightKey", "D");
+        StrafeLeftKey = GetKeycode("StrafeLeftKey", "A");
+        ReverseKey = GetKeycode("ReverseKey", "X");
+        AfterburnerKey = GetKeycode("AfterburnerKey", "Tab");
+        KillEnginesKey = GetKeycode("KillEnginesKey", "Z");
+        ToggleMouseFlightKey = GetKeycode("ToggleMouseFlightKey", "Space");
 
-        Nanobots = GetKeycode("NanobotsKey", "G");
-        ShieldBots = GetKeycode("ShieldbotsKey", "F");
+        ManualMouseFlightKey = GetKeycode("ManualMouseFlightKey", "Mouse0");
+        FireKey = GetKeycode("FireKey", "Mouse1");
 
-        Hardpoint1 = GetKeycode("Hardpoint1Key", "Alpha1");
-        Hardpoint2 = GetKeycode("Hardpoint2Key", "Alpha2");
-        Hardpoint3 = GetKeycode("Hardpoint3Key", "Alpha3");
-        Hardpoint4 = GetKeycode("Hardpoint4Key", "Alpha4");
-        Hardpoint5 = GetKeycode("Hardpoint5Key", "Alpha5");
-        Hardpoint6 = GetKeycode("Hardpoint6Key", "Alpha6");
-        Hardpoint7 = GetKeycode("Hardpoint7Key", "Alpha7");
-        Hardpoint8 = GetKeycode("Hardpoint8Key", "Alpha8");
-        Hardpoint9 = GetKeycode("Hardpoint9Key", "Alpha9");
-        Hardpoint10 = GetKeycode("Hardpoint10Key", "Alpha0");
+        NanobotsKey = GetKeycode("NanobotsKey", "G");
+        ShieldBotsKey = GetKeycode("ShieldbotsKey", "F");
 
-        LootAll = GetKeycode("LootAllKey", "B");
+        Hardpoint1Key = GetKeycode("Hardpoint1Key", "Alpha1");
+        Hardpoint2Key = GetKeycode("Hardpoint2Key", "Alpha2");
+        Hardpoint3Key = GetKeycode("Hardpoint3Key", "Alpha3");
+        Hardpoint4Key = GetKeycode("Hardpoint4Key", "Alpha4");
+        Hardpoint5Key = GetKeycode("Hardpoint5Key", "Alpha5");
+        Hardpoint6Key = GetKeycode("Hardpoint6Key", "Alpha6");
+        Hardpoint7Key = GetKeycode("Hardpoint7Key", "Alpha7");
+        Hardpoint8Key = GetKeycode("Hardpoint8Key", "Alpha8");
+        Hardpoint9Key = GetKeycode("Hardpoint9Key", "Alpha9");
+        Hardpoint10Key = GetKeycode("Hardpoint10Key", "Alpha0");
 
-        FireMineDropper = GetKeycode("MineDropperKey", "E");
-        FireMissiles = GetKeycode("FireMissilesKey", "Q");
-        FireCountermeasure = GetKeycode("FireCountermeasureKey", "C");
+        LootAllKey = GetKeycode("LootAllKey", "B");
 
-        PauseGame = GetKeycode("PauseKey", "F1");
-        RequestDock = GetKeycode("RequestDockKey", "F3");
-        GoToTarget = GetKeycode("GoToKey", "F2");
-        JoinFormation = GetKeycode("JoinFormKey", "F4");
+        FireMineDropperKey = GetKeycode("FireMineDropperKey", "E");
+        FireMissilesKey = GetKeycode("FireMissilesKey", "Q");
+        FireCountermeasureKey = GetKeycode("FireCountermeasureKey", "C");
+
+        PauseGameKey = GetKeycode("PauseGameKey", "F1");
+        RequestDockKey = GetKeycode("RequestDockKey", "F3");
+        GoToTargetKey = GetKeycode("GoToTargetKey", "F2");
+        JoinFormationKey = GetKeycode("JoinFormationKey", "F4");
+
+        var propInfo = typeof(InputManager).GetProperties();
+
+        foreach (var prop in propInfo)
+        {
+            if (prop.PropertyType == typeof(KeyCode))
+            {
+                var currentKey = (KeyCode)prop.GetValue(this, null);
+                keyDictionary.Add(prop.Name, currentKey);
+                print(prop.Name + " : " + currentKey);
+            }
+        }
     }
 
-    public KeyCode GetKeycode(string keyName, string defaultName)
+    public static KeyCode GetKeycode(string keyName, string defaultName)
     {
-        return (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString(keyName, defaultName));
+        return (KeyCode)Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString(keyName, defaultName));
     }
 }

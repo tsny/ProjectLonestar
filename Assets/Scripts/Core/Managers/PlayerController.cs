@@ -102,53 +102,53 @@ public class PlayerController : MonoBehaviour
         if(inputAllowed)
         {
             #region movement
-            if(Input.GetKey(InputManager.instance.ThrottleUp) || Input.GetAxis("Mouse ScrollWheel") > 0f)
+            if(Input.GetKey(InputManager.instance.ThrottleUpKey) || Input.GetAxis("Mouse ScrollWheel") > 0f)
             {
                 shipMovement.ThrottleUp();
             }
 
-            if(Input.GetKey(InputManager.instance.ThrottleDown) || Input.GetAxis("Mouse ScrollWheel") < 0f)
+            if(Input.GetKey(InputManager.instance.ThrottleDownKey) || Input.GetAxis("Mouse ScrollWheel") < 0f)
             {
                 shipMovement.ThrottleDown();
             }
 
-            if(Input.GetKey(InputManager.instance.StrafeLeft))
+            if(Input.GetKey(InputManager.instance.StrafeLeftKey))
             {
                 shipMovement.ChangeStrafe(-1);
             }
 
-            if(Input.GetKey(InputManager.instance.StrafeRight))
+            if(Input.GetKey(InputManager.instance.StrafeRightKey))
             {
                 shipMovement.ChangeStrafe(1);
             }
 
             // If neither strafe key is pressed, reset the ship's strafing
-            if(!Input.GetKey(InputManager.instance.StrafeRight) && !Input.GetKey(InputManager.instance.StrafeLeft))
+            if(!Input.GetKey(InputManager.instance.StrafeRightKey) && !Input.GetKey(InputManager.instance.StrafeLeftKey))
             {
                 shipMovement.ChangeStrafe(0);
             }         
 
-            if(Input.GetKeyDown(InputManager.instance.ToggleMouseFlight))
+            if(Input.GetKeyDown(InputManager.instance.ToggleMouseFlightKey))
             {
                 ToggleMouseFlight();
             }
 
-            if(Input.GetKeyDown(InputManager.instance.Afterburner))
+            if(Input.GetKeyDown(InputManager.instance.AfterburnerKey))
             {
                 controlledShip.hardpointSystem.ToggleAfterburner(true);
             }
             
-            else if(Input.GetKeyUp(InputManager.instance.Afterburner))
+            else if(Input.GetKeyUp(InputManager.instance.AfterburnerKey))
             {
                 controlledShip.hardpointSystem.ToggleAfterburner(false);
             }
 
-            if(Input.GetKeyDown(InputManager.instance.ManualMouseFlight))
+            if(Input.GetKeyDown(InputManager.instance.ManualMouseFlightKey))
             {
                 if(mouseState == MouseState.Off) StartCoroutine("ManualMouseFlightCoroutine");
             }
 
-            if(Input.GetKeyUp(InputManager.instance.ManualMouseFlight))
+            if(Input.GetKeyUp(InputManager.instance.ManualMouseFlightKey))
             {
                 StopAllCoroutines();
 
@@ -160,7 +160,7 @@ public class PlayerController : MonoBehaviour
                 shipMovement.ToggleCruiseEngines();
             }
 
-            if(Input.GetKeyDown(InputManager.instance.KillEngines))
+            if(Input.GetKeyDown(InputManager.instance.KillEnginesKey))
             {
                 shipMovement.Drift();
             }
@@ -168,69 +168,69 @@ public class PlayerController : MonoBehaviour
             #endregion
 
             #region hardpoints
-            if(Input.GetKey(InputManager.instance.Hardpoint1))
+            if(Input.GetKey(InputManager.instance.Hardpoint1Key))
             {
                 controlledShip.hardpointSystem.FireHardpoint(1);
             }
 
-            if(Input.GetKey(InputManager.instance.Hardpoint2))
+            if(Input.GetKey(InputManager.instance.Hardpoint2Key))
             {
                 controlledShip.hardpointSystem.FireHardpoint(2);
             }
 
-            if(Input.GetKey(InputManager.instance.Hardpoint3))
+            if(Input.GetKey(InputManager.instance.Hardpoint3Key))
             {
                 controlledShip.hardpointSystem.FireHardpoint(3);
             }
 
-            if(Input.GetKey(InputManager.instance.Hardpoint4))
+            if(Input.GetKey(InputManager.instance.Hardpoint4Key))
             {
                 controlledShip.hardpointSystem.FireHardpoint(4);
             }
 
-            if(Input.GetKey(InputManager.instance.Hardpoint5))
+            if(Input.GetKey(InputManager.instance.Hardpoint5Key))
             {
                 controlledShip.hardpointSystem.FireHardpoint(5);
             }
 
-            if(Input.GetKey(InputManager.instance.Hardpoint6))
+            if(Input.GetKey(InputManager.instance.Hardpoint6Key))
             {
                 controlledShip.hardpointSystem.FireHardpoint(6);
             }
 
-            if(Input.GetKey(InputManager.instance.Hardpoint7))
+            if(Input.GetKey(InputManager.instance.Hardpoint7Key))
             {
                 controlledShip.hardpointSystem.FireHardpoint(7);
             }
 
-            if(Input.GetKey(InputManager.instance.Hardpoint8))
+            if(Input.GetKey(InputManager.instance.Hardpoint8Key))
             {
                 controlledShip.hardpointSystem.FireHardpoint(8);
             }
 
-            if(Input.GetKey(InputManager.instance.Hardpoint9))
+            if(Input.GetKey(InputManager.instance.Hardpoint9Key))
             {
                 controlledShip.hardpointSystem.FireHardpoint(9);
             }
 
-            if(Input.GetKey(InputManager.instance.Hardpoint10))
+            if(Input.GetKey(InputManager.instance.Hardpoint10Key))
             {
                 controlledShip.hardpointSystem.FireHardpoint(10);
             }
             #endregion
 
-            if(Input.GetKey(InputManager.instance.Fire))
+            if(Input.GetKey(InputManager.instance.FireKey))
             {
                 controlledShip.hardpointSystem.FireActiveWeapons();
             }
 
-            if (Input.GetKeyDown(InputManager.instance.LootAll))
+            if (Input.GetKeyDown(InputManager.instance.LootAllKey))
             {
                 controlledShip.hardpointSystem.tractorHardpoint.TractorAllLoot();
             }
         }
 
-        if(Input.GetKeyDown(InputManager.instance.PauseGame) && canPause)
+        if(Input.GetKeyDown(InputManager.instance.PauseGameKey) && canPause)
         {
             GameManager.instance.TogglePause();
         }

@@ -33,7 +33,19 @@ public class GameManager : MonoBehaviour
     private GameObject shipHUD;
 
     private GameObject currentHUD;
-    private bool paused;
+    public bool Paused
+    {
+        get
+        {
+            return Time.timeScale == 0;
+        }
+
+        set
+        {
+            playerController.inputAllowed = !value;
+            Time.timeScale = value ? 0 : 1;
+        }
+    }
 
     private void Awake()
     {
@@ -127,11 +139,7 @@ public class GameManager : MonoBehaviour
     // TODO: Also disable player input
     public void TogglePause()
     {
-        paused = !paused;
-
-        playerController.inputAllowed = !paused;
-
-        Time.timeScale = paused ? 0.0f : 1.0f;
+        Paused = !Paused;
     }
 
     public void SavePlayerInfo()

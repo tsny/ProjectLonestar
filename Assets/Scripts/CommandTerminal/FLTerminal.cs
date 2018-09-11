@@ -42,7 +42,6 @@ public class FLTerminal : Terminal
     public void UnlimitedEnergy(CommandArg[] args)
     {
         playerController.controlledShip.hardpointSystem.EnableInfiniteEnergy();
-
     }
 
     public void UnlimitedAfterburner(CommandArg[] args)
@@ -68,5 +67,11 @@ public class FLTerminal : Terminal
     public void Restart(CommandArg[] args)
     {
         SceneManager.LoadScene(0);
+    }
+
+    public void PauseGame(CommandArg[] args)
+    {
+        var gameManager = FindObjectOfType<GameManager>();
+        gameManager.TogglePause();
     }
 }
