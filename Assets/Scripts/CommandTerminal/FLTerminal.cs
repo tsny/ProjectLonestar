@@ -4,7 +4,7 @@ using CommandTerminal;
 
 public class FLTerminal : Terminal
 {
-    [RegisterCommand(Help = "Checks the live version on itch.io against the local version", MinArgCount = 0, MaxArgCount = 0)]
+    [RegisterCommand(Name = "version.check", Help = "Checks the live version on itch.io against the local version", MinArgCount = 0, MaxArgCount = 0)]
     static void VersionCheck(CommandArg[] args)
     {
         FindObjectOfType<GameManager>().StartCoroutine(VersionChecker.GetVersions());
@@ -23,12 +23,12 @@ public class FLTerminal : Terminal
         print("Godmode : " + pc.controlledShip.invulnerable);
     }
 
-    //[RegisterCommand(Help = "Spawns an empty ship at level origin (0,0,0)", MinArgCount = 0, MaxArgCount = 0)]
-    //static void SpawnDefault(CommandArg[] args)
-    //{
-    //    FindObjectOfType<ShipSpawner>().SpawnShip();
-    //    print("Spawned default ship");
-    //}
+    [RegisterCommand(Help = "Spawns an empty ship at level origin (0,0,0)", MinArgCount = 0, MaxArgCount = 0)]
+    static void SpawnDefault(CommandArg[] args)
+    {
+        ShipSpawner.SpawnDefaultShip();
+        print("Spawned default ship");
+    }
 
     [RegisterCommand(Help = "Toggles the game's time scale between 1 and 0", MinArgCount = 0, MaxArgCount = 0)]
     static void Pause(CommandArg[] args)
@@ -46,7 +46,7 @@ public class FLTerminal : Terminal
     }
 
     [RegisterCommand(Help = "Gives current ship unlimited afterburner energy", MinArgCount = 0, MaxArgCount = 0)]
-    static void InfAft(CommandArg[] args)
+    static void Impulse102(CommandArg[] args)
     {
         if (PlayerControllerExistsInScene() == false) return;
 
@@ -87,6 +87,14 @@ public class FLTerminal : Terminal
         if (PlayerControllerExistsInScene() == false) return;
 
         FindObjectOfType<PlayerController>().controlledShip.engine.throttlePower = args[0].Int;
+    }
+
+    [RegisterCommand(Name = "cruise.power", Help = "Change the current ship's cruise power", MinArgCount = 1, MaxArgCount = 1)]
+    static void SetCruisePower(CommandArg[] args)
+    {
+        if (PlayerControllerExistsInScene() == false) return;
+
+        FindObjectOfType<PlayerController>().controlledShip.cruiseEngine.cruisePower = args[0].Int;
     }
 
     private static bool PlayerControllerExistsInScene()
