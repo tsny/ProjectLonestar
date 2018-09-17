@@ -1,15 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class ShipSpawner : MonoBehaviour
+public class ShipSpawner : ScriptableObject
 {
-    public static ShipSpawner instance;
-
     public static Loadout CreateDummyLoadout()
     {
-        Loadout loadout = ScriptableObject.CreateInstance<Loadout>();
-        loadout.equipment.Add(ScriptableObject.CreateInstance<Weapon>());
-        loadout.equipment.Add(ScriptableObject.CreateInstance<Weapon>());
+        Loadout loadout = CreateInstance<Loadout>();
+        loadout.equipment.Add(CreateInstance<Weapon>());
+        loadout.equipment.Add(CreateInstance<Weapon>());
 
         return loadout;
     }

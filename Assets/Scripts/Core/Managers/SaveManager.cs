@@ -4,19 +4,19 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using System;
 
-public class SaveManager : MonoBehaviour
+public class SaveManager : ScriptableObject
 {
-    public void SavePlayerInfo()
+    public static void SavePlayerInfo()
     {
         BinaryFormatter bf = new BinaryFormatter();
         FileStream file = File.Open(Application.persistentDataPath + "/playerSave.dat", FileMode.Create);
-        PlayerInfo playerInfo = new PlayerInfo();
+        SaveInfo playerInfo = new SaveInfo();
 
         bf.Serialize(file, playerInfo);
         file.Close();
     }
 
-    public void LoadPlayerInfo()
+    public static void LoadPlayerInfo()
     {
         var path = Application.persistentDataPath + "/playerSave.dat";
 
@@ -25,13 +25,11 @@ public class SaveManager : MonoBehaviour
         BinaryFormatter bf = new BinaryFormatter();
         FileStream file = File.Open(Application.persistentDataPath + "/playerSave.dat", FileMode.Open);
 
-        PlayerInfo playerInfo = (PlayerInfo) bf.Deserialize(file);
+        SaveInfo playerInfo = (SaveInfo) bf.Deserialize(file);
         file.Close();
-
-        print("Loaded Save 1, ID: " + playerInfo.saveTime);
     }
 
-    public void DeleteSave()
+    public static void DeleteSave()
     {
         var playerSavePath = Application.persistentDataPath + "/playerSave.dat";
         if (File.Exists(playerSavePath)) File.Delete(playerSavePath);
@@ -39,11 +37,13 @@ public class SaveManager : MonoBehaviour
 }
 
 [Serializable]
-public class PlayerInfo
+public class SaveInfo : ScriptableObject
 {
     public string saveTime;
+    public string saveName = "SaveName";
+    public GameObject shipPrefab;
 
-    public PlayerInfo()
+    public SaveInfo()
     {
         saveTime = DateTime.Now.ToShortTimeString();
     }
