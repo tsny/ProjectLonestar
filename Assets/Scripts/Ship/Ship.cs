@@ -50,11 +50,6 @@ public class Ship : WorldObject
         base.Awake();
     }
 
-    public override string ToStringForScannerEntry()
-    {
-        return pilotFirstName + " - " + stats.shipName;
-    }
-
     public void ChangePossession(PlayerController pc, bool possessed)
     {
         name = possessed ? "PLAYER SHIP" : NameGenerator.GenerateFullName();

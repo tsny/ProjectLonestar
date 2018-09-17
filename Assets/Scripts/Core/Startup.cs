@@ -8,8 +8,8 @@ public class Startup : ScriptableObject
     [RuntimeInitializeOnLoadMethod]
     static void OnRuntimeMethodLoad()
     {
-        Debug.Log("After scene is loaded and game is running");
         SceneManager.sceneLoaded += HandleNewScene;
+        DebugSettings.Instance.FirstMethodRun();
 
         if (SceneManager.GetActiveScene().name != "SCN_MainMenu")
         {
@@ -19,7 +19,10 @@ public class Startup : ScriptableObject
 
     private static void HandleNewScene(Scene arg0, LoadSceneMode arg1)
     {
-        if (arg0.name == "SCN_MainMenu") return;
+        if (arg0.name == "SCN_MainMenu")
+        {
+            return;
+        }
 
         DebugSettings.Instance.SpawnPrefabs();
     }

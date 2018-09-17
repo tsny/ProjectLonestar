@@ -18,16 +18,6 @@ public class WorldObject : MonoBehaviour
         if (Killed != null) Killed(this, new DeathEventArgs());
     }
 
-    public virtual string ToStringForScannerEntry()
-    {
-        return "World Object Scanner String";
-    }
-
-    public virtual string ToStringForIndicatorHeader()
-    {
-        return "World Object Indicator Header";
-    }
-
     protected virtual void SetHierarchyName()
     {
         name = "World Object";

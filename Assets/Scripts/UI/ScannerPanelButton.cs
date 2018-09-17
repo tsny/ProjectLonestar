@@ -30,6 +30,5 @@ public class ScannerPanelButton : MonoBehaviour
     private void Update()
     {
         var distance = (int) Vector3.Distance(target.transform.position, owner.transform.position) + "M";
-        text.text = target.ToStringForScannerEntry() + " - " + distance;
     }
 }

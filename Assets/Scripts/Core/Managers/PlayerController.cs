@@ -239,7 +239,7 @@ public class PlayerController : MonoBehaviour
 
         if(Input.GetKeyDown(InputManager.PauseGameKey) && canPause)
         {
-            GameManager.TogglePause();
+            GameStateUtils.TogglePause();
         }
     }
 

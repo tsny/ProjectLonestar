@@ -10,15 +10,26 @@ public class DebugSettings : SingletonScriptableObject<DebugSettings>
     public GameObject flycamPrefab;
     public Loadout defaultLoadout;
 
-    public void SpawnPrefabs()
+    public void FirstMethodRun()
     {
         Instantiate(terminalPrefab);
+    }
 
-        var playerController = new GameObject().AddComponent<PlayerController>();
+    public void SpawnPrefabs()
+    {
+        var playerController = FindObjectOfType<PlayerController>();
+
+        if (playerController == null)
+        {
+            playerController = new GameObject().AddComponent<PlayerController>();
+        }
+
         var playerShip = playerController.SpawnPlayer(shipPrefab, defaultLoadout);
+
         playerController.Possess(playerShip);
 
         var hud = playerController.SpawnHUD();
+
         hud.gameObject.SetActive(true);
     }
 }

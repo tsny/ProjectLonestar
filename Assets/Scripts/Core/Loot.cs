@@ -26,11 +26,6 @@ public class Loot : WorldObject
         name = "loot_" + item.name + " x" + item.quantity;
     }
 
-    public override string ToStringForScannerEntry()
-    {
-        return item.name + " x" + item.quantity;
-    }
-
     public void SetTarget(Transform newTarget, float pullForce)
     {
         target = newTarget;

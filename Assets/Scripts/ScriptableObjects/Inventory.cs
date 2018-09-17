@@ -30,10 +30,7 @@ public class Inventory : MonoBehaviour
     public void Initialize(Loadout loadout)
     {
         items.AddRange(loadout.equipment.ToArray());
-        //transform.root.GetComponentInChildren<HardpointSystem>().MountLoadout(loadout);
         transform.parent.GetComponentInChildren<HardpointSystem>().MountLoadout(loadout);
-
-        //MountHardpoints(loadout);
     }
 
     /// <summary>

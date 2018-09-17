@@ -14,7 +14,7 @@ public class HUDManager : MonoBehaviour
 
     private void Awake()
     {
-        GameManager.GamePaused += HandleGamePaused;
+        GameStateUtils.GamePaused += HandleGamePaused;
         name = "SHIP HUD";
         GetComponentsInChildren(true, uiElements);
 

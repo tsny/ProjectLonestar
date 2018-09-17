@@ -7,7 +7,7 @@ public class FLTerminal : Terminal
     [RegisterCommand(Name = "version.check", Help = "Checks the live version on itch.io against the local version", MinArgCount = 0, MaxArgCount = 0)]
     static void VersionCheck(CommandArg[] args)
     {
-        FindObjectOfType<GameManager>().StartCoroutine(VersionChecker.GetVersions());
+        FindObjectOfType<MonoBehaviour>().StartCoroutine(VersionChecker.GetVersions());
     }
 
     [RegisterCommand(Help = "Toggle GodMode on Current Ship", MinArgCount = 0, MaxArgCount = 0)]
@@ -20,6 +20,7 @@ public class FLTerminal : Terminal
         if (pc.controlledShip == null) return;
 
         pc.controlledShip.invulnerable = !pc.controlledShip.invulnerable;
+
         print("Godmode : " + pc.controlledShip.invulnerable);
     }
 
@@ -33,7 +34,7 @@ public class FLTerminal : Terminal
     [RegisterCommand(Help = "Toggles the game's time scale between 1 and 0", MinArgCount = 0, MaxArgCount = 0)]
     static void Pause(CommandArg[] args)
     {
-        GameManager.TogglePause();
+        GameStateUtils.TogglePause();
     }
 
     [RegisterCommand(Help = "Gives current ship unlimited energy", MinArgCount = 0, MaxArgCount = 0)]
@@ -70,8 +71,7 @@ public class FLTerminal : Terminal
     [RegisterCommand(Name = "SpawnNew", Help = "Spawns a new ship and possesses it", MinArgCount = 0, MaxArgCount = 0)]
     static void SpawnNewPlayerShip(CommandArg[] args)
     {
-        // TODO: Update this somehow?
-        //FindObjectOfType<GameManager>().SpawnPlayer();
+        DebugSettings.Instance.SpawnPrefabs();
     }
 
     [RegisterCommand(Help = "Restarts the current scene", MinArgCount = 0, MaxArgCount = 0)]
