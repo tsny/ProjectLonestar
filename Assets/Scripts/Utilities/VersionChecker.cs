@@ -1,9 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
 using System.Collections;
-using System.IO;
-using System.Reflection;
-using UnityEngine.UI;
 
 public class VersionChecker : ScriptableObject
 {
@@ -17,7 +14,7 @@ public class VersionChecker : ScriptableObject
 
             if (www.isNetworkError || www.isHttpError)
             {
-                Debug.Log("Couldn't find Version at specified URL...");
+                Debug.Log("ERROR: URL is either invalid or the network is down...");
                 yield break;
             }
 

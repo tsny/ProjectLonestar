@@ -1,9 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-
-// This is just a test comment, messing with Git
+﻿using UnityEngine;
 
 [CreateAssetMenu]
 public class Projectile : ScriptableObject
