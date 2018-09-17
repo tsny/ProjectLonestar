@@ -19,7 +19,7 @@ public class HUDManager : MonoBehaviour
         GetComponentsInChildren(true, uiElements);
 
         cruiseText.text = "";
-        mouseFlightText.text = ""; 
+        mouseFlightText.text = "";
     }
 
     public void InitializeHUD(PlayerController playerController)

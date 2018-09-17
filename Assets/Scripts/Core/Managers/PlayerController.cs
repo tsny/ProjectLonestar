@@ -58,7 +58,7 @@ public class PlayerController : MonoBehaviour
 
     private void SpawnPlayer()
     {
-        controlledShip = ShipSpawner.SpawnShip(GameManager.instance.prefabManager.shipPrefab, GameManager.instance.prefabManager.defaultLoadout, Vector3.zero);
+        controlledShip = ShipSpawner.SpawnShip(PrefabManager.Instance.shipPrefab, PrefabManager.Instance.defaultLoadout, Vector3.zero);
     }
 
     private void SpawnHUD()
@@ -67,7 +67,7 @@ public class PlayerController : MonoBehaviour
 
         if (hud == null)
         {
-            Instantiate(GameManager.instance.prefabManager.HUDPrefab).GetComponent<HUDManager>().InitializeHUD(this);
+            Instantiate(PrefabManager.Instance.HUDPrefab).GetComponent<HUDManager>().InitializeHUD(this);
         }
 
         else
@@ -319,7 +319,7 @@ public class PlayerController : MonoBehaviour
     public void SpawnFlyCam(Vector3 pos)
     {
         RemoveFlycamFromScene();
-        var flyCam = Instantiate(GameManager.instance.prefabManager.flycamPrefab);
+        var flyCam = Instantiate(PrefabManager.Instance.flycamPrefab);
         flyCam.transform.position = pos + new Vector3(0, 10, 0);
     }
 

@@ -11,4 +11,9 @@ public class PrefabManager : SingletonScriptableObject<PrefabManager>
     public Loadout defaultLoadout;
 
     public string test;
+
+    public void SpawnPrefabs()
+    {
+        Instantiate(terminalPrefab);
+    }
 }

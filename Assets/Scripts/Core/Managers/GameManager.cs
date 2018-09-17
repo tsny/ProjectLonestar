@@ -33,50 +33,6 @@ public class GameManager : MonoBehaviour
     private void Awake()
     {
         name = "GAMEMANAGER";
-        SingletonInit();
-    }
-
-    private void HandleNewScene(Scene arg0, LoadSceneMode arg1)
-    {
-        if (arg0.name == "SCN_MainMenu") return;
-
-        SpawnPlayerController();
-    }
-
-    public void SpawnPlayerController()
-    {
-        playerController = FindObjectOfType<PlayerController>();
-
-        if (playerController != null)
-        {
-            playerController.Possession -= HandlePossession;
-        }
-
-        playerController = new GameObject().AddComponent<PlayerController>();
-        playerController.Possession += HandlePossession;
-
-        if (PlayerControllerSpawned != null) PlayerControllerSpawned(this, playerController);
-    }
-
-    private void HandlePossession(PossessionEventArgs args)
-    {
-
-    }
-
-    private void SingletonInit()
-    {
-        if (instance == null)
-        {
-            DontDestroyOnLoad(gameObject);
-            instance = this;
-
-            // Only do these things once, when the game loads
-
-            DontDestroyOnLoad(Instantiate(prefabManager.terminalPrefab));
-            SceneManager.sceneLoaded += HandleNewScene;
-        }
-
-        else if (instance != this) Destroy(gameObject);
     }
 
     public static void TogglePause()

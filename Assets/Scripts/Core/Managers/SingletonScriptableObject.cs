@@ -20,7 +20,7 @@ public class SingletonScriptableObject<T>: ScriptableObject where T : Scriptable
                 _inst = CreateInstance<T>();
             }
 
-            _inst.hideFlags = HideFlags.DontUnloadUnusedAsset;
+            //_inst.hideFlags = HideFlags.DontUnloadUnusedAsset;
             return _inst;
         }
     }
