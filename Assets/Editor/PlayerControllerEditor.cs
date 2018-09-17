@@ -25,11 +25,5 @@ public class PlayerControllerEditor : Editor
         {
             playerController.Possess(null);
         }
-
-        if (GUILayout.Button("Test"))
-        {
-            Debug.Log(PrefabManager.Instance.test);
-        }
     }
-
 }

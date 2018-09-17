@@ -4,7 +4,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using System;
 
-public class SaveManager : ScriptableObject
+public class SaveManager
 {
     public static void SavePlayerInfo()
     {

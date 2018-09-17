@@ -3,17 +3,20 @@ using System.Collections;
 
 public class CollisionAvoidance : ShipComponent
 {
-    public float rayCastOffset;
-    public float detectionDistance;
+    public float rayCastOffset = 5;
+    public float detectionDistance = 20;
 
-    public bool obstacleDetected;
     public float obstacleDetectedTime;
+    //public float turnSpeed = 5;
 
     public Engine engine;
 
     private void Update()
     {
-        obstacleDetected = CheckForObstacle();
+        if (engine == null)
+            return;
+
+        var obstacleDetected = CheckForObstacle();
 
         if (obstacleDetected)
             obstacleDetectedTime += Time.deltaTime;
@@ -51,13 +54,13 @@ public class CollisionAvoidance : ShipComponent
 
         else if (Physics.Raycast(up, transform.forward, out hit, detectionDistance))
         {
-            //engine.Rotate(0, engine.turnSpeed);
+            engine.Pitch(-engine.turnSpeed);
             return true;
         }
 
         else if (Physics.Raycast(down, transform.forward, out hit, detectionDistance))
         {
-            //engine.Rotate(0, -1);
+            engine.Pitch(engine.turnSpeed);
             return true;
         }
 

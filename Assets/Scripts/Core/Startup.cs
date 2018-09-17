@@ -10,11 +10,18 @@ public class Startup : ScriptableObject
     {
         Debug.Log("After scene is loaded and game is running");
         SceneManager.sceneLoaded += HandleNewScene;
+
+        if (SceneManager.GetActiveScene().name != "SCN_MainMenu")
+        {
+            DebugSettings.Instance.SpawnPrefabs();
+        }
     }
 
     private static void HandleNewScene(Scene arg0, LoadSceneMode arg1)
     {
-        SpawnPlayerController();
+        if (arg0.name == "SCN_MainMenu") return;
+
+        DebugSettings.Instance.SpawnPrefabs();
     }
 
     public static PlayerController SpawnPlayerController()

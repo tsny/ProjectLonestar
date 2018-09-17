@@ -97,12 +97,6 @@ public class FLTerminal : Terminal
         FindObjectOfType<PlayerController>().controlledShip.cruiseEngine.cruisePower = args[0].Int;
     }
 
-    [RegisterCommand(Help = "Test", MinArgCount = 0, MaxArgCount = 0)]
-    static void TestSingleton(CommandArg[] args)
-    {
-        Debug.Log(PrefabManager.Instance.test);
-    }
-
     private static bool PlayerControllerExistsInScene()
     {
         var pc = FindObjectOfType<PlayerController>();

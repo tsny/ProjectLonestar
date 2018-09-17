@@ -32,27 +32,13 @@ public class WeaponPanelButton : MonoBehaviour
 
     private void SetName()
     {
-        //if (weaponHardpoint.active)
-        //{
-        //    text.text = weaponHardpoint.CurrentEquipment.name + " - Active";
-        //}
+        var activeString = (weaponHardpoint.active) ? " - Active" : " - Inactive";
 
-        //else
-        //{
-        //    text.text = weaponHardpoint.CurrentEquipment.name + " - Inactive";
-        //}
+        text.text = weaponHardpoint.CurrentEquipment.name + activeString;
     }
 
     private void SetColor()
     {
-        if (weaponHardpoint.active)
-        {
-            image.color = enabledColor;
-        }
-
-        else
-        {
-            image.color = disabledColor;
-        }
+        image.color = (weaponHardpoint.active) ? enabledColor : disabledColor;
     }
 }

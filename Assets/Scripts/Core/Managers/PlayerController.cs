@@ -46,34 +46,26 @@ public class PlayerController : MonoBehaviour
     private void Awake()
     {
         name = "PLAYER CONTROLLER";
-
-        SpawnPlayer();
-        SpawnHUD();
     }
 
-    private void Start()
+    public Ship SpawnPlayer(GameObject shipPrefab, Loadout loadout)
     {
-        Possess(controlledShip);
+        controlledShip = ShipSpawner.SpawnShip(shipPrefab, loadout, Vector3.zero);
+        return controlledShip;
     }
 
-    private void SpawnPlayer()
-    {
-        controlledShip = ShipSpawner.SpawnShip(PrefabManager.Instance.shipPrefab, PrefabManager.Instance.defaultLoadout, Vector3.zero);
-    }
-
-    private void SpawnHUD()
+    public HUDManager SpawnHUD()
     {
         var hud = FindObjectOfType<HUDManager>();
 
         if (hud == null)
         {
-            Instantiate(PrefabManager.Instance.HUDPrefab).GetComponent<HUDManager>().InitializeHUD(this);
+            hud = Instantiate(DebugSettings.Instance.HUDPrefab).GetComponent<HUDManager>();
         }
 
-        else
-        {
-            hud.InitializeHUD(this);
-        }
+        hud.InitializeHUD(this);
+
+        return hud;
     }
 
     public void Possess(Ship newShip)
@@ -100,13 +92,13 @@ public class PlayerController : MonoBehaviour
         enabled = true;
     }
 
-    private void Eject()
+    public void Eject()
     {
         controlledShip.ChangePossession(this, false);
         controlledShip = null;
         MouseState = MouseState.Off;
         enabled = false;
-        Instantiate(GameManager.instance.prefabManager.flycamPrefab);
+        Instantiate(DebugSettings.Instance.flycamPrefab);
     }
 
     private void Update()
@@ -319,7 +311,7 @@ public class PlayerController : MonoBehaviour
     public void SpawnFlyCam(Vector3 pos)
     {
         RemoveFlycamFromScene();
-        var flyCam = Instantiate(PrefabManager.Instance.flycamPrefab);
+        var flyCam = Instantiate(DebugSettings.Instance.flycamPrefab);
         flyCam.transform.position = pos + new Vector3(0, 10, 0);
     }
 

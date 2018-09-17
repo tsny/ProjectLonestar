@@ -5,12 +5,6 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    [Space(5)]
-    public static GameManager instance;
-
-    public PlayerController playerController;
-    public PrefabManager prefabManager;
-
     public static bool Paused
     {
         get
@@ -25,15 +19,8 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public delegate void EventHandler(bool paused);
-    public delegate void ManagerSpawnedEventHandler(GameManager sender, PlayerController playerController);
     public static event EventHandler GamePaused;
-    public event ManagerSpawnedEventHandler PlayerControllerSpawned;
-
-    private void Awake()
-    {
-        name = "GAMEMANAGER";
-    }
+    public delegate void EventHandler(bool paused);
 
     public static void TogglePause()
     {
