@@ -7,11 +7,13 @@ public class ScannerUI : ShipUIElement
     public GameObject scannerButtonPrefab;
     public VerticalLayoutGroup buttonVLG;
 
-    private ScannerHardpoint pairedScanner;
+    private ScannerHardpoint scannerHardpoint;
 
     public override void SetShip(Ship ship)
     {
         base.SetShip(ship);
+
+        scannerHardpoint = ship.hardpointSystem.scannerHardpoint;
     }
 
     private void HandleScannerEntryChanged(WorldObject entry, bool added)
@@ -26,7 +28,7 @@ public class ScannerUI : ShipUIElement
             Destroy(button.gameObject);
         }
 
-        foreach (var obj in pairedScanner.detectedObjects)
+        foreach (var obj in scannerHardpoint.detectedObjects)
         {
             var newButton = Instantiate(scannerButtonPrefab, buttonVLG.transform).GetComponent<ScannerPanelButton>();
             newButton.Setup(obj, ship);

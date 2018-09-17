@@ -1177,7 +1177,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &1808852193537344
 GameObject:
   m_ObjectHideFlags: 1
@@ -1428,7 +1428,6 @@ GameObject:
   - component: {fileID: 224289365945265612}
   - component: {fileID: 222442948326908252}
   - component: {fileID: 114167654543597842}
-  - component: {fileID: 114659456359532414}
   - component: {fileID: 114421295837048162}
   m_Layer: 5
   m_Name: TestBuildInformation
@@ -3265,7 +3264,6 @@ MonoBehaviour:
   mouseFlightText: {fileID: 114083165457537620}
   cruiseText: {fileID: 114845872657693518}
   uiElements: []
-  mouseState: 0
 --- !u!114 &114432988710129404
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4169,17 +4167,6 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: Fullscreen
---- !u!114 &114659456359532414
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1932387536186026}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1bfdd6c58ce2ca143adb7c1ce68b709a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &114667182750493542
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -7276,7 +7263,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -0.000091552734, y: -0.000030517578}
+  m_AnchoredPosition: {x: -0.000091552734, y: 0.000030517578}
   m_SizeDelta: {x: 0, y: -267.68}
   m_Pivot: {x: 0, y: 1}
 --- !u!224 &224869458701754084

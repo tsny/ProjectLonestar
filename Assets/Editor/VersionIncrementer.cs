@@ -21,7 +21,7 @@ public class VersionIncrementor : IPreprocessBuildWithReport
     [MenuItem("Build/Build Current")]
     public static void BuildCurrent()
     {
-        IncreaseBuild();
+        IncreaseRevision();
         BuildPlayerWindow.ShowBuildPlayerWindow();
     }
 
@@ -31,7 +31,9 @@ public class VersionIncrementor : IPreprocessBuildWithReport
 
         int MajorVersion = int.Parse(lines[0]) + majorIncr;
         int MinorVersion = int.Parse(lines[1]) + minorIncr;
+
         int Build = 0;
+
         if (lines.Length > 2)
         {
             Build = int.Parse(lines[2]) + buildIncr;
@@ -63,15 +65,15 @@ public class VersionIncrementor : IPreprocessBuildWithReport
         IncrementVersion(1, 0, 0);
     }
 
-    [MenuItem("Build/Increase Current Build Version")]
-    private static void IncreaseBuild()
+    [MenuItem("Build/Increase Revision")]
+    private static void IncreaseRevision()
     {
         IncrementVersion(0, 0, 1);
     }
 
     public void OnPreprocessBuild(BuildReport report)
     {
-        IncreaseBuild();
+        IncreaseRevision();
     }
 }
 

@@ -16,17 +16,20 @@ public class SaveManager : ScriptableObject
         file.Close();
     }
 
-    public static void LoadPlayerInfo()
+    public static SaveInfo LoadPlayerInfo()
     {
         var path = Application.persistentDataPath + "/playerSave.dat";
 
-        if (!File.Exists(path)) return;
+        if (!File.Exists(path))
+            return null;
 
         BinaryFormatter bf = new BinaryFormatter();
         FileStream file = File.Open(Application.persistentDataPath + "/playerSave.dat", FileMode.Open);
 
         SaveInfo playerInfo = (SaveInfo) bf.Deserialize(file);
         file.Close();
+
+        return playerInfo;
     }
 
     public static void DeleteSave()
