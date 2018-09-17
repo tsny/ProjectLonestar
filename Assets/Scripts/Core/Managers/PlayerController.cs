@@ -60,7 +60,7 @@ public class PlayerController : MonoBehaviour
 
         if (hud == null)
         {
-            hud = Instantiate(DebugSettings.Instance.HUDPrefab).GetComponent<HUDManager>();
+            hud = Instantiate(GameSettings.Instance.HUDPrefab).GetComponent<HUDManager>();
         }
 
         hud.InitializeHUD(this);
@@ -98,7 +98,7 @@ public class PlayerController : MonoBehaviour
         controlledShip = null;
         MouseState = MouseState.Off;
         enabled = false;
-        Instantiate(DebugSettings.Instance.flycamPrefab);
+        Instantiate(GameSettings.Instance.flycamPrefab);
     }
 
     private void Update()
@@ -311,7 +311,7 @@ public class PlayerController : MonoBehaviour
     public void SpawnFlyCam(Vector3 pos)
     {
         RemoveFlycamFromScene();
-        var flyCam = Instantiate(DebugSettings.Instance.flycamPrefab);
+        var flyCam = Instantiate(GameSettings.Instance.flycamPrefab);
         flyCam.transform.position = pos + new Vector3(0, 10, 0);
     }
 

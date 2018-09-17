@@ -1,21 +1,26 @@
 ﻿using UnityEngine;
 using UnityEditor;
 
-[CreateAssetMenu(fileName = "PrefabManager")]
-public class DebugSettings : SingletonScriptableObject<DebugSettings>
+[CreateAssetMenu(menuName = "Settings/GameSettings")]
+public class GameSettings : SingletonScriptableObject<GameSettings>
 {
-    public GameObject HUDPrefab;
-    public GameObject terminalPrefab;
     public GameObject shipPrefab;
     public GameObject flycamPrefab;
+    public GameObject HUDPrefab;
+
     public Loadout defaultLoadout;
 
-    public void FirstMethodRun()
+    public GameObject[] prefabsToSpawnAtLoad;
+
+    public void SpawnLoadPrefabs()
     {
-        Instantiate(terminalPrefab);
+        foreach (var prefab in prefabsToSpawnAtLoad)
+        {
+            Instantiate(prefab);
+        }
     }
 
-    public void SpawnPrefabs()
+    public void SpawnNewScenePrefabs()
     {
         var playerController = FindObjectOfType<PlayerController>();
 
@@ -29,7 +34,5 @@ public class DebugSettings : SingletonScriptableObject<DebugSettings>
         playerController.Possess(playerShip);
 
         var hud = playerController.SpawnHUD();
-
-        hud.gameObject.SetActive(true);
     }
 }

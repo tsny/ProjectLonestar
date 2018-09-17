@@ -28,7 +28,7 @@ public class ShipSpawner : ScriptableObject
 
     public static Ship SpawnDefaultShip()
     {
-        var newShip = Instantiate(DebugSettings.Instance.shipPrefab);
+        var newShip = Instantiate(GameSettings.Instance.shipPrefab);
         return newShip.GetComponent<Ship>();
     }
 }

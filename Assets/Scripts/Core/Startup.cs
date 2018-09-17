@@ -9,11 +9,10 @@ public class Startup : ScriptableObject
     static void OnRuntimeMethodLoad()
     {
         SceneManager.sceneLoaded += HandleNewScene;
-        DebugSettings.Instance.FirstMethodRun();
 
         if (SceneManager.GetActiveScene().name != "SCN_MainMenu")
         {
-            DebugSettings.Instance.SpawnPrefabs();
+            GameSettings.Instance.SpawnNewScenePrefabs();
         }
     }
 
@@ -24,7 +23,7 @@ public class Startup : ScriptableObject
             return;
         }
 
-        DebugSettings.Instance.SpawnPrefabs();
+        GameSettings.Instance.SpawnNewScenePrefabs();
     }
 
     public static PlayerController SpawnPlayerController()

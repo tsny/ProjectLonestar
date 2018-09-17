@@ -71,7 +71,7 @@ public class FLTerminal : Terminal
     [RegisterCommand(Name = "SpawnNew", Help = "Spawns a new ship and possesses it", MinArgCount = 0, MaxArgCount = 0)]
     static void SpawnNewPlayerShip(CommandArg[] args)
     {
-        DebugSettings.Instance.SpawnPrefabs();
+        //GameSettings.Instance.SpawnPrefabs();
     }
 
     [RegisterCommand(Help = "Restarts the current scene", MinArgCount = 0, MaxArgCount = 0)]
