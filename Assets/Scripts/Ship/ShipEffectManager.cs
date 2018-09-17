@@ -9,40 +9,49 @@ public class ShipEffectManager : ShipComponent
     public GameObject fullCruiseEffect;
     public GameObject dustEffect;
 
-    private ParticleSystem test;
+    public float currentScale = 1;
 
     private Vector3 originalScale;
 
-    protected override void Awake()
+    private void Awake()
     {
-        base.Awake();
-        owningShip.GetComponent<ShipEngine>().CruiseChanged += HandleCruiseChanged;
+        enabled = false;
     }
 
-    private void HandleCruiseChanged(ShipEngine sender)
+    public override void InitShipComponent(Ship sender, ShipStats stats)
     {
-        switch (sender.engineState)
+        base.InitShipComponent(sender, stats);
+        sender.cruiseEngine.CruiseStateChanged += HandleCruiseChanged;
+        sender.Possession += HandleOwnerPossession;
+
+        chargeCruiseEffect.SetActive(false);
+        fullCruiseEffect.SetActive(false);
+    }
+
+    private void HandleOwnerPossession(PlayerController pc, Ship sender, bool possessed)
+    {
+        dustEffect.SetActive(possessed);
+    }
+
+    private void HandleCruiseChanged(CruiseEngine sender)
+    {
+        switch (sender.State)
         {
-            case EngineState.Normal:
+            case CruiseEngine.CruiseState.Off:
                 chargeCruiseEffect.SetActive(false);
                 fullCruiseEffect.SetActive(false);
                 break;
 
-            case EngineState.Charging:
+            case CruiseEngine.CruiseState.Charging:
                 chargeCruiseEffect.SetActive(true);
                 break;
 
-            case EngineState.Cruise:
+            case CruiseEngine.CruiseState.On:
                 chargeCruiseEffect.SetActive(false);
                 fullCruiseEffect.SetActive(true);
                 break;
 
-            case EngineState.Drifting:
-                chargeCruiseEffect.SetActive(false);
-                fullCruiseEffect.SetActive(false);
-                break;
-
-            case EngineState.Reversing:
+            case CruiseEngine.CruiseState.Disrupted:
                 chargeCruiseEffect.SetActive(false);
                 fullCruiseEffect.SetActive(false);
                 break;
@@ -60,19 +69,11 @@ public class ShipEffectManager : ShipComponent
         fullCruiseEffect.SetActive(false);
     }
 
-    protected override void HandlePossession(Ship sender, bool possessed)
-    {
-        base.HandlePossession(sender, possessed);
-
-        dustEffect.SetActive(possessed);
-    }
-
     private void Update()
     {
-        //var speedFactor = shipPhysics.speed / shipPhysics.maxSpeed;
         foreach (var effect in engineEffects)
         {
-            effect.transform.localScale = originalScale * owningShip.shipEngine.throttle;
+            effect.transform.localScale = originalScale * owningShip.engine.Speed;
         }
     }
 }

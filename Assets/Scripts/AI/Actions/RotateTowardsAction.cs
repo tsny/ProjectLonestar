@@ -16,12 +16,12 @@ public class RotateTowardsAction : FLAction
     {
         if (controller.targetShip != null)
         {
-            controller.ship.shipEngine.RotateTowardsTarget(controller.targetShip.transform);
+            //controller.ship.shipEngine.RotateTowardsTarget(controller.targetShip.transform);
         }
 
         else if (controller.targetLoc != null)
         {
-            controller.ship.shipEngine.RotateTowardsTarget(controller.targetLoc);
+            //controller.ship.shipEngine.RotateTowardsTarget(controller.targetLoc);
         }
     }
 }

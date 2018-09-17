@@ -9,28 +9,19 @@ public class WeaponHardpoint : Hardpoint
     public int rank;
     public bool active;
 
-    private Weapon weapon;
-    public AudioSource audioSource;
-
-    public bool CanFire
+    public Weapon Weapon
     {
         get
         {
-            return hardpointSystem.energy > weapon.energyDraw && !OnCooldown;
+            return CurrentEquipment as Weapon;
         }
     }
 
-    public WeaponHardpoint()
-    {
-        associatedEquipmentType = typeof(Weapon);
-    }
+    public AudioSource audioSource;
 
-    public override void Mount(Equipment newEquipment)
+    protected override bool EquipmentMatchesHardpoint(Equipment equipment)
     {
-        base.Mount(newEquipment);
-
-        weapon = newEquipment as Weapon;
-        active = true;
+        return equipment is Weapon;
     }
 
     public void Toggle()
@@ -38,17 +29,22 @@ public class WeaponHardpoint : Hardpoint
         active = !active;
     }
 
-    public void Fire()
+    /// <summary>
+    /// Fires the equipped weapon
+    /// </summary>
+    /// <returns>
+    /// A bool respresenting if the hardpoint fired 
+    /// </returns>
+    public bool Fire()
     {
-        if (!owningShip.CanFire || weapon == null || !CanFire) return;
+        if (Weapon == null || OnCooldown) return false;
 
-        hardpointSystem.energy -= weapon.energyDraw;
+        GameObject newProjectile = Instantiate(Weapon.projectile, transform.position, Quaternion.identity);
+        newProjectile.GetComponent<ProjectileController>().Initialize(owningShip, Weapon);
 
-        GameObject newProjectile = Instantiate(weapon.projectile, transform.position, Quaternion.identity);
-        newProjectile.GetComponent<ProjectileController>().Initialize(owningShip, weapon);
-
-        audioSource.PlayOneShot(weapon.clip);
+        audioSource.PlayOneShot(Weapon.clip);
 
         StartCooldown();
+        return true;
     }
 }

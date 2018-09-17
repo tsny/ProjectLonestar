@@ -5,24 +5,6 @@ public class ShipSpawner : MonoBehaviour
 {
     public static ShipSpawner instance;
 
-    public GameObject defaultShip;
-
-    private void Awake()
-    {
-        SingletonInit();
-    }
-
-    private void SingletonInit()
-    {
-        if (instance == null)
-        {
-            DontDestroyOnLoad(gameObject);
-            instance = this;
-        }
-
-        else if (instance != this) Destroy(gameObject);
-    }
-
     public static Loadout CreateDummyLoadout()
     {
         Loadout loadout = ScriptableObject.CreateInstance<Loadout>();
@@ -32,31 +14,18 @@ public class ShipSpawner : MonoBehaviour
         return loadout;
     }
 
-    public Ship SpawnDefaultShip()
+    public static Ship SpawnShip(GameObject ship, ShipStats stats, Loadout loadout, Vector3 spawnPosition)
     {
-        return Instantiate(defaultShip).GetComponent<Ship>();
+        var shipRef = Instantiate(ship, spawnPosition, Quaternion.identity).GetComponent<Ship>();
+        shipRef.inventory.Initialize(loadout);
+        return shipRef;
     }
 
-    public Ship SpawnPlayerShip(GameObject shipPrefab, Loadout loadout, Vector3 spawnPosition)
+    public static Ship SpawnShip(GameObject ship, Loadout loadout, Vector3 spawnPosition)
     {
-        Ship playerShip = SpawnShip(shipPrefab, loadout, spawnPosition);
-        return playerShip;
-    }
-
-    public Ship SpawnShip(GameObject shipPrefab, Loadout loadout, Vector3 spawnPosition)
-    {
-        Ship ship = Instantiate(shipPrefab, spawnPosition, Quaternion.identity).GetComponent<Ship>();
-        Inventory inventory = ship.GetComponentInChildren<Inventory>();
-
-        if (loadout == null)
-        {
-            print("Loadout was null, giving ship defualt loadout...");
-            inventory.Initialize(CreateDummyLoadout());
-            return ship;
-        }
-
-        inventory.Initialize(loadout);
-        return ship;
+        var shipRef = Instantiate(ship, spawnPosition, Quaternion.identity).GetComponent<Ship>();
+        shipRef.inventory.Initialize(loadout);
+        return shipRef;
     }
 }
 

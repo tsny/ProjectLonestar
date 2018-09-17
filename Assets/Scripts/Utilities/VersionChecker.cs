@@ -9,6 +9,8 @@ public class VersionChecker : MonoBehaviour
     public delegate void EventHandler(VersionChecker sender);
     public event EventHandler UpdateFound;
 
+    public bool VersionChecked { get; private set; }
+
     public string LiveVersion { get; set; }
     public string LocalVersion { get; set; }
 
@@ -22,10 +24,19 @@ public class VersionChecker : MonoBehaviour
 
     private void Start()
     {
-        StartCoroutine(VersionCheck());
+        StartCoroutine(GetVersions());
     }
 
-    private IEnumerator VersionCheck()
+    private void OnVersionsChecked(string liveVersion, string localVersion)
+    {
+        LiveVersion = liveVersion;
+        LocalVersion = localVersion;
+        print("Note: Local version " + (LocalVersionIsLive ? "is live" : "isn't live"));
+        VersionChecked = true;
+        if (UpdateFound != null) UpdateFound(this);
+    }
+
+    private IEnumerator GetVersions()
     {
         var url = "https://itch.io/api/1/x/wharf/latest?target=tsny/project-lonestar&channel_name=win";
 
@@ -42,11 +53,7 @@ public class VersionChecker : MonoBehaviour
             else
             {
                 var json = JsonUtility.FromJson<ButlerInfo>(www.downloadHandler.text);
-                LiveVersion = json.latest;
-                LocalVersion = Application.version;
-
-                if (UpdateFound != null) UpdateFound(this);
-                print("Note: Local version " + (LocalVersionIsLive ? "is live" : "isn't live"));
+                OnVersionsChecked(json.latest, Application.version);
             }
         }
     }

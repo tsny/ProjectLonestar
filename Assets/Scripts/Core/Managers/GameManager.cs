@@ -1,39 +1,17 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System;
 using UnityEngine;
-using System.Linq;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.IO;
-using System;
+using System.Collections;
 using UnityEngine.SceneManagement;
-using UnityEngine.Networking;
-using CommandTerminal;
 
 public class GameManager : MonoBehaviour
 {
     [Space(5)]
     public static GameManager instance;
+
     public PlayerController playerController;
+    public PrefabManager prefabManager;
 
-    [Header("Ship Details")]
-    public GameObject shipPrefab;
-    public Vector3 spawnPosition;
-    public Loadout playerLoadout;
-    public Ship playerShip;
-
-    [Space(5)]
-
-    public bool spawnPlayerAsShip;
-
-    [Space(5)]
-    public GameObject shipHUDPrefab;
-    public GameObject flycamPrefab;
-
-    private GameObject flyCamHUD;
-    private GameObject shipHUD;
-
-    private GameObject currentHUD;
-    public bool Paused
+    public static bool Paused
     {
         get
         {
@@ -42,53 +20,47 @@ public class GameManager : MonoBehaviour
 
         set
         {
-            playerController.inputAllowed = !value;
+            if (GamePaused != null) GamePaused(value);
             Time.timeScale = value ? 0 : 1;
         }
     }
 
+    public delegate void EventHandler(bool paused);
+    public delegate void ManagerSpawnedEventHandler(GameManager sender, PlayerController playerController);
+    public static event EventHandler GamePaused;
+    public event ManagerSpawnedEventHandler PlayerControllerSpawned;
+
     private void Awake()
     {
+        name = "GAMEMANAGER";
         SingletonInit();
     }
 
     private void HandleNewScene(Scene arg0, LoadSceneMode arg1)
     {
-        CreatePlayerController();
+        if (arg0.name == "SCN_MainMenu") return;
 
-        if (spawnPlayerAsShip) SpawnPlayer();
-        else SpawnFlyCam(Vector3.zero);
-
-        new GameObject().AddComponent<FLTerminal>();
+        SpawnPlayerController();
     }
 
-    public void SpawnPlayer()
+    public void SpawnPlayerController()
     {
-        playerShip = ShipSpawner.instance.SpawnPlayerShip(shipPrefab, playerLoadout, spawnPosition);
-        playerController.Possess(playerShip);
-        RemoveFlycamFromScene();
-        CreateHUD();
+        playerController = FindObjectOfType<PlayerController>();
+
+        if (playerController != null)
+        {
+            playerController.Possession -= HandlePossession;
+        }
+
+        playerController = new GameObject().AddComponent<PlayerController>();
+        playerController.Possession += HandlePossession;
+
+        if (PlayerControllerSpawned != null) PlayerControllerSpawned(this, playerController);
     }
 
-    // If unpossessing without possessing new ship: spawn a flyCam
-    // Otherwise: Destroy the current flyCam
     private void HandlePossession(PossessionEventArgs args)
     {
-        if (args.newShip == null) SpawnFlyCam(args.oldShip.transform.position);
-    }
 
-    // Can only be one fly cam in the scene
-    public void SpawnFlyCam(Vector3 pos)
-    {
-        RemoveFlycamFromScene();
-        var flyCam = Instantiate(flycamPrefab);
-        flyCam.transform.position = pos + new Vector3(0, 10, 0);
-    }
-
-    public void RemoveFlycamFromScene()
-    {
-        var flyCam = FindObjectOfType<Flycam>();
-        if (flyCam != null) Destroy(flyCam.gameObject);
     }
 
     private void SingletonInit()
@@ -98,93 +70,23 @@ public class GameManager : MonoBehaviour
             DontDestroyOnLoad(gameObject);
             instance = this;
 
-            // Only do these things once
+            // Only do these things once, when the game loads
+
+            DontDestroyOnLoad(Instantiate(prefabManager.terminalPrefab));
             SceneManager.sceneLoaded += HandleNewScene;
         }
 
         else if (instance != this) Destroy(gameObject);
     }
 
-    private PlayerController CreatePlayerController()
-    {
-        playerController = FindObjectOfType<PlayerController>();
-
-        if (playerController == null)
-        {
-            playerController = new GameObject().AddComponent<PlayerController>();
-        }
-
-        playerController.Possession += HandlePossession;
-
-        return playerController;
-    }
-
-    private HUDManager CreateHUD()
-    {
-        var hudManager = FindObjectOfType<HUDManager>();
-
-        if (hudManager == null)
-        {
-            hudManager = Instantiate(shipHUDPrefab).GetComponent<HUDManager>();
-        }
-
-        return hudManager;
-    }
-
-    private void OnApplicationQuit()
-    {
-        SavePlayerInfo();
-    }
-
-    public void TogglePause()
+    public static void TogglePause()
     {
         Paused = !Paused;
     }
 
-    public void SetPause(bool pause)
+    public static void SetPause(bool pause)
     {
         Paused = pause;
     }
-
-    public void SavePlayerInfo()
-    {
-        BinaryFormatter bf = new BinaryFormatter();
-        FileStream file = File.Open(Application.persistentDataPath + "/playerSave.dat", FileMode.Create);
-        PlayerInfo playerInfo = new PlayerInfo();
-
-        bf.Serialize(file, playerInfo);
-        file.Close();
-    }
-
-    public void LoadPlayerInfo()
-    {
-        var path = Application.persistentDataPath + "/playerSave.dat";
-
-        if (!File.Exists(path)) return;
-
-        BinaryFormatter bf = new BinaryFormatter();
-        FileStream file = File.Open(Application.persistentDataPath + "/playerSave.dat", FileMode.Open);
-
-        PlayerInfo playerInfo = (PlayerInfo) bf.Deserialize(file);
-        file.Close();
-
-        print("Loaded Save 1, ID: " + playerInfo.saveTime);
-    }
-
-    public void DeleteSave()
-    {
-        var playerSavePath = Application.persistentDataPath + "/playerSave.dat";
-        if (File.Exists(playerSavePath)) File.Delete(playerSavePath);
-    }
 }
 
-[Serializable]
-public class PlayerInfo
-{
-    public string saveTime;
-
-    public PlayerInfo()
-    {
-        saveTime = DateTime.Now.ToShortTimeString();
-    }
-}

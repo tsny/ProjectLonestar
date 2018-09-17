@@ -11,6 +11,6 @@ public class GetTargetPointAction : FLAction
 
     private void GetTargetPoint(StateController controller)
     {
-        controller.ship.AimPosition = controller.targetShip.transform.position;
+        controller.ship.aimPosition = controller.targetShip.transform.position;
     }
 }

@@ -21,7 +21,7 @@ public class ShieldHardpointEditor : Editor
                 shieldHardpoint.Demount();
             }
 
-            shieldHardpoint.CurrentEquipment = newShield;
+            shieldHardpoint.TryMount(newShield);
         }
 
         if (shieldHardpoint.IsMounted)

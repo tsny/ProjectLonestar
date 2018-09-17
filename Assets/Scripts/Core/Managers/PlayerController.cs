@@ -12,25 +12,30 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    public InputManager inputManager;
-
     [Header("--- Input ---")]
     public bool canPause = true;
     public bool inputAllowed = true;
 
-    public MouseState mouseState;
-    public float mouseX;
-    public float mouseY;
-    public float distanceFromCenter;
+    private MouseState mouseState;
+    public MouseState MouseState
+    {
+        get
+        {
+            return mouseState;
+        }
+
+        set
+        {
+            mouseState = value;
+            if (MouseStateChanged != null) MouseStateChanged(MouseState);
+        }
+    }
 
     // The amount of time that the controller waits until it 
     // determines the player is trying to switch to manual mouse flight
     public float mouseHoldDelay = .1f;
-
-    private ShipCamera shipCamera;
-    private ShipEngine shipMovement;
-
     public Ship controlledShip;
+    public GameObject hudPrefab;
 
     public delegate void PossessionEventHandler(PossessionEventArgs args);
     public event PossessionEventHandler Possession;
@@ -40,226 +45,252 @@ public class PlayerController : MonoBehaviour
 
     private void Awake()
     {
-        enabled = false;
         name = "PLAYER CONTROLLER";
-        FindInputManager();
+
+        SpawnPlayer();
+        SpawnHUD();
+    }
+
+    private void Start()
+    {
+        Possess(controlledShip);
+    }
+
+    private void SpawnPlayer()
+    {
+        controlledShip = ShipSpawner.SpawnShip(GameManager.instance.prefabManager.shipPrefab, GameManager.instance.prefabManager.defaultLoadout, Vector3.zero);
+    }
+
+    private void SpawnHUD()
+    {
+        var hud = FindObjectOfType<HUDManager>();
+
+        if (hud == null)
+        {
+            Instantiate(GameManager.instance.prefabManager.HUDPrefab).GetComponent<HUDManager>().InitializeHUD(this);
+        }
+
+        else
+        {
+            hud.InitializeHUD(this);
+        }
     }
 
     public void Possess(Ship newShip)
     {
-        if (controlledShip != null) UnPossess();
+        if (newShip == null)
+        {
+            Eject();
+            return;
+        }
 
         var oldShip = controlledShip;
+
+        if (oldShip != null)
+        {
+            oldShip.ChangePossession(this, false);
+        }
+
         controlledShip = newShip;
 
-        // TODO: Moves these responsibilities somewhere else
-        shipCamera = controlledShip.GetComponentInChildren<ShipCamera>(true);
-        shipMovement = controlledShip.GetComponent<ShipEngine>();
+        newShip.ChangePossession(this, true);
 
-        shipCamera.enabled = true;
-        shipCamera.pController = this;
+        if (Possession != null) Possession(new PossessionEventArgs(newShip, oldShip, this));
 
         enabled = true;
-
-        newShip.Possessed(this);
-        if (Possession != null) Possession(new PossessionEventArgs(newShip, oldShip, this));
     }
 
-    public void UnPossess()
+    private void Eject()
     {
-        if (controlledShip == null) return;
-
-        var oldShip = controlledShip;
-        oldShip.UnPossessed(this);
-
-        shipCamera.enabled = false;
-        shipCamera = null;
+        controlledShip.ChangePossession(this, false);
         controlledShip = null;
-
-        mouseState = MouseState.Off;
+        MouseState = MouseState.Off;
         enabled = false;
-
-        if (Possession != null) Possession(new PossessionEventArgs(this, oldShip));
-    }
-
-    private void FixedUpdate()
-    {
-        switch (mouseState)
-        {
-            case MouseState.Off:
-                shipMovement.LerpYawToNeutral();
-                break;
-
-            case MouseState.Toggled:
-            case MouseState.Held:
-                shipMovement.Pitch(mouseY);
-                shipMovement.Yaw(mouseX);
-                break;
-        }
+        Instantiate(GameManager.instance.prefabManager.flycamPrefab);
     }
 
     private void Update()
     {
-        SetMousePosition();
+        GetMousePosition();
 
         if(inputAllowed)
         {
             #region movement
-            if(Input.GetKey(InputManager.instance.ThrottleUpKey) || Input.GetAxis("Mouse ScrollWheel") > 0f)
+            if(Input.GetKey(InputManager.ThrottleUpKey) || Input.GetAxis("Mouse ScrollWheel") > 0f)
             {
-                shipMovement.ThrottleUp();
+                controlledShip.engine.ThrottleUp();
             }
 
-            if(Input.GetKey(InputManager.instance.ThrottleDownKey) || Input.GetAxis("Mouse ScrollWheel") < 0f)
+            if(Input.GetKey(InputManager.ThrottleDownKey) || Input.GetAxis("Mouse ScrollWheel") < 0f)
             {
-                shipMovement.ThrottleDown();
+                controlledShip.engine.ThrottleDown();
             }
 
-            if(Input.GetKey(InputManager.instance.StrafeLeftKey))
+            if(Input.GetKey(InputManager.StrafeLeftKey))
             {
-                shipMovement.ChangeStrafe(-1);
+                controlledShip.engine.Strafe = -1; 
             }
 
-            if(Input.GetKey(InputManager.instance.StrafeRightKey))
+            if(Input.GetKey(InputManager.StrafeRightKey))
             {
-                shipMovement.ChangeStrafe(1);
+                controlledShip.engine.Strafe = 1; 
             }
 
             // If neither strafe key is pressed, reset the ship's strafing
-            if(!Input.GetKey(InputManager.instance.StrafeRightKey) && !Input.GetKey(InputManager.instance.StrafeLeftKey))
+            if(!Input.GetKey(InputManager.StrafeRightKey) && !Input.GetKey(InputManager.StrafeLeftKey))
             {
-                shipMovement.ChangeStrafe(0);
+                controlledShip.engine.Strafe = 0; 
             }         
 
-            if(Input.GetKeyDown(InputManager.instance.ToggleMouseFlightKey))
+            if(Input.GetKeyDown(InputManager.ToggleMouseFlightKey))
             {
                 ToggleMouseFlight();
             }
 
-            if(Input.GetKeyDown(InputManager.instance.AfterburnerKey))
+            if(Input.GetKeyDown(InputManager.AfterburnerKey))
             {
                 controlledShip.hardpointSystem.ToggleAfterburner(true);
             }
             
-            else if(Input.GetKeyUp(InputManager.instance.AfterburnerKey))
+            else if(Input.GetKeyUp(InputManager.AfterburnerKey))
             {
                 controlledShip.hardpointSystem.ToggleAfterburner(false);
             }
 
-            if(Input.GetKeyDown(InputManager.instance.ManualMouseFlightKey))
+            if(Input.GetKeyDown(InputManager.ManualMouseFlightKey))
             {
-                if(mouseState == MouseState.Off) StartCoroutine("ManualMouseFlightCoroutine");
+                if(MouseState == MouseState.Off) StartCoroutine("ManualMouseFlightCoroutine");
             }
 
-            if(Input.GetKeyUp(InputManager.instance.ManualMouseFlightKey))
+            if(Input.GetKeyUp(InputManager.ManualMouseFlightKey))
             {
                 StopAllCoroutines();
 
-                if (mouseState == MouseState.Held) mouseState = MouseState.Off;
+                if (MouseState == MouseState.Held) MouseState = MouseState.Off;
             }
 
-            if(Input.GetKey(KeyCode.LeftShift) && Input.GetKeyDown(KeyCode.W))
+            if(Input.GetKey(KeyCode.LeftShift) && Input.GetKeyDown(InputManager.ThrottleUpKey))
             {
-                shipMovement.ToggleCruiseEngines();
+                controlledShip.cruiseEngine.ToggleCruiseEngines();
             }
 
-            if(Input.GetKeyDown(InputManager.instance.KillEnginesKey))
+            if(Input.GetKeyDown(InputManager.KillEnginesKey))
             {
-                shipMovement.Drift();
+                controlledShip.engine.ToggleDrifting();
             }
 
             #endregion
 
             #region hardpoints
-            if(Input.GetKey(InputManager.instance.Hardpoint1Key))
+            if(Input.GetKey(InputManager.Hardpoint1Key))
             {
-                controlledShip.hardpointSystem.FireHardpoint(1);
+                controlledShip.hardpointSystem.FireWeaponHardpoint(1);
             }
 
-            if(Input.GetKey(InputManager.instance.Hardpoint2Key))
+            if(Input.GetKey(InputManager.Hardpoint2Key))
             {
-                controlledShip.hardpointSystem.FireHardpoint(2);
+                controlledShip.hardpointSystem.FireWeaponHardpoint(2);
             }
 
-            if(Input.GetKey(InputManager.instance.Hardpoint3Key))
+            if(Input.GetKey(InputManager.Hardpoint3Key))
             {
-                controlledShip.hardpointSystem.FireHardpoint(3);
+                controlledShip.hardpointSystem.FireWeaponHardpoint(3);
             }
 
-            if(Input.GetKey(InputManager.instance.Hardpoint4Key))
+            if(Input.GetKey(InputManager.Hardpoint4Key))
             {
-                controlledShip.hardpointSystem.FireHardpoint(4);
+                controlledShip.hardpointSystem.FireWeaponHardpoint(4);
             }
 
-            if(Input.GetKey(InputManager.instance.Hardpoint5Key))
+            if(Input.GetKey(InputManager.Hardpoint5Key))
             {
-                controlledShip.hardpointSystem.FireHardpoint(5);
+                controlledShip.hardpointSystem.FireWeaponHardpoint(5);
             }
 
-            if(Input.GetKey(InputManager.instance.Hardpoint6Key))
+            if(Input.GetKey(InputManager.Hardpoint6Key))
             {
-                controlledShip.hardpointSystem.FireHardpoint(6);
+                controlledShip.hardpointSystem.FireWeaponHardpoint(6);
             }
 
-            if(Input.GetKey(InputManager.instance.Hardpoint7Key))
+            if(Input.GetKey(InputManager.Hardpoint7Key))
             {
-                controlledShip.hardpointSystem.FireHardpoint(7);
+                controlledShip.hardpointSystem.FireWeaponHardpoint(7);
             }
 
-            if(Input.GetKey(InputManager.instance.Hardpoint8Key))
+            if(Input.GetKey(InputManager.Hardpoint8Key))
             {
-                controlledShip.hardpointSystem.FireHardpoint(8);
+                controlledShip.hardpointSystem.FireWeaponHardpoint(8);
             }
 
-            if(Input.GetKey(InputManager.instance.Hardpoint9Key))
+            if(Input.GetKey(InputManager.Hardpoint9Key))
             {
-                controlledShip.hardpointSystem.FireHardpoint(9);
+                controlledShip.hardpointSystem.FireWeaponHardpoint(9);
             }
 
-            if(Input.GetKey(InputManager.instance.Hardpoint10Key))
+            if(Input.GetKey(InputManager.Hardpoint10Key))
             {
-                controlledShip.hardpointSystem.FireHardpoint(10);
+                controlledShip.hardpointSystem.FireWeaponHardpoint(10);
             }
-            #endregion
 
-            if(Input.GetKey(InputManager.instance.FireKey))
+            if(Input.GetKey(InputManager.FireKey))
             {
                 controlledShip.hardpointSystem.FireActiveWeapons();
             }
 
-            if (Input.GetKeyDown(InputManager.instance.LootAllKey))
+            if (Input.GetKeyDown(InputManager.LootAllKey))
             {
                 controlledShip.hardpointSystem.tractorHardpoint.TractorAllLoot();
             }
+
+            #endregion
         }
 
-        if(Input.GetKeyDown(InputManager.instance.PauseGameKey) && canPause)
+        if(Input.GetKeyDown(InputManager.PauseGameKey) && canPause)
         {
-            GameManager.instance.TogglePause();
+            GameManager.TogglePause();
+        }
+    }
+
+    private void FixedUpdate()
+    {
+        var engine = controlledShip.engine;
+
+        switch (mouseState)
+        {
+            case MouseState.Off:
+                engine.LerpYawToNeutral();
+                break;
+
+            case MouseState.Toggled:
+            case MouseState.Held:
+                engine.Pitch(GetMousePosition().y);
+                engine.Yaw(GetMousePosition().x);
+                break;
+
+            default:
+                break;
         }
     }
 
     public void ToggleMouseFlight()
     {
-        switch(mouseState)
+        switch(MouseState)
         {
             case MouseState.Off:
-                mouseState = MouseState.Toggled;
+                MouseState = MouseState.Toggled;
                 break;
 
             case MouseState.Toggled:
-                mouseState = MouseState.Off;
+                MouseState = MouseState.Off;
                 break;
 
             case MouseState.Held:
-                mouseState = MouseState.Toggled;
+                MouseState = MouseState.Toggled;
                 break;
         }
-
-        if (MouseStateChanged != null) MouseStateChanged(mouseState);
     }
 
-    public void SetMousePosition()
+    public static Vector2 GetMousePosition()
     {
         int width = Screen.width;
         int height = Screen.height;
@@ -269,30 +300,35 @@ public class PlayerController : MonoBehaviour
 
         // Shifts the origin of the screen to be in the middle instead of the bottom left corner
 
-        mouseX = mousePosition.x - center.x;
-        mouseY = mousePosition.y - center.y;
+        var mouseX = mousePosition.x - center.x;
+        var mouseY = mousePosition.y - center.y;
 
         mouseX = Mathf.Clamp(mouseX / center.x, -1, 1);
         mouseY = Mathf.Clamp(mouseY / center.y, -1, 1);
 
-        distanceFromCenter = Vector2.Distance(Vector2.zero, new Vector2(mouseX, mouseY));
+        return new Vector2(mouseX, mouseY);
     }
 
     IEnumerator ManualMouseFlightCoroutine()
     {
         yield return new WaitForSeconds(mouseHoldDelay);
 
-        mouseState = MouseState.Held;
+        MouseState = MouseState.Held;
     }
 
-    private void FindInputManager()
+    public void SpawnFlyCam(Vector3 pos)
     {
-        inputManager = FindObjectOfType<InputManager>();
+        RemoveFlycamFromScene();
+        var flyCam = Instantiate(GameManager.instance.prefabManager.flycamPrefab);
+        flyCam.transform.position = pos + new Vector3(0, 10, 0);
+    }
 
-        if (inputManager == null)
-        {
-            inputManager = new GameObject().AddComponent<InputManager>();
-        }
+    // Can only be one fly cam in the scene
+
+    public void RemoveFlycamFromScene()
+    {
+        var flyCam = FindObjectOfType<Flycam>();
+        if (flyCam != null) Destroy(flyCam.gameObject);
     }
 }
 

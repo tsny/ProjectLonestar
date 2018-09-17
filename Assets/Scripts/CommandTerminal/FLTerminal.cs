@@ -4,81 +4,109 @@ using CommandTerminal;
 
 public class FLTerminal : Terminal
 {
-    private PlayerController playerController;
-    private ShipSpawner shipSpawner;
-
-    protected override void Initialize()
+    [RegisterCommand(Help = "Checks the live version on itch.io against the local version", MinArgCount = 0, MaxArgCount = 0)]
+    static void VersionCheck(CommandArg[] args)
     {
-        base.Initialize();
-        name = "TERMINAL";
-        playerController = FindObjectOfType<PlayerController>();
-        shipSpawner = FindObjectOfType<ShipSpawner>();
+        var vc = FindObjectOfType<VersionChecker>();
 
-        if (playerController == null)
+        if (vc == null)
         {
-            print(name + " couldn't find player controller...");
-            Destroy(gameObject);
+            print("Couldn't find version checker...");
+            return;
         }
 
-        PopulateDebugConsole();
+        print("Local verison: " + vc.LocalVersion);
+        print("Live version: " + vc.LiveVersion);
     }
 
-    private void PopulateDebugConsole()
+    [RegisterCommand(Help = "Toggle GodMode on Current Ship", MinArgCount = 0, MaxArgCount = 0)]
+    static void God(CommandArg[] args)
     {
-        Shell.AddCommand("God", GodMode, 0, 0, "Current ship invincible");
-        Shell.AddCommand("SpawnDefault", SpawnDefaultShip, 0, 0, "Spawns an empty ship");
-        Shell.AddCommand("UnlimitedEnergy", UnlimitedEnergy, 0, 0, "Current ship has infinite energy");
-        Shell.AddCommand("UnlimitedAfterburner", UnlimitedAfterburner, 0, 0, "Current ship has infinite afterburner");
-        Shell.AddCommand("Unpossess", UnPossess, 0, 0, "Unpossess the current ship and go into flycam mode");
-        Shell.AddCommand("Restart", Restart, 0, 0, "Restarts the current scene");
-        Shell.AddCommand("NewPlayer", SpawnNewPlayerShip, 0, 0, "Spawns the player again");
+        if (PlayerControllerExistsInScene() == false) return;
+
+        var pc = FindObjectOfType<PlayerController>();
+
+        if (pc.controlledShip == null) return;
+
+        pc.controlledShip.invulnerable = !pc.controlledShip.invulnerable;
+        print("Godmode : " + pc.controlledShip.invulnerable);
     }
 
-    public void GodMode(CommandArg[] args)
+    //[RegisterCommand(Help = "Spawns an empty ship at level origin (0,0,0)", MinArgCount = 0, MaxArgCount = 0)]
+    //static void SpawnDefault(CommandArg[] args)
+    //{
+    //    FindObjectOfType<ShipSpawner>().SpawnShip();
+    //    print("Spawned default ship");
+    //}
+
+    [RegisterCommand(Help = "Toggles the game's time scale between 1 and 0", MinArgCount = 0, MaxArgCount = 0)]
+    static void Pause(CommandArg[] args)
     {
-        playerController.controlledShip.invulnerable = !playerController.controlledShip.invulnerable;
-        print("Godmode : " + playerController.controlledShip.invulnerable);
+        GameManager.TogglePause();
     }
 
-    public void SpawnDefaultShip(CommandArg[] args)
+    [RegisterCommand(Help = "Gives current ship unlimited energy", MinArgCount = 0, MaxArgCount = 0)]
+    static void Impulse101(CommandArg[] args)
     {
-        shipSpawner.SpawnDefaultShip();
-        print("Spawned default ship");
-    }
+        if (PlayerControllerExistsInScene() == false) return;
 
-    public void UnlimitedEnergy(CommandArg[] args)
-    {
+        var playerController = FindObjectOfType<PlayerController>();
         playerController.controlledShip.hardpointSystem.EnableInfiniteEnergy();
     }
 
-    public void UnlimitedAfterburner(CommandArg[] args)
+    [RegisterCommand(Help = "Gives current ship unlimited afterburner energy", MinArgCount = 0, MaxArgCount = 0)]
+    static void InfAft(CommandArg[] args)
     {
-        var abHardpoint = playerController.controlledShip.hardpointSystem.afterburnerHardpoint;
+        if (PlayerControllerExistsInScene() == false) return;
 
+        var abHardpoint = FindObjectOfType<PlayerController>().controlledShip.hardpointSystem.afterburnerHardpoint;
         abHardpoint.drain = abHardpoint.drain == 0 ? 100 : 0;
 
         print("Toggled infinite afterburner...");
     }
 
-    public void UnPossess(CommandArg[] args)
+    [RegisterCommand(Help = "Unpossesses the current ship", MinArgCount = 0, MaxArgCount = 0)]
+    static void UnPossess(CommandArg[] args)
     {
-        playerController.UnPossess();
+        if (PlayerControllerExistsInScene() == false) return;
+
+        FindObjectOfType<PlayerController>().Possess(null);
+
         print("Ship unpossessed");
     }
 
-    public void SpawnNewPlayerShip(CommandArg[] args)
+
+    [RegisterCommand(Name = "SpawnNew", Help = "Spawns a new ship and possesses it", MinArgCount = 0, MaxArgCount = 0)]
+    static void SpawnNewPlayerShip(CommandArg[] args)
     {
-        FindObjectOfType<GameManager>().SpawnPlayer();
+        // TODO: Update this somehow?
+        //FindObjectOfType<GameManager>().SpawnPlayer();
     }
 
-    public void Restart(CommandArg[] args)
+    [RegisterCommand(Help = "Restarts the current scene", MinArgCount = 0, MaxArgCount = 0)]
+    static void Restart(CommandArg[] args)
     {
         SceneManager.LoadScene(0);
     }
 
-    public void PauseGame(CommandArg[] args)
+    // Change this to apply to all speeds
+    [RegisterCommand(Name = "throttle.power", Help = "Change the current ship's throttle power", MinArgCount = 1, MaxArgCount = 1)]
+    static void SetThrottlePower(CommandArg[] args)
     {
-        var gameManager = FindObjectOfType<GameManager>();
-        gameManager.TogglePause();
+        if (PlayerControllerExistsInScene() == false) return;
+
+        FindObjectOfType<PlayerController>().controlledShip.engine.throttlePower = args[0].Int;
+    }
+
+    private static bool PlayerControllerExistsInScene()
+    {
+        var pc = FindObjectOfType<PlayerController>();
+        if (pc == null)
+        {
+            print("ERROR: Couldn't find Player Controller in scene...");
+            return false;
+        }
+
+        return true;
     }
 }

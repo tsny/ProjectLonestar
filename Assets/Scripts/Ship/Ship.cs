@@ -3,88 +3,83 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Ship : WorldObject, IPossessable
+public class Ship : WorldObject
 {
     [Header("Details")]
     protected string pilotFirstName = "First Name";
     protected string pilotLastName = "Last Name";
-    public string shipName = "TestShip";
-    public ShipClass shipClass = ShipClass.Light;
-    public Faction faction = Faction.LibertyNavy;
-
-    [Header("States")]
-    public int cargoHoldCapacity = 30;
 
     [Header("References")]
     public HardpointSystem hardpointSystem;
-    public Vector3 AimPosition;
+    public Vector3 aimPosition;
     public ShipStats stats;
-
-    public ShipEngine shipEngine;
+    public Engine engine;
+    public CruiseEngine cruiseEngine;
+    public ShipCamera shipCam;
+    public Rigidbody rb;
+    public List<ShipComponent> components;
     public Inventory inventory;
 
-    public ParticleSystem dustParticleSystem;
-
-    public bool CanFire
-    {
-        get
-        {
-            return !(shipEngine.engineState == EngineState.Charging || shipEngine.engineState == EngineState.Cruise);
-        }
-    }
-
-    public delegate void PossessionEventHandler(Ship sender, bool possessed);
+    public delegate void PossessionEventHandler(PlayerController pc, Ship sender, bool possessed);
     public event PossessionEventHandler Possession;
 
     protected override void Awake()
     {
-        base.Awake();
-
         hardpointSystem = GetComponentInChildren<HardpointSystem>();
-        shipEngine = GetComponent<ShipEngine>();
+        cruiseEngine = GetComponentInChildren<CruiseEngine>();
         inventory = GetComponentInChildren<Inventory>();
+        shipCam = GetComponentInChildren<ShipCamera>();
+        engine = GetComponentInChildren<Engine>();
+        rb = GetComponentInChildren<Rigidbody>();
 
         hullHealth = hullFullHealth;
+
+        if (stats == null)
+        {
+            stats = ScriptableObject.CreateInstance<ShipStats>();
+            print("No ship stats found, assigning default ship values...");
+        }
+
+        GetComponentsInChildren(true, components);
+
+        foreach (var component in components)
+        {
+            component.InitShipComponent(this, stats);
+        }
+
+        base.Awake();
     }
 
     public override string ToStringForScannerEntry()
     {
-        return pilotFirstName + " - " + shipName;
+        return pilotFirstName + " - " + stats.shipName;
     }
 
-    public TargetIndicator SetupTargetIndicator(TargetIndicator indicator)
+    public void ChangePossession(PlayerController pc, bool possessed)
     {
-        return indicator;
-    }
+        name = possessed ? "PLAYER SHIP" : NameGenerator.GenerateFullName();
 
-    public void Possessed(PlayerController sender)
-    {
-        name = "PLAYER SHIP - " + shipName;
-        tag = "Player";
+        tag = possessed ? "Player" : "Untagged";
 
         foreach(Transform transform in transform)
         {
-            transform.gameObject.layer = LayerMask.NameToLayer("Player");
+            if (possessed)
+            {
+                transform.gameObject.layer = LayerMask.NameToLayer("Player");
+            }
+
+            else
+            {
+                transform.gameObject.layer = 0;
+            }
         }
 
-        OnPossession(true);
+        OnPossession(pc, possessed);
     }
 
-    public void UnPossessed(PlayerController sender)
+    protected void OnPossession(PlayerController pc, bool possessed)
     {
-        SetHierarchyName();
-        tag = "Untagged";
-        foreach(Transform transform in transform)
-        {
-            transform.gameObject.layer = 0;
-        }
-
-        OnPossession(false);
-    }
-
-    protected void OnPossession(bool possessed)
-    {
-        if (Possession != null) Possession(this, possessed);
+        if (Possession != null) Possession(pc, this, possessed);
     }
 
     public override void TakeDamage(Weapon weapon)
@@ -110,7 +105,7 @@ public class Ship : WorldObject, IPossessable
         pilotFirstName = NameGenerator.Generate(Gender.Male).First;
         pilotLastName = NameGenerator.Generate(Gender.Male).Last;
 
-        name =  pilotLastName + " - " + shipName + " - " + faction; 
+        name =  pilotLastName + " - " + stats.shipName; 
     }
 
 }

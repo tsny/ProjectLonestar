@@ -23,7 +23,7 @@ public class PlayerControllerEditor : Editor
     {
         if (GUILayout.Button("Unpossess"))
         {
-            playerController.UnPossess();
+            playerController.Possess(null);
         }
     }
 }

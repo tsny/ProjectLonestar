@@ -9,25 +9,9 @@ public class ScannerUI : ShipUIElement
 
     private ScannerHardpoint pairedScanner;
 
-    protected override void HandlePossessed(PlayerController sender, Ship newShip)
+    public override void SetShip(Ship ship)
     {
-        base.HandlePossessed(sender, newShip);
-
-        pairedScanner = newShip.hardpointSystem.scannerHardpoint;
-        pairedScanner.EntryChanged += HandleScannerEntryChanged;
-
-        RefreshScannerList();
-
-        gameObject.SetActive(true);
-    }
-
-    protected override void HandleUnpossessed(PlayerController sender, Ship oldShip)
-    {
-        base.HandleUnpossessed(sender, oldShip);
-        pairedScanner.EntryChanged -= HandleScannerEntryChanged;
-        pairedScanner = null;
-
-        gameObject.SetActive(false);
+        base.SetShip(ship);
     }
 
     private void HandleScannerEntryChanged(WorldObject entry, bool added)
@@ -37,6 +21,11 @@ public class ScannerUI : ShipUIElement
 
     private void RefreshScannerList()
     {
+        foreach (Transform button in buttonVLG.transform)
+        {
+            Destroy(button.gameObject);
+        }
+
         foreach (var obj in pairedScanner.detectedObjects)
         {
             var newButton = Instantiate(scannerButtonPrefab, buttonVLG.transform).GetComponent<ScannerPanelButton>();

@@ -36,15 +36,6 @@ public enum HullType
     Station
 }
 
-public enum EngineState
-{
-    Normal,
-    Charging,
-    Cruise,
-    Drifting,
-    Reversing
-}
-
 public enum ShipClass
 {
     Light,

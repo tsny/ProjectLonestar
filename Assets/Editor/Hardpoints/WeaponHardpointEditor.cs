@@ -12,7 +12,7 @@ public class WeaponHardpointEditor : Editor
 
         EditorGUI.BeginChangeCheck();
 
-        Weapon newWeapon = (Weapon) EditorGUILayout.ObjectField("Weapon", weaponHardpoint.CurrentEquipment, typeof(Weapon), true);
+            Weapon newWeapon = (Weapon) EditorGUILayout.ObjectField("Weapon", weaponHardpoint.CurrentEquipment, typeof(Weapon), true);
 
         if (EditorGUI.EndChangeCheck())
         {
@@ -21,7 +21,7 @@ public class WeaponHardpointEditor : Editor
                 weaponHardpoint.Demount();
             }
 
-            weaponHardpoint.CurrentEquipment = newWeapon;
+            weaponHardpoint.TryMount(newWeapon);
         }
 
         if (weaponHardpoint.IsMounted)

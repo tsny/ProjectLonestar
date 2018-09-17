@@ -30,7 +30,7 @@ public class ProjectileController : MonoBehaviour
 
         Physics.IgnoreCollision(owner.GetComponentInChildren<Collider>(), collider);
 
-        target = owner.AimPosition;
+        target = owner.aimPosition;
 
         transform.LookAt(target);
         rb.AddForce(transform.forward * weapon.thrust, ForceMode.Impulse);

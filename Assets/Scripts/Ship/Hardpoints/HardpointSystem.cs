@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 public class HardpointSystem : ShipComponent
 {
@@ -13,16 +14,45 @@ public class HardpointSystem : ShipComponent
     public ShieldHardpoint shieldHardpoint;
     public ScannerHardpoint scannerHardpoint;
     public TractorHardpoint tractorHardpoint;
+    public CruiseEngine cruiseEngine;
 
     [Header("Energy")]
 
     public float energy = 100;
     public float energyCapacity = 100;
-    public float chargeRate = 3;
+    public float chargeRate = .2f;
+    public float timeTillRecharge = 3;
 
-    protected override void Awake()
+    private IEnumerator rechargeEnumerator;
+    private IEnumerator cooldownEnumerator;
+
+    public bool CanFireWeapons
     {
-        base.Awake();
+        get
+        {
+            if (cruiseEngine == null) return true;
+
+            switch (cruiseEngine.State)
+            {
+                case CruiseEngine.CruiseState.Off:
+                case CruiseEngine.CruiseState.Disrupted:
+                    return true;
+
+                case CruiseEngine.CruiseState.Charging:
+                case CruiseEngine.CruiseState.On:
+                    return false;
+
+                default:
+                    return false;
+            }
+        }
+    }
+
+    public delegate void WeaponFiredEventHandler(Weapon weapon);
+    public event WeaponFiredEventHandler WeaponFired;
+
+    private void Awake()
+    {
         GetComponentsInChildren(true, hardpoints);
 
         DesignateWeaponSlots();
@@ -34,22 +64,10 @@ public class HardpointSystem : ShipComponent
         }
     }
 
-    private void HandleHardpointDemounted(Hardpoint sender)
+    public void SetStats(ShipStats stats)
     {
-        WeaponHardpoint weaponHardpoint = sender as WeaponHardpoint;
-
-        if (weaponHardpoint == null) return;
-
-        weaponHardpoints.Remove(weaponHardpoint.slot);
-    }
-
-    private void HandleHardpointMounted(Hardpoint sender)
-    {
-        WeaponHardpoint weaponHardpoint = sender as WeaponHardpoint;
-
-        if (weaponHardpoint == null) return;
-
-        weaponHardpoints.Add(weaponHardpoint.slot, weaponHardpoint);
+        energyCapacity = stats.energyCapacity;
+        chargeRate = stats.energyChargeRate;
     }
 
     public void DemountAll()
@@ -60,32 +78,10 @@ public class HardpointSystem : ShipComponent
         }
     }
 
-    private void DesignateWeaponSlots()
-    {
-        int slotCounter = 1;
-
-        foreach (Hardpoint hardpoint in hardpoints)
-        {
-            if (hardpoint.GetType() != typeof(WeaponHardpoint)) return;
-
-            WeaponHardpoint weaponHardpoint = (WeaponHardpoint)hardpoint;
-
-            weaponHardpoint.slot = slotCounter;
-
-            slotCounter++;
-        }
-    }
-
     public void ToggleAfterburner(bool toggle)
     {
         if (toggle) afterburnerHardpoint.Activate();
         else afterburnerHardpoint.Disable();
-    }
-
-    // This can be an enumerator
-    private void Update()
-    {
-        RechargeEnergy();
     }
 
     public void EnableInfiniteEnergy()
@@ -98,19 +94,70 @@ public class HardpointSystem : ShipComponent
     public void FireActiveWeapons()
     {
         foreach (WeaponHardpoint hardpoint in weaponHardpoints.Values)
-            if (hardpoint.active) hardpoint.Fire();
+        {
+            if (hardpoint.active)
+            {
+                FireWeaponHardpoint(hardpoint);
+            }
+        }
     }
 
-    public void FireHardpoint(int hardpointSlot)
+    public void FireWeaponHardpoint(int hardpointSlot)
     {
-        if (weaponHardpoints.ContainsKey(hardpointSlot) && weaponHardpoints[hardpointSlot] != null)
-            weaponHardpoints[hardpointSlot].Fire();
+        WeaponHardpoint hardpointToFire;
+
+        if (weaponHardpoints.TryGetValue(hardpointSlot, out hardpointToFire))
+        {
+            FireWeaponHardpoint(hardpointToFire);
+        }
     }
 
-    private void RechargeEnergy()
+    public void FireWeaponHardpoint(WeaponHardpoint hardpointToFire)
     {
-        energy = Mathf.Clamp(energy, 0, energyCapacity);
-        energy = Mathf.MoveTowards(energy, energyCapacity, chargeRate * Time.deltaTime);
+        if (hardpointToFire.Weapon.energyDraw < energy)
+        {
+            if (hardpointToFire.Fire())
+            {
+                energy -= hardpointToFire.Weapon.energyDraw;
+                if (WeaponFired != null) WeaponFired(hardpointToFire.Weapon);
+                BeginCooldown();
+            }
+        }
+    }
+
+    public void BeginCooldown()
+    {
+        if (cooldownEnumerator != null)
+        {
+            StopCoroutine(cooldownEnumerator);
+        }
+
+        cooldownEnumerator = CooldownCoroutine();
+        StartCoroutine(cooldownEnumerator);
+    }
+
+    public void StopCooldown()
+    {
+        if (cooldownEnumerator == null) return;
+
+        StopCoroutine(cooldownEnumerator);
+        cooldownEnumerator = null; 
+    }
+
+    public void StartRecharging()
+    {
+        rechargeEnumerator = RechargeCoroutine();
+        StartCoroutine(rechargeEnumerator);
+    }
+
+    public void StopRecharging()
+    {
+        if (rechargeEnumerator != null)
+        {
+            StopCoroutine(rechargeEnumerator);
+        }
+
+        rechargeEnumerator = null;
     }
 
     public void MountLoadout(Loadout newLoadout)
@@ -119,16 +166,63 @@ public class HardpointSystem : ShipComponent
 
         foreach (Equipment equipment in newLoadout.equipment)
         {
-            foreach(Hardpoint hardpoint in hardpoints)
+            foreach (Hardpoint hardpoint in hardpoints)
             {
                 if (hardpoint.IsMounted) continue;
 
-                if (hardpoint.associatedEquipmentType == equipment.GetType())
+                if (hardpoint.TryMount(equipment))
                 {
-                    hardpoint.Mount(equipment);
                     break;
                 }
             }
+        }
+    }
+
+    private void HandleHardpointDemounted(Hardpoint sender, Equipment oldEquipment)
+    {
+        WeaponHardpoint weaponHardpoint = sender as WeaponHardpoint;
+
+        if (weaponHardpoint == null) return;
+
+        weaponHardpoints.Remove(weaponHardpoint.slot);
+    }
+
+    private void HandleHardpointMounted(Hardpoint sender, Equipment newEquipment)
+    {
+        WeaponHardpoint weaponHardpoint = sender as WeaponHardpoint;
+
+        if (weaponHardpoint == null) return;
+
+        weaponHardpoints.Add(weaponHardpoint.slot, weaponHardpoint);
+    }
+
+    private void DesignateWeaponSlots()
+    {
+        int slotCounter = 1;
+
+        foreach (WeaponHardpoint weaponHardpoint in hardpoints.Where(x => x.GetType() == typeof(WeaponHardpoint)))
+        {
+            weaponHardpoint.slot = slotCounter;
+            slotCounter++;
+        }
+    }
+
+    private IEnumerator CooldownCoroutine()
+    {
+        StopRecharging();
+
+        yield return new WaitForSeconds(timeTillRecharge);
+
+        StartRecharging();
+    }
+
+    private IEnumerator RechargeCoroutine()
+    {
+        while (energy < energyCapacity)
+        {
+            energy += chargeRate;
+            energy = Mathf.Clamp(energy, 0, energyCapacity);
+            yield return null;
         }
     }
 }

@@ -13,32 +13,9 @@ public class ScannerHardpoint : Hardpoint
     public delegate void EntryChangeEventHandler(WorldObject entry, bool added);
     public event EntryChangeEventHandler EntryChanged;
 
-    public ScannerHardpoint()
+    protected override bool EquipmentMatchesHardpoint(Equipment equipment)
     {
-        associatedEquipmentType = typeof(Scanner);
-    }
-
-    public override void Mount(Equipment newEquipment)
-    {
-        base.Mount(newEquipment);
-
-        scanner = newEquipment as Scanner;
-
-        StartCoroutine("ScanCoroutine");
-    }
-
-    public override void Demount()
-    {
-        base.Demount();
-
-        StopCoroutine("ScanCoroutine");
-    }
-
-    protected override void Awake()
-    {
-        base.Awake();
-        hardpointSystem.scannerHardpoint = this;
-        detectedObjects.Clear();
+        return equipment is Scanner;
     }
 
     private void OnDestroy()

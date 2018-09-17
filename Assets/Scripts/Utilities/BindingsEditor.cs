@@ -9,16 +9,14 @@ public class BindingsEditor : MonoBehaviour
 
     private void Start()
     {
-        var inputManager = FindObjectOfType<InputManager>();
-        foreach (var key in inputManager.keyDictionary.Keys)
-        {
-            KeyCode currKeyCode;
-            bool success = inputManager.keyDictionary.TryGetValue(key, out currKeyCode);
-            if (success)
-            {
-                var text = Instantiate(keyBindingButtonPrefab, vlg.transform).GetComponentInChildren<Text>();
-                text.text = key + " : " + currKeyCode;
-            }
-        }
+        //var keycodeDict = InputManager.SetKeycodes();
+
+        //foreach (var entry in keycodeDict)
+        //{
+        //    var text = Instantiate(keyBindingButtonPrefab, vlg.transform).GetComponentInChildren<Text>();
+        //    text.text = entry.Key + " : " + entry.Value;
+        //}
+
+        gameObject.SetActive(false);
     }
 }

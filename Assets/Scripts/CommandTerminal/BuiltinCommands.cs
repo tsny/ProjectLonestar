@@ -47,10 +47,10 @@ namespace CommandTerminal
         //    Terminal.Log("Time: {0}ms", (double)sw.ElapsedTicks / 10000);
         //}
 
-        [RegisterCommand(Help = "Output message")]
-        static void CommandPrint(CommandArg[] args) {
-            Terminal.Log(JoinArguments(args));
-        }
+        //[RegisterCommand(Help = "Output message")]
+        //static void CommandPrint(CommandArg[] args) {
+        //    Terminal.Log(JoinArguments(args));
+        //}
 
     #if DEBUG
         [RegisterCommand(Help = "Output the stack trace of the previous message", MaxArgCount = 0)]

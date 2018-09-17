@@ -23,6 +23,7 @@ public class ScannerPanelButton : MonoBehaviour
 
     private void HandleTargetKilled(WorldObject sender, DeathEventArgs e)
     {
+        target.Killed -= HandleTargetKilled;
         Destroy(gameObject);
     }
 

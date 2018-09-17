@@ -3,57 +3,40 @@ using UnityEngine;
 
 public class AfterburnerHardpoint : Hardpoint
 {
-    public Afterburner afterburner;
+    public Rigidbody rb;
 
     public float charge = 100;
     public float regenRate = 1;
     public float thrust = 1;
     public float drain = 1;
 
-    public bool canAfterburn;
     public bool burning;
+
+    public Afterburner Afterburner
+    {
+        get
+        {
+            return CurrentEquipment as Afterburner;
+        }
+    }
 
     private IEnumerator chargeCoroutine;
     private IEnumerator burnCoroutine;
 
-    public AfterburnerHardpoint()
+    public override void InitShipComponent(Ship sender, ShipStats stats)
     {
-        associatedEquipmentType = typeof(Afterburner);
+        base.InitShipComponent(sender, stats);
+        rb = sender.rb;
     }
 
-    protected override void Awake()
+    protected override bool EquipmentMatchesHardpoint(Equipment equipment)
     {
-        base.Awake();
-        hardpointSystem.afterburnerHardpoint = this;
-    }
-
-    protected void Start()
-    {
-        owningShip.shipEngine.CruiseChanged += HandleCruiseChange;
-        HandleCruiseChange(owningShip.shipEngine);
-    }
-
-    private void HandleCruiseChange(ShipEngine sender)
-    {
-        canAfterburn = !(sender.engineState == EngineState.Charging || sender.engineState == EngineState.Cruise);
-    }
-
-    public override void Mount(Equipment newEquipment)
-    {
-        base.Mount(newEquipment);
-
-        afterburner = newEquipment as Afterburner;
-
-        regenRate = afterburner.regenRate;
-        thrust = afterburner.thrust;
-        drain = afterburner.drain;
-
-        charge = 100;
+        return equipment is Afterburner;
     }
 
     public void Activate()
     {
-        if (OnCooldown || afterburner == null || !canAfterburn || burning) return;
+        if (OnCooldown || Afterburner == null || burning) return;
 
         if (chargeCoroutine != null) StopCoroutine(chargeCoroutine);
         burnCoroutine = Burn();
@@ -91,7 +74,8 @@ public class AfterburnerHardpoint : Hardpoint
             charge = Mathf.MoveTowards(charge, 0, drain * Time.deltaTime);
             if (charge <= 0) break;
 
-            yield return null;
+            rb.AddForce(rb.transform.forward * thrust);
+            yield return new WaitForFixedUpdate();
         }
 
         StartCooldown();

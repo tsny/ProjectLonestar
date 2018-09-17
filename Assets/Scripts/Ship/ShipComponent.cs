@@ -7,18 +7,8 @@ public class ShipComponent : MonoBehaviour
 {
     protected Ship owningShip;
 
-    protected virtual void Awake()
+    public virtual void InitShipComponent(Ship sender, ShipStats stats)
     {
-        owningShip = GetComponentInParent<Ship>();
-
-        if (owningShip == null)
-        {
-            print("Could not find owning ship, destroying self...");
-            Destroy(gameObject);
-        }
-
-        owningShip.Possession += HandlePossession;
+        owningShip = sender;
     }
-
-    protected virtual void HandlePossession(Ship sender, bool possessed) { }
 }

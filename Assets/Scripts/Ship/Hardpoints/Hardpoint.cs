@@ -5,11 +5,7 @@ using UnityEngine;
 [RequireComponent(typeof(MeshRenderer), typeof(MeshFilter))]
 public class Hardpoint : ShipComponent
 {
-    public HardpointSystem hardpointSystem;
-
-    public Type associatedEquipmentType = typeof(Equipment);
-
-    public delegate void MountedEventHandler(Hardpoint sender);
+    public delegate void MountedEventHandler(Hardpoint sender, Equipment equipment);
     public event MountedEventHandler Mounted;
     public event MountedEventHandler Demounted;
 
@@ -17,7 +13,7 @@ public class Hardpoint : ShipComponent
     {
         get
         {
-            return currentEquipment != null;
+            return CurrentEquipment != null;
         }
     }
     public bool OnCooldown
@@ -28,39 +24,47 @@ public class Hardpoint : ShipComponent
         }
     }
 
-    public Equipment CurrentEquipment
-    {
-        get
-        {
-            return currentEquipment;
-        }
-
-        set
-        {
-            Mount(value);
-        }
-    }
-
+    public Equipment CurrentEquipment { get; private set; }
     private IEnumerator cooldownCoroutine;
 
-    private Equipment currentEquipment;
-
-    protected override void Awake()
+    protected virtual void OnMounted(Equipment newEquipment)
     {
-        base.Awake();
+        if (Mounted != null) Mounted(this, newEquipment);
+    }
 
-        hardpointSystem = GetComponentInParent<HardpointSystem>();
-
-        if (hardpointSystem == null)
+    public virtual bool TryMount(Equipment newEquipment)
+    {
+        if (newEquipment == null || EquipmentMatchesHardpoint(newEquipment) == false)
         {
-            print(name + " could not find hardpointSystem on owning ship, destroying self...");
-            Destroy(gameObject);
+            return false;
         }
+
+        if (IsMounted) Demount();
+
+        CurrentEquipment = newEquipment;
+
+        OnMounted(newEquipment);
+
+        return true;
+    }
+
+    protected virtual bool EquipmentMatchesHardpoint(Equipment equipment)
+    {
+        return false;
+    }
+
+    public virtual void Demount()
+    {
+        var oldEquipment = CurrentEquipment;
+
+        CurrentEquipment = null;
+
+        if (Demounted != null) Demounted(this, oldEquipment);
     }
 
     protected virtual void StartCooldown()
     {
-        cooldownCoroutine = Cooldown(currentEquipment.cooldownDuration);
+        cooldownCoroutine = Cooldown(CurrentEquipment.cooldownDuration);
         StartCoroutine(cooldownCoroutine);
     }
 
@@ -68,28 +72,6 @@ public class Hardpoint : ShipComponent
     {
         StopCoroutine(cooldownCoroutine);
         cooldownCoroutine = null;
-    }
-
-    public virtual void Mount(Equipment newEquipment)
-    {
-        if (IsMounted) Demount();
-
-        if (newEquipment.GetType() == associatedEquipmentType)
-        {
-            currentEquipment = newEquipment;
-            if (Mounted != null) Mounted(this);
-        }
-
-        else
-        {
-            print("Tried to populate with type " + newEquipment.GetType() + " on a " + GetType() + " hardpoint");
-        }
-    }
-
-    public virtual void Demount()
-    {
-        currentEquipment = null;
-        if (Demounted != null) Demounted(this);
     }
 
     protected IEnumerator Cooldown(float seconds)

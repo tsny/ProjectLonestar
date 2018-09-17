@@ -11,28 +11,36 @@ public class ShipStatusUI : ShipUIElement
     public Text afterburnerText;
     public Text speedText;
 
-    private ShipPhysics shipPhysics;
+    public AfterburnerHardpoint afterburnerHardpoint;
+
+    public override void SetShip(Ship ship)
+    {
+        base.SetShip(ship);
+
+        enabled = true;
+
+        if (ship.hardpointSystem.afterburnerHardpoint.IsMounted)
+        {
+            afterburnerHardpoint = ship.hardpointSystem.afterburnerHardpoint;
+        }
+
+        ship.hardpointSystem.WeaponFired += HandleWeaponFired;
+        ship.TookDamage += HandleTookDamage;
+    }
+
+    private void HandleTookDamage(WorldObject sender, DamageEventArgs e)
+    {
+        SetFillAmounts();
+    }
+
+    private void HandleWeaponFired(Weapon weapon)
+    {
+        SetFillAmounts();
+    }
 
     private void Update()
     {
-        SetFillAmounts();
         SetText();
-    }
-
-    protected override void HandlePossessed(PlayerController sender, Ship newShip)
-    {
-        base.HandlePossessed(sender, newShip);
-
-        shipPhysics = ship.GetComponent<ShipPhysics>();
-    }
-
-    protected override void HandleUnpossessed(PlayerController sender, Ship oldShip)
-    {
-        base.HandleUnpossessed(sender, oldShip);
-
-        shipPhysics = null;
-        afterburnerText.text = "";
-        speedText.text = "";
     }
 
     private void SetFillAmounts()
@@ -44,11 +52,11 @@ public class ShipStatusUI : ShipUIElement
 
     private void SetText()
     {
-        speedText.text = "" + (int) shipPhysics.speed + " kph";
+        speedText.text = "" + (int) ship.engine.Speed + " kph";
 
-        if (ship.hardpointSystem.afterburnerHardpoint != null && ship.hardpointSystem.afterburnerHardpoint.IsMounted)
+        if (afterburnerHardpoint != null)
         {
-            afterburnerText.text = "Afterburner: " + (int) ship.hardpointSystem.afterburnerHardpoint.charge + "%";
+            afterburnerText.text = "Afterburner: " + (int) afterburnerHardpoint.charge + "%";
         }
 
         else

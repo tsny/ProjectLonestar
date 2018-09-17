@@ -24,7 +24,7 @@ public class ShipEditor : Editor
     {
         ship = target as Ship;
 
-        if (!Application.isPlaying) return;
+        if (!Application.isPlaying || playerController == null) return;
 
         if (playerController.controlledShip != ship) ShowPossessionHandle();
     }
@@ -39,7 +39,7 @@ public class ShipEditor : Editor
 
     private void DecidePossessionButtonVisibility()
     {
-        if (!Application.isPlaying) return;
+        if (!Application.isPlaying || playerController == null) return;
 
         if (playerController.controlledShip != ship)
         {
@@ -53,7 +53,7 @@ public class ShipEditor : Editor
         {
             if (GUILayout.Button("Unpossess"))
             {
-                playerController.UnPossess();
+                playerController.Possess(null);
             }
         }
     }

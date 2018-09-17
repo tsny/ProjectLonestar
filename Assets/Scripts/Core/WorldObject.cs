@@ -7,11 +7,11 @@ public class WorldObject : MonoBehaviour
     public float hullHealth = 100;
     public float hullFullHealth = 100;
 
-    public delegate void WorldObjectKilledEventHandler(WorldObject sender, DeathEventArgs e);
-    public delegate void WorldObjectDamagedEventHandler(WorldObject sender, DamageEventArgs e);
+    public delegate void DeathEventHandler(WorldObject sender, DeathEventArgs e);
+    public delegate void DamagedEventHandler(WorldObject sender, DamageEventArgs e);
 
-    public event WorldObjectKilledEventHandler Killed;
-    public event WorldObjectDamagedEventHandler TookDamage;
+    public event DeathEventHandler Killed;
+    public event DamagedEventHandler TookDamage;
 
     protected virtual void OnKilled()
     {

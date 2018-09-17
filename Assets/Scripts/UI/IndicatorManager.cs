@@ -19,28 +19,6 @@ public class IndicatorManager : ShipUIElement
         selectedIndicator = newIndicator;
     }
 
-    protected override void HandlePossessed(PlayerController sender, Ship newShip)
-    {
-        base.HandlePossessed(sender, newShip);
-
-        ClearIndicators();
-
-        foreach (WorldObject worldObject in newShip.hardpointSystem.scannerHardpoint.detectedObjects)
-        {
-            AddIndicator(worldObject);
-        }
-
-        newShip.hardpointSystem.scannerHardpoint.EntryChanged += HandleEntryChanged;
-    }
-
-    protected override void HandleUnpossessed(PlayerController sender, Ship oldShip)
-    {
-        base.HandleUnpossessed(sender, oldShip);
-
-        oldShip.hardpointSystem.scannerHardpoint.EntryChanged -= HandleEntryChanged;
-        ClearIndicators();
-    }
-
     private void HandleEntryChanged(WorldObject entry, bool added)
     {
         if (added) AddIndicator(entry);

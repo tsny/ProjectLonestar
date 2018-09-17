@@ -9,7 +9,13 @@ public class ShieldHardpoint : Hardpoint
     public float health;
     public float regenRate;
 
-    private Shield shield;
+    public Shield Shield
+    {
+        get
+        {
+            return CurrentEquipment as Shield;
+        }
+    }
 
     public bool IsOnline
     {
@@ -19,44 +25,28 @@ public class ShieldHardpoint : Hardpoint
         }
     }
 
-    public ShieldHardpoint()
+    protected override bool EquipmentMatchesHardpoint(Equipment equipment)
     {
-        associatedEquipmentType = typeof(Shield);
+        return equipment is Shield;
     }
 
-    public override void Mount(Equipment newEquipment)
+    private void Awake()
     {
-        base.Mount(newEquipment);
-
-        shield = newEquipment as Shield;
-
-        health = shield.capacity;
-        capacity = shield.capacity;
-        regenRate = shield.regenRate;
-    }
-
-    public override void Demount()
-    {
-        base.Demount();
-
-        shield = null;
-
-        health = 0;
-        capacity = 0;
-        regenRate = 0;
-    }
-
-    protected override void Awake()
-    {
-        base.Awake();
-
-        hardpointSystem.shieldHardpoint = this;
         hitSource = GetComponent<AudioSource>();
+    }
+
+    protected override void OnMounted(Equipment newEquipment)
+    {
+        base.OnMounted(newEquipment);
+
+        capacity = Shield.capacity;
+        health = capacity;
+        regenRate = Shield.regenRate;
     }
 
     private void Update()
     {
-        if(!OnCooldown)
+        if (!OnCooldown)
         {
             Recharge();
         }
@@ -69,7 +59,7 @@ public class ShieldHardpoint : Hardpoint
 
     public void TakeDamage(Weapon weapon)
     {
-        health -= Damage.CalculateShieldDamage(weapon, shield.type);
+        health -= Damage.CalculateShieldDamage(weapon, Shield.type);
         hitSource.Play();
 
         if (health <= 0) health = 0;

@@ -1,9 +1,8 @@
 ﻿using UnityEngine;
 
-//[RequireComponent(typeof(Rigidbody)), RequireComponent(typeof(ShipMovement))]
 public class ShipPhysics : ShipComponent
 {
-    [Header("--- Movement ---")]
+    [Header("Movement")]
     [Space(5)]
 
     public int enginePower = 100;
@@ -16,29 +15,57 @@ public class ShipPhysics : ShipComponent
     public float drag = 5;
     public float mass = 5;
 
-    [Header("--- States ---")]
-    [Space(5), ReadOnly]
-    public float speed;
+    public float Speed
+    {
+        get
+        {
+            return Vector3.Dot(rb.velocity, transform.forward);
+        }
+    }
 
-    public Rigidbody rb;
-    public ShipEngine shipMovement;
+    [Header("Mins and Maxes")]
+    [Space(5)]
 
     public float maxNormalSpeed = 20;
-    public float maxAfterburnerSpeed = 50;
+    public float maxAfterburnSpeed = 50;
     public float maxDriftingSpeed = 50;
     public float maxCruiseSpeed = 100;
     public float maxTotalSpeed = 300;
 
-    protected override void Awake()
+    [Header("References")]
+    [Space(5)]
+
+    public Rigidbody rb;
+    public Engine engine;
+    public CruiseEngine cruiseEngine;
+
+    private void Awake()
     {
-        base.Awake();
-        //rb = GetComponent<Rigidbody>();
-        shipMovement = owningShip.GetComponent<ShipEngine>();
+        enabled = false;
     }
 
-    private void UpdateRigidbody()
+    public override void InitShipComponent(Ship sender, ShipStats stats)
     {
-        if (shipMovement.engineState == EngineState.Drifting)
+        base.InitShipComponent(sender, stats);
+
+        maxNormalSpeed = stats.maxNormalSpeed;
+        maxAfterburnSpeed = stats.maxAfterburnSpeed;
+        maxDriftingSpeed = stats.maxDriftSpeed;
+        maxCruiseSpeed = stats.maxCruiseSpeed;
+        maxTotalSpeed = stats.maxTotalSpeed;
+
+        cruiseEngine = sender.cruiseEngine;
+        engine = sender.engine;
+        rb = sender.GetComponentInChildren<Rigidbody>();
+
+        engine.DriftingChange += HandleDriftingChange;
+
+        enabled = true;
+    }
+
+    private void HandleDriftingChange(bool drifting)
+    {
+        if (drifting)
         {
             rb.drag = 0.05f;
         }
@@ -57,58 +84,55 @@ public class ShipPhysics : ShipComponent
 
     private void UpdateForces()
     {
-        UpdateRigidbody();
-
         ApplyStrafeForces();
 
-        switch (shipMovement.engineState)
+        switch (cruiseEngine.State)
         {
-            case EngineState.Normal:
-            case EngineState.Charging:
-
+            case CruiseEngine.CruiseState.Off:
+            case CruiseEngine.CruiseState.Charging:
                 ApplyThrottleForces();
                 break;
 
-            case EngineState.Cruise:
+            case CruiseEngine.CruiseState.On:
                 ApplyCruiseForces();
                 break;
 
-            case EngineState.Reversing:
-                UpdateRigidbody();
+            case CruiseEngine.CruiseState.Disrupted:
+                ApplyThrottleForces();
+                break;
+
+            default:
                 break;
         }
 
-        ApplyAfterburnerForces();
+        //ApplyAfterburnerForces();
 
         ClampSpeed();
-
-        speed = Vector3.Dot(rb.velocity, transform.forward);
     }
 
     private void ClampSpeed()
     {
         var currentMaxSpeed = maxTotalSpeed;
 
-        switch (owningShip.shipEngine.engineState)
+        switch (owningShip.cruiseEngine.State)
         {
-            case (EngineState.Charging):
-            case (EngineState.Normal):
-            case (EngineState.Reversing):
-                currentMaxSpeed = maxNormalSpeed;
+            case CruiseEngine.CruiseState.Off:
                 break;
-            case (EngineState.Cruise):
-                currentMaxSpeed = maxCruiseSpeed;
+
+            case CruiseEngine.CruiseState.Charging:
                 break;
-            case (EngineState.Drifting):
-                currentMaxSpeed = maxDriftingSpeed;
+
+            case CruiseEngine.CruiseState.On:
+                break;
+
+            case CruiseEngine.CruiseState.Disrupted:
+                break;
+
+            default:
                 break;
         }
-        
-        //rb.velocity = rb.velocity.normalized * currentMaxSpeed;
-        if (rb.velocity.magnitude > currentMaxSpeed)
-        {
-            rb.velocity = rb.velocity.normalized * currentMaxSpeed;
-        }
+
+        rb.velocity = Vector3.ClampMagnitude(rb.velocity, currentMaxSpeed);
     }
 
     private void ApplyCruiseForces()
@@ -118,27 +142,22 @@ public class ShipPhysics : ShipComponent
 
     private void ApplyStrafeForces()
     {
-        if (shipMovement.strafe != 0)
+        if (engine.Strafe != 0)
         {
-            rb.AddForce(rb.transform.right * shipMovement.strafe * strafePower);
+            rb.AddForce(rb.transform.right * engine.Strafe * strafePower);
         }
     }
 
     private void ApplyThrottleForces()
     {
-        if (shipMovement.throttle > 0)
+        if (engine.Throttle > 0)
         {
-            rb.AddForce(rb.transform.forward * shipMovement.throttle * enginePower);
+            rb.AddForce(rb.transform.forward * engine.Throttle * enginePower);
         }
     }
 
-    private void ApplyAfterburnerForces()
+    private void ApplyAfterburnerForces(float afterburnerThrust)
     {
-        if (owningShip.hardpointSystem.afterburnerHardpoint == null) return;
-
-        if (owningShip.hardpointSystem.afterburnerHardpoint.burning)
-        {
-            rb.AddForce(rb.transform.forward * afterburnerPower * owningShip.hardpointSystem.afterburnerHardpoint.thrust);
-        }
+        rb.AddForce(rb.transform.forward * afterburnerThrust);
     }
 } 

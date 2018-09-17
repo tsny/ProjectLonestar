@@ -3,30 +3,30 @@ using UnityEngine;
 
 public class TractorHardpoint : Hardpoint
 {
-    public TractorBeam tractor;
+    public TractorBeam Tractor
+    {
+        get
+        {
+            return CurrentEquipment as TractorBeam;
+        }
+    }
 
     public float range = 20;
     public float pullForce = 10;
 
     public Inventory inventory;
 
-    public TractorHardpoint()
+    protected override bool EquipmentMatchesHardpoint(Equipment equipment)
     {
-        associatedEquipmentType = typeof(TractorBeam);
+        return equipment is TractorBeam;
     }
 
-    protected override void Awake()
+    protected override void OnMounted(Equipment newEquipment)
     {
-        base.Awake();
-        hardpointSystem.tractorHardpoint = this;
-    }
+        base.OnMounted(newEquipment);
 
-    public override void Mount(Equipment newEquipment)
-    {
-        base.Mount(newEquipment);
-
-        tractor = newEquipment as TractorBeam;
-        range = tractor.range;
+        range = Tractor.range;
+        pullForce = Tractor.pullForce;
     }
 
     public void TractorAllLoot()

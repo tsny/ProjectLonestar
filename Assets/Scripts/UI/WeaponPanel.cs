@@ -9,27 +9,13 @@ public class WeaponPanel : ShipUIElement
 
     public GameObject weaponPanelButton;
 
-    protected override void HandlePossessed(PlayerController sender, Ship newShip)
+    public override void SetShip(Ship ship)
     {
-        base.HandlePossessed(sender, newShip);
+        base.SetShip(ship);
 
-        hardpointSystem = newShip.hardpointSystem;
-
+        hardpointSystem = ship.hardpointSystem;
         ClearPanel();
         PopulatePanel();
-
-        gameObject.SetActive(true);
-    }
-
-    protected override void HandleUnpossessed(PlayerController sender, Ship oldShip)
-    {
-        base.HandleUnpossessed(sender, oldShip);
-
-        hardpointSystem = null;
-
-        ClearPanel();
-
-        gameObject.SetActive(false);
     }
 
     private void PopulatePanel()

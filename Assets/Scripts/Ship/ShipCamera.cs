@@ -32,43 +32,16 @@ public class ShipCamera : ShipComponent
     [Space(5)]
     public float aimRaycastDistance = 10000;
 
-    public ShipPhysics shipPhysics;
-    public PlayerController pController;
-    public Camera shipCam;
-    public AudioListener audioListener;
+    public PlayerController playerController;
+    public Engine engine;
 
-    protected override void HandlePossession(Ship sender, bool possessed)
+    private Camera shipCam;
+    private AudioListener audioListener;
+
+    private void Awake()
     {
-        base.HandlePossession(sender, possessed);
-
-        enabled = possessed;
-    }
-
-    private void FixedUpdate()
-    {
-        CalculateOffsets();
-        owningShip.AimPosition = GetAimPosition();
-
-        if (pController.mouseState == MouseState.Held || pController.mouseState == MouseState.Toggled)
-        {
-            FollowShip();
-        }
-
-        else
-        {
-            Vector3 newPosition = transform.parent.position - (transform.parent.forward * distanceOffset);
-            transform.position = Vector3.Lerp(transform.position, newPosition, lerpSpeed);
-        } 
-    }
-
-    protected override void Awake()
-    {
-        base.Awake();
-
         shipCam = GetComponent<Camera>();
         audioListener = GetComponent<AudioListener>();
-        shipPhysics = owningShip.GetComponentInParent<ShipPhysics>();
-
         enabled = false;
     }
 
@@ -80,9 +53,38 @@ public class ShipCamera : ShipComponent
 
     private void OnDisable()
     {
-        pController = null;
         shipCam.enabled = false;
         audioListener.enabled = false;
+    }
+
+    public override void InitShipComponent(Ship sender, ShipStats stats)
+    {
+        base.InitShipComponent(sender, stats);
+        sender.Possession += HandleOwnerPossessed;
+        engine = sender.engine;
+    }
+
+    private void HandleOwnerPossessed(PlayerController pc, Ship sender, bool possessed)
+    {
+        playerController = pc;
+        enabled = possessed;
+    }
+
+    private void FixedUpdate()
+    {
+        CalculateOffsets();
+        owningShip.aimPosition = GetAimPosition();
+
+        if (playerController.MouseState != MouseState.Off)
+        {
+            FollowShip();
+        }
+
+        else
+        {
+            Vector3 newPosition = transform.parent.position - (transform.parent.forward * distanceOffset);
+            transform.position = Vector3.Lerp(transform.position, newPosition, lerpSpeed);
+        } 
     }
 
     public Vector3 GetAimPosition()
@@ -98,6 +100,7 @@ public class ShipCamera : ShipComponent
         {
             return hitInfo.collider.transform.position;
         }
+
         else
         {
             return ray.GetPoint(aimRaycastDistance);
@@ -106,9 +109,12 @@ public class ShipCamera : ShipComponent
 
     public void CalculateOffsets()
     {
-        distanceOffset = Mathf.Clamp(shipPhysics.speed / speedDivisor, 0, maxDistance);
-        pitchOffset = Mathf.Clamp(pController.mouseY * pitchModifier, maxLowerPitch, maxUpperPitch);
-        yawOffset = Mathf.Clamp(pController.mouseX * yawModifier, -maxYaw, maxYaw);
+        var mouseCoords = PlayerController.GetMousePosition();
+
+        distanceOffset = Mathf.Clamp(engine.Speed / speedDivisor, 0, maxDistance);
+
+        pitchOffset = Mathf.Clamp(mouseCoords.y * pitchModifier, maxLowerPitch, maxUpperPitch);
+        yawOffset = Mathf.Clamp(mouseCoords.x * yawModifier, -maxYaw, maxYaw);
     }
 
     public void FollowShip()

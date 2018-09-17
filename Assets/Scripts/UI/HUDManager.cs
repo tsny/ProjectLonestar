@@ -1,35 +1,55 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using System.Linq;
+using System.Collections.Generic;
 
-public class HUDManager : ShipUIElement
+public class HUDManager : MonoBehaviour
 {
+    public PlayerController playerController;
+    public GameObject pauseMenu;
     public Text mouseFlightText;
     public Text cruiseText;
 
-    public MouseState mouseState;
-    public EngineState engineState;
+    public List<ShipUIElement> uiElements;
 
-    private ShipEngine engine;
-
-    protected override void Awake()
+    private void Awake()
     {
-        base.Awake();
+        GameManager.GamePaused += HandleGamePaused;
         name = "SHIP HUD";
+        GetComponentsInChildren(true, uiElements);
+
+        cruiseText.text = "";
+        mouseFlightText.text = ""; 
     }
 
-    protected override void HandlePossessed(PlayerController sender, Ship newShip)
+    public void InitializeHUD(PlayerController playerController)
     {
-        base.HandlePossessed(sender, newShip);
+        this.playerController = playerController;
+        uiElements.ForEach(x => x.SetShip(playerController.controlledShip));
 
-        engine = newShip.shipEngine;
-        engine.CruiseChanged += HandleCruiseChange;
-
+        playerController.Possession += HandlePossession;
         playerController.MouseStateChanged += HandleMouseStateChange;
+        playerController.controlledShip.cruiseEngine.CruiseStateChanged += HandleCruiseChanged;
 
-        SetCruiseText(engine.engineState);
-        SetMouseFlightText(playerController.mouseState);
+        if (playerController.controlledShip != null)
+        {
+            SetCruiseText(playerController.controlledShip.cruiseEngine.State);
+        }
+    }
 
-        mouseFlightText.text = "";
+    private void HandleCruiseChanged(CruiseEngine sender)
+    {
+        SetCruiseText(sender.State);
+    }
+
+    private void HandlePossession(PossessionEventArgs args)
+    {
+        uiElements.ForEach(x => x.SetShip(playerController.controlledShip));
+    }
+
+    private void HandleGamePaused(bool paused)
+    {
+        pauseMenu.SetActive(paused);
     }
 
     private void HandleMouseStateChange(MouseState state)
@@ -37,40 +57,24 @@ public class HUDManager : ShipUIElement
         SetMouseFlightText(state);
     }
 
-    protected override void HandleUnpossessed(PlayerController sender, Ship oldShip)
+    private void SetCruiseText(CruiseEngine.CruiseState cruiseState)
     {
-        base.HandleUnpossessed(sender, oldShip);
-
-        engine.CruiseChanged -= HandleCruiseChange;
-        engine = null;
-
-        mouseFlightText.text = "";
-        cruiseText.text = "";
-    }
-
-    private void HandleCruiseChange(ShipEngine sender)
-    {
-        SetCruiseText(sender.engineState);
-    }
-
-    private void SetCruiseText(EngineState engineState)
-    {
-        switch (engineState)
+        switch (cruiseState)
         {
-            case EngineState.Normal:
+            case CruiseEngine.CruiseState.Off:
                 cruiseText.text = "Engines Nominal";
                 break;
-            case EngineState.Charging:
+
+            case CruiseEngine.CruiseState.Charging:
                 cruiseText.text = "Charging Cruise...";
                 break;
-            case EngineState.Cruise:
+
+            case CruiseEngine.CruiseState.On:
                 cruiseText.text = "Cruising";
                 break;
-            case EngineState.Drifting:
-                cruiseText.text = "Drifting";
-                break;
-            case EngineState.Reversing:
-                cruiseText.text = "Reversing";
+
+            case CruiseEngine.CruiseState.Disrupted:
+                cruiseText.text = "Disrupted";
                 break;
         }
     }

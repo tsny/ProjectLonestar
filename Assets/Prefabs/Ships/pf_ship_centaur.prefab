@@ -387,8 +387,9 @@ GameObject:
   - component: {fileID: 4709334792375274}
   - component: {fileID: 114843565123289172}
   - component: {fileID: 54334028879456994}
-  - component: {fileID: 114546078585340872}
-  - component: {fileID: 114411058820966502}
+  - component: {fileID: 114039821875042540}
+  - component: {fileID: 114969239178157234}
+  - component: {fileID: 114314561816717210}
   m_Layer: 0
   m_Name: PF_Ship_Centaur
   m_TagString: Untagged
@@ -925,7 +926,7 @@ Camera:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1842610132850410}
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 1
   m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
@@ -1456,7 +1457,7 @@ AudioListener:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1842610132850410}
-  m_Enabled: 0
+  m_Enabled: 1
 --- !u!82 &82050184999988126
 AudioSource:
   m_ObjectHideFlags: 1
@@ -2306,6 +2307,21 @@ TrailRenderer:
   m_MinVertexDistance: 0
   m_Autodestruct: 0
   m_Emitting: 1
+--- !u!114 &114039821875042540
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1731105088454010}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 454f023511b7fbb4b8f98d33caad8b1b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rb: {fileID: 0}
+  chargeDuration: 5
+  cruisePower: 300
+  cruiseMultiplier: 1
 --- !u!114 &114153537171405082
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2317,10 +2333,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 421dd0b7b6838334f84c5f5f07322a2a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hardpointSystem: {fileID: 0}
   slot: 6
   rank: 0
   active: 1
+  weapon: {fileID: 0}
   audioSource: {fileID: 82539974547494270}
 --- !u!114 &114165425904898910
 MonoBehaviour:
@@ -2333,10 +2349,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 421dd0b7b6838334f84c5f5f07322a2a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hardpointSystem: {fileID: 0}
   slot: 2
   rank: 0
   active: 1
+  weapon: {fileID: 0}
   audioSource: {fileID: 82056361354212886}
 --- !u!114 &114182349002600078
 MonoBehaviour:
@@ -2349,11 +2365,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26ec0829f007a87429434278c0546be7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hardpointSystem: {fileID: 0}
   tractor: {fileID: 0}
   range: 20
   pullForce: 10
   inventory: {fileID: 114843555553186374}
+--- !u!114 &114314561816717210
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1731105088454010}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecee2e991ffc3c6438f7888d4b054f4b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 0}
+  turnSpeed: 1
+  turnAngleThreshold: 5
+  fireAngleThreshold: 10
+  delayBetweenShots: 0.1
+  cruiseDistanceThreshold: 1000
 --- !u!114 &114318202317187816
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2365,10 +2397,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 421dd0b7b6838334f84c5f5f07322a2a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hardpointSystem: {fileID: 0}
   slot: 1
   rank: 0
   active: 1
+  weapon: {fileID: 0}
   audioSource: {fileID: 82674757958555714}
 --- !u!114 &114395436724679158
 MonoBehaviour:
@@ -2387,52 +2419,7 @@ MonoBehaviour:
   chargeCruiseEffect: {fileID: 1794774825933662}
   fullCruiseEffect: {fileID: 1593252236080804}
   dustEffect: {fileID: 1110838530097842}
---- !u!114 &114411058820966502
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1731105088454010}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1b162f7032abcf445821e14dd42449aa, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  engineState: 0
-  throttleChangeIncrement: 0.1
-  turnSpeed: 2
-  throttle: 0
-  strafe: 0
-  cruiseDisrupted: 0
-  cruiseChargeDuration: 5
-  cruiseChargeSource: {fileID: 0}
---- !u!114 &114546078585340872
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1731105088454010}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e7e79e07fcf2db24fad008f02981a74c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  enginePower: 400
-  strafePower: 200
-  reversePower: 25
-  cruisePower: 300
-  cruiseMultiplier: 5
-  afterburnerPower: 100
-  drag: 5
-  mass: 5
-  speed: 0
-  rb: {fileID: 54334028879456994}
-  shipMovement: {fileID: 114411058820966502}
-  maxNormalSpeed: 20
-  maxAfterburnerSpeed: 50
-  maxDriftingSpeed: 50
-  maxCruiseSpeed: 100
-  maxTotalSpeed: 300
+  currentScale: 1
 --- !u!114 &114681986092633008
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2444,13 +2431,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f539068853ed88144816f64bfff8e096, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hardpointSystem: {fileID: 0}
   afterburner: {fileID: 0}
+  rb: {fileID: 0}
   charge: 100
   regenRate: 0.25
   thrust: 2
   drain: 0.5
-  canAfterburn: 0
   burning: 0
 --- !u!114 &114750398125826666
 MonoBehaviour:
@@ -2463,10 +2449,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 421dd0b7b6838334f84c5f5f07322a2a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hardpointSystem: {fileID: 0}
   slot: 5
   rank: 0
   active: 1
+  weapon: {fileID: 0}
   audioSource: {fileID: 82050184999988126}
 --- !u!114 &114763845051631152
 MonoBehaviour:
@@ -2479,10 +2465,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 421dd0b7b6838334f84c5f5f07322a2a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hardpointSystem: {fileID: 0}
   slot: 3
   rank: 0
   active: 1
+  weapon: {fileID: 0}
   audioSource: {fileID: 82317354978225804}
 --- !u!114 &114843555553186374
 MonoBehaviour:
@@ -2497,6 +2483,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   items:
   - {fileID: 11400000, guid: f75bed335905d284e9b4bd5493cede60, type: 2}
+  - {fileID: 11400000, guid: 8cdb4af4d97ee484aaa94c7d339b79c6, type: 2}
+  - {fileID: 11400000, guid: 8cdb4af4d97ee484aaa94c7d339b79c6, type: 2}
   lootPrefab: {fileID: 1601505678792048, guid: b8a49763792a4c84c8abf04f433533b9, type: 2}
 --- !u!114 &114843565123289172
 MonoBehaviour:
@@ -2517,11 +2505,15 @@ MonoBehaviour:
   faction: 1
   cargoHoldCapacity: 30
   hardpointSystem: {fileID: 114890172326677854}
-  AimPosition: {x: 0, y: 0, z: 0}
-  stats: {fileID: 0}
-  shipEngine: {fileID: 0}
+  aimPosition: {x: 0, y: 0, z: 0}
+  stats: {fileID: 11400000, guid: b045a77c58c92314587fb581f8c8a7dd, type: 2}
+  engine: {fileID: 0}
+  cruiseEngine: {fileID: 0}
+  physics: {fileID: 0}
+  shipCam: {fileID: 0}
+  rb: {fileID: 0}
+  components: []
   inventory: {fileID: 0}
-  dustParticleSystem: {fileID: 198993074573449122}
 --- !u!114 &114890172326677854
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2548,9 +2540,11 @@ MonoBehaviour:
   shieldHardpoint: {fileID: 114992891233242000}
   scannerHardpoint: {fileID: 114924268490386734}
   tractorHardpoint: {fileID: 0}
+  cruiseEngine: {fileID: 0}
   energy: 100
   energyCapacity: 100
   chargeRate: 3
+  timeTillRecharge: 3
 --- !u!114 &114898708139772632
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2562,10 +2556,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 421dd0b7b6838334f84c5f5f07322a2a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hardpointSystem: {fileID: 0}
   slot: 4
   rank: 0
   active: 1
+  weapon: {fileID: 0}
   audioSource: {fileID: 82061525696926652}
 --- !u!114 &114921829818448814
 MonoBehaviour:
@@ -2573,7 +2567,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1842610132850410}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4fa9cb008f76f474ba34a0e91b1b16f8, type: 3}
   m_Name: 
@@ -2590,10 +2584,8 @@ MonoBehaviour:
   maxLowerPitch: -10
   maxDistance: 10
   aimRaycastDistance: 10000
-  shipPhysics: {fileID: 0}
-  pController: {fileID: 0}
-  shipCam: {fileID: 20452498980098602}
-  audioListener: {fileID: 0}
+  playerController: {fileID: 0}
+  engine: {fileID: 0}
 --- !u!114 &114924268490386734
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2605,12 +2597,33 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7d516cd45b05ce41a5be3e19d36eb92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hardpointSystem: {fileID: 0}
   tractor: {fileID: 114182349002600078}
   detectedObjects:
   - {fileID: 0}
   scanner: {fileID: 0}
   scanFrequency: 10
+--- !u!114 &114969239178157234
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1731105088454010}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 200a1a33bbc3c1b4c99fc9c2a103651e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rb: {fileID: 0}
+  cruiseEngine: {fileID: 0}
+  turnSpeed: 1
+  throttlePower: 300
+  strafePower: 200
+  throttleChangeIncrement: 0.1
+  drifting: 0
+  mass: 5
+  drag: 5
+  driftMass: 5
+  driftDrag: 0.1
 --- !u!114 &114992891233242000
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2622,7 +2635,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 410c1d85b8513ca4799b6cd02354ddfa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hardpointSystem: {fileID: 0}
   capacity: 0
   health: 0
   regenRate: 0

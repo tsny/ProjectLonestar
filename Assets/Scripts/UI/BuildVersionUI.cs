@@ -6,21 +6,33 @@ using System;
 using System.Reflection;
 using System.Linq;
 
-[RequireComponent(typeof(VersionChecker))]
-public class BuildVersionUI : ShipUIElement
-{
-    public string LiveVersion { get; set; }
-    public string LocalVersion { get; set; }
+// This probably does not have to be a ShipUIElement
 
+[RequireComponent(typeof(VersionChecker))]
+public class BuildVersionUI : MonoBehaviour
+{
     private Text text;
     private VersionChecker versionChecker;
 
-    protected override void Awake()
+    protected void Awake()
     {
-        base.Awake();
-        versionChecker = FindObjectOfType<VersionChecker>();
-        versionChecker.UpdateFound += HandleUpdateChecked;
         text = GetComponent<Text>();
+        StartCoroutine(FindVersionChecker());
+    }
+
+    private IEnumerator FindVersionChecker()
+    {
+        for (; ;)
+        {
+            versionChecker = FindObjectOfType<VersionChecker>();
+
+            if (versionChecker == null) yield return null;
+
+            else break;
+        }
+
+        versionChecker.UpdateFound += HandleUpdateChecked;
+        if (versionChecker.VersionChecked) SetText();
     }
 
     protected void Start()
