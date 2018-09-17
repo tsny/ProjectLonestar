@@ -3,16 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IWorldObject 
+public interface IKillable 
 {
     void TakeDamage(Weapon weapon);
     void Die();
-}
-
-public interface IPossessable
-{
-    void Possessed(PlayerController sender);
-    void UnPossessed(PlayerController sender);
 }
 
 public class DamageEventArgs : EventArgs
