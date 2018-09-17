@@ -7,16 +7,7 @@ public class FLTerminal : Terminal
     [RegisterCommand(Help = "Checks the live version on itch.io against the local version", MinArgCount = 0, MaxArgCount = 0)]
     static void VersionCheck(CommandArg[] args)
     {
-        var vc = FindObjectOfType<VersionChecker>();
-
-        if (vc == null)
-        {
-            print("Couldn't find version checker...");
-            return;
-        }
-
-        print("Local verison: " + vc.LocalVersion);
-        print("Live version: " + vc.LiveVersion);
+        FindObjectOfType<GameManager>().StartCoroutine(VersionChecker.GetVersions());
     }
 
     [RegisterCommand(Help = "Toggle GodMode on Current Ship", MinArgCount = 0, MaxArgCount = 0)]

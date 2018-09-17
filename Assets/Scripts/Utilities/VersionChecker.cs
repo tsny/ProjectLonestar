@@ -3,40 +3,11 @@ using UnityEngine.Networking;
 using System.Collections;
 using System.IO;
 using System.Reflection;
+using UnityEngine.UI;
 
-public class VersionChecker : MonoBehaviour
+public class VersionChecker : ScriptableObject
 {
-    public delegate void EventHandler(VersionChecker sender);
-    public event EventHandler UpdateFound;
-
-    public bool VersionChecked { get; private set; }
-
-    public string LiveVersion { get; set; }
-    public string LocalVersion { get; set; }
-
-    public bool LocalVersionIsLive
-    {
-        get
-        {
-            return LiveVersion == LocalVersion;
-        }
-    }
-
-    private void Start()
-    {
-        StartCoroutine(GetVersions());
-    }
-
-    private void OnVersionsChecked(string liveVersion, string localVersion)
-    {
-        LiveVersion = liveVersion;
-        LocalVersion = localVersion;
-        print("Note: Local version " + (LocalVersionIsLive ? "is live" : "isn't live"));
-        VersionChecked = true;
-        if (UpdateFound != null) UpdateFound(this);
-    }
-
-    private IEnumerator GetVersions()
+    public static IEnumerator GetVersions(MonoBehaviour caller = null)
     {
         var url = "https://itch.io/api/1/x/wharf/latest?target=tsny/project-lonestar&channel_name=win";
 
@@ -46,14 +17,23 @@ public class VersionChecker : MonoBehaviour
 
             if (www.isNetworkError || www.isHttpError)
             {
-                print("Couldn't find Version at specified URL...");
+                Debug.Log("Couldn't find Version at specified URL...");
                 yield break;
             }
 
             else
             {
                 var json = JsonUtility.FromJson<ButlerInfo>(www.downloadHandler.text);
-                OnVersionsChecked(json.latest, Application.version);
+                Debug.Log("Local version: " + Application.version);
+                Debug.Log("Live version: " + json.latest);
+
+                if (caller != null)
+                {
+                    var buildUI = caller.GetComponent<BuildVersionUI>();
+
+                    if (buildUI != null)
+                        buildUI.SetText(json.latest);
+                }
             }
         }
     }
