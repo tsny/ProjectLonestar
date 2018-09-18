@@ -50,7 +50,7 @@ public class PlayerController : MonoBehaviour
 
     public Ship SpawnPlayer(GameObject shipPrefab, Loadout loadout)
     {
-        controlledShip = ShipSpawner.SpawnShip(shipPrefab, loadout, Vector3.zero);
+        controlledShip = ShipSpawner.SpawnShip(shipPrefab, Vector3.zero, loadout);
         return controlledShip;
     }
 

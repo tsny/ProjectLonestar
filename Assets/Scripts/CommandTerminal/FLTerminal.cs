@@ -7,7 +7,7 @@ public class FLTerminal : Terminal
     [RegisterCommand(Name = "version.check", Help = "Checks the live version on itch.io against the local version", MinArgCount = 0, MaxArgCount = 0)]
     static void VersionCheck(CommandArg[] args)
     {
-        FindObjectOfType<MonoBehaviour>().StartCoroutine(VersionChecker.GetVersions());
+        FindObjectOfType<MonoBehaviour>().StartCoroutine(VersionChecker.GetVersions(null, true));
     }
 
     [RegisterCommand(Help = "Mounts a default loadout onto the current ship", MinArgCount = 0, MaxArgCount = 0)]
@@ -42,11 +42,13 @@ public class FLTerminal : Terminal
         switch (args[0].String)
         {
             case "player":
+                ShipSpawner.SpawnShip(GameSettings.Instance.shipPrefab, Vector3.zero, GameSettings.Instance.defaultLoadout);
+                print("Spawning player ship...");
                 break;
 
             case "empty":
-                ShipSpawner.SpawnDefaultShip();
-                print("Spawned default ship");
+                ShipSpawner.SpawnShip(GameSettings.Instance.shipPrefab, Vector3.zero);
+                print("Spawned default ship...");
                 break;
         }
     }
@@ -87,11 +89,11 @@ public class FLTerminal : Terminal
         print("Ship unpossessed");
     }
 
-    [RegisterCommand(Help = "Reloads the original scene", MinArgCount = 0, MaxArgCount = 0)]
+    [RegisterCommand(Help = "Reloads the current scene", MinArgCount = 0, MaxArgCount = 0)]
     static void Restart(CommandArg[] args)
     {
-        SceneManager.LoadScene(0);
-        print("Reloading original scene...");
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        print("Reloading current scene...");
     }
 
     // Change this to apply to all speeds
