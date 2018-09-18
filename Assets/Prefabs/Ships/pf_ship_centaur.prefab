@@ -2448,15 +2448,17 @@ MonoBehaviour:
   invulnerable: 0
   hullHealth: 100
   hullFullHealth: 100
+  pilotDetails: {fileID: 11400000, guid: 0e4162d9bfb61814e9801b68670a6bac, type: 2}
+  engineStats: {fileID: 11400000, guid: 03bae706e6806dc48a6c222c5b4179ed, type: 2}
+  shipDetails: {fileID: 11400000, guid: fe0dfa754dd6a08468063fea5943ef08, type: 2}
+  stats: {fileID: 11400000, guid: b045a77c58c92314587fb581f8c8a7dd, type: 2}
   hardpointSystem: {fileID: 114890172326677854}
   aimPosition: {x: 0, y: 0, z: 0}
-  stats: {fileID: 11400000, guid: b045a77c58c92314587fb581f8c8a7dd, type: 2}
   engine: {fileID: 0}
   cruiseEngine: {fileID: 0}
   shipCam: {fileID: 0}
   rb: {fileID: 0}
   components: []
-  inventory: {fileID: 0}
 --- !u!114 &114889744303056916
 MonoBehaviour:
   m_ObjectHideFlags: 1

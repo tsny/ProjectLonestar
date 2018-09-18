@@ -80,12 +80,12 @@ public class PlayerController : MonoBehaviour
 
         if (oldShip != null)
         {
-            oldShip.ChangePossession(this, false);
+            oldShip.SetPossessed(this, false);
         }
 
         controlledShip = newShip;
 
-        newShip.ChangePossession(this, true);
+        newShip.SetPossessed(this, true);
 
         if (Possession != null) Possession(new PossessionEventArgs(newShip, oldShip, this));
 
@@ -94,7 +94,7 @@ public class PlayerController : MonoBehaviour
 
     public void Eject()
     {
-        controlledShip.ChangePossession(this, false);
+        controlledShip.SetPossessed(this, false);
         controlledShip = null;
         MouseState = MouseState.Off;
         enabled = false;

@@ -49,23 +49,17 @@ public class Ship : WorldObject
         base.Awake();
     }
 
-    public void ChangePossession(PlayerController pc, bool possessed)
+    public void SetPossessed(PlayerController pc, bool possessed)
     {
-        name = possessed ? "PLAYER SHIP" : NameGenerator.GenerateFullName();
+        name = possessed ? "PLAYER SHIP" : pilotDetails.FullName;
 
         tag = possessed ? "Player" : "Untagged";
 
         foreach(Transform transform in transform)
         {
-            if (possessed)
-            {
-                transform.gameObject.layer = LayerMask.NameToLayer("Player");
-            }
+            var newLayer = possessed ? LayerMask.NameToLayer("Player") : 0;
 
-            else
-            {
-                transform.gameObject.layer = 0;
-            }
+            transform.gameObject.layer = newLayer;
         }
 
         OnPossession(pc, possessed);
@@ -95,6 +89,7 @@ public class Ship : WorldObject
 
     protected override void SetHierarchyName()
     {
+        name = pilotDetails.FirstName + " - " + shipDetails.shipName;
     }
 
     private void FixedUpdate()

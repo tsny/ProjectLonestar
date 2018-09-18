@@ -59,6 +59,7 @@ public class ShipNavigation : ShipComponent
             owningShip.aimPosition = target.position;
             owningShip.hardpointSystem.FireActiveWeapons();
             remainingShots--;
+            print(remainingShots);
             if (remainingShots <= 0) break;
             yield return new WaitForSeconds(delayBetweenShots);
         }
