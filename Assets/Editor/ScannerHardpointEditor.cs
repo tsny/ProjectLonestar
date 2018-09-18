@@ -2,12 +2,13 @@
 using UnityEngine;
 
 [CustomEditor(typeof(ScannerHardpoint))]
-public class ScannerEditor : Editor 
+public class ScannerHardpointEditor : Editor 
 {
     public override void OnInspectorGUI()
     {
-        ScannerHardpoint scanner = (ScannerHardpoint)target;
         base.OnInspectorGUI();
+
+        ScannerHardpoint scanner = (ScannerHardpoint)target;
 
         if (GUILayout.Button("Scan"))
         {
@@ -16,7 +17,7 @@ public class ScannerEditor : Editor
 
         if (GUILayout.Button("Clear Entries"))
         {
-            scanner.detectedObjects.Clear();
+            scanner.ClearEntries();
         }
     }
 } 

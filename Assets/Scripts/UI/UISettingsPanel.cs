@@ -57,4 +57,9 @@ public class UISettingsPanel : MonoBehaviour
     {
         Screen.fullScreen = isFullscreen;
     }
+
+    public static void Quit()
+    {
+        Application.Quit();
+    }
 }

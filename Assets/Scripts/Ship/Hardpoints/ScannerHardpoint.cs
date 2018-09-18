@@ -4,9 +4,15 @@ using System.Collections.Generic;
 
 public class ScannerHardpoint : Hardpoint
 {
-    public TractorHardpoint tractor;
-    public List<WorldObject> detectedObjects;
-    public Scanner scanner;
+    //public TractorHardpoint tractor;
+    public List<WorldObject> scannerEntries;
+    public Scanner Scanner
+    {
+        get
+        {
+            return CurrentEquipment as Scanner;
+        }
+    }
 
     public int scanFrequency = 10;
 
@@ -18,32 +24,36 @@ public class ScannerHardpoint : Hardpoint
         return equipment is Scanner;
     }
 
-    private void OnDestroy()
+    protected override void OnMounted(Equipment newEquipment)
     {
-        detectedObjects.Clear();
+        base.OnMounted(newEquipment);
+
+        Scan();
+
+        StartCoroutine(ScanCoroutine());
     }
 
     public void Scan()
     {
-        if (scanner == null) return;
+        if (Scanner == null) return;
 
         WorldObject[] scannedObjects = FindObjectsOfType<WorldObject>();
 
         foreach (WorldObject scannedObject in scannedObjects)
         {
+            if (scannerEntries.Contains(scannedObject) || scannedObject == owningShip) continue;
             AddEntry(scannedObject);
         }
     }
 
-    public void AddEntry(WorldObject objectToAdd)
+    public void ClearEntries()
     {
-        if (detectedObjects.Contains(objectToAdd) || objectToAdd == owningShip) return;
-    
-        detectedObjects.Add(objectToAdd);
+        foreach (var entry in scannerEntries)
+        {
+            RemoveEntry(entry);
+        }
 
-        objectToAdd.Killed += HandleEntryKilled;
-
-        if (EntryChanged != null) EntryChanged(objectToAdd, true);
+        scannerEntries.Clear();
     }
 
     private void HandleEntryKilled(WorldObject sender, DeathEventArgs e)
@@ -51,11 +61,22 @@ public class ScannerHardpoint : Hardpoint
         RemoveEntry(sender);
     }
 
+    public void AddEntry(WorldObject objectToAdd)
+    {
+        if (scannerEntries.Contains(objectToAdd) || objectToAdd == owningShip) return;
+    
+        scannerEntries.Add(objectToAdd);
+
+        objectToAdd.Killed += HandleEntryKilled;
+
+        if (EntryChanged != null) EntryChanged(objectToAdd, true);
+    }
+
     public void RemoveEntry(WorldObject objectToRemove)
     {
-        if (!detectedObjects.Contains(objectToRemove)) return;
+        if (!scannerEntries.Contains(objectToRemove)) return;
 
-        detectedObjects.Remove(objectToRemove);
+        scannerEntries.Remove(objectToRemove);
 
         objectToRemove.Killed -= HandleEntryKilled;
 

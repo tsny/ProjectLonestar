@@ -8,17 +8,13 @@ public class ScannerPanelButton : MonoBehaviour
     private Ship owner;
     public Text text;
 
-    private void Awake()
-    {
-        enabled = false;
-    }
-
     public void Setup(WorldObject target, Ship owner)
     {
         this.target = target;
         this.owner = owner;
         target.Killed += HandleTargetKilled;
-        enabled = true;
+
+        StartCoroutine(UpdateText());
     }
 
     private void HandleTargetKilled(WorldObject sender, DeathEventArgs e)
@@ -27,8 +23,14 @@ public class ScannerPanelButton : MonoBehaviour
         Destroy(gameObject);
     }
 
-    private void Update()
+    private IEnumerator UpdateText()
     {
-        var distance = (int) Vector3.Distance(target.transform.position, owner.transform.position) + "M";
+        for (; ;)
+        {
+            var distance = (int) Vector3.Distance(target.transform.position, owner.transform.position) + "M";
+            text.text = target.name + " " + distance;
+
+            yield return new WaitForSeconds(2);
+        }
     }
 }

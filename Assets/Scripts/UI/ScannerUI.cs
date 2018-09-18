@@ -14,11 +14,26 @@ public class ScannerUI : ShipUIElement
         base.SetShip(ship);
 
         scannerHardpoint = ship.hardpointSystem.scannerHardpoint;
+        scannerHardpoint.EntryChanged += HandleScannerEntryChanged;
+
+        RefreshScannerList();
     }
 
     private void HandleScannerEntryChanged(WorldObject entry, bool added)
     {
-        RefreshScannerList();
+        if (added)
+        {
+            var newButton = Instantiate(scannerButtonPrefab, buttonVLG.transform).GetComponent<ScannerPanelButton>();
+            newButton.Setup(entry, ship);
+        }
+    }
+
+    public ScannerPanelButton CreatePanelButton(WorldObject entry)
+    {
+        var newButton = Instantiate(scannerButtonPrefab, buttonVLG.transform).GetComponent<ScannerPanelButton>();
+        newButton.Setup(entry, ship);
+
+        return newButton;
     }
 
     private void RefreshScannerList()
@@ -28,10 +43,9 @@ public class ScannerUI : ShipUIElement
             Destroy(button.gameObject);
         }
 
-        foreach (var obj in scannerHardpoint.detectedObjects)
+        foreach (var entry in scannerHardpoint.scannerEntries)
         {
-            var newButton = Instantiate(scannerButtonPrefab, buttonVLG.transform).GetComponent<ScannerPanelButton>();
-            newButton.Setup(obj, ship);
+            CreatePanelButton(entry);
         }
     }
 }

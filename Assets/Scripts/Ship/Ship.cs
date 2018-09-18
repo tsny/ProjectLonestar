@@ -104,7 +104,3 @@ public class Ship : WorldObject
     }
 
 }
-
-
-
-

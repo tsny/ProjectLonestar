@@ -18,6 +18,10 @@ public class GameSettings : SingletonScriptableObject<GameSettings>
     {
         Instance.SpawnLoadPrefabs();
         SceneManager.activeSceneChanged += HandleNewScene;
+        if (SceneManager.GetActiveScene().name != "SCN_MainMenu")
+        {
+            Instance.SpawnNewScenePrefabs();
+        }
     }
 
     private static void HandleNewScene(Scene arg0, Scene arg1)

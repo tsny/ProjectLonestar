@@ -24,11 +24,19 @@ public class FLTerminal : Terminal
         print("Godmode : " + pc.controlledShip.invulnerable);
     }
 
-    [RegisterCommand(Help = "Spawns an empty ship at level origin (0,0,0)", MinArgCount = 0, MaxArgCount = 0)]
-    static void SpawnDefault(CommandArg[] args)
+    [RegisterCommand(Help = "Spawns a ship, args: player, empty", MinArgCount = 1, MaxArgCount = 1)]
+    static void Spawn(CommandArg[] args)
     {
-        ShipSpawner.SpawnDefaultShip();
-        print("Spawned default ship");
+        switch (args[0].String)
+        {
+            case "player":
+                break;
+
+            case "empty":
+                ShipSpawner.SpawnDefaultShip();
+                print("Spawned default ship");
+                break;
+        }
     }
 
     [RegisterCommand(Help = "Toggles the game's time scale between 1 and 0", MinArgCount = 0, MaxArgCount = 0)]
@@ -67,17 +75,11 @@ public class FLTerminal : Terminal
         print("Ship unpossessed");
     }
 
-
-    [RegisterCommand(Name = "SpawnNew", Help = "Spawns a new ship and possesses it", MinArgCount = 0, MaxArgCount = 0)]
-    static void SpawnNewPlayerShip(CommandArg[] args)
-    {
-        //GameSettings.Instance.SpawnPrefabs();
-    }
-
-    [RegisterCommand(Help = "Restarts the current scene", MinArgCount = 0, MaxArgCount = 0)]
+    [RegisterCommand(Help = "Reloads the original scene", MinArgCount = 0, MaxArgCount = 0)]
     static void Restart(CommandArg[] args)
     {
         SceneManager.LoadScene(0);
+        print("Reloading original scene...");
     }
 
     // Change this to apply to all speeds

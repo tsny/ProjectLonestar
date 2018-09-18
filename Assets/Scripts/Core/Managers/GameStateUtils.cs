@@ -3,7 +3,7 @@ using UnityEngine;
 using System.Collections;
 using UnityEngine.SceneManagement;
 
-public class GameStateUtils  
+public static class GameStateUtils  
 {
     public static bool Paused
     {
@@ -30,6 +30,11 @@ public class GameStateUtils
     public static void SetPause(bool pause)
     {
         Paused = pause;
+    }
+
+    public static void Quit()
+    {
+        Application.Quit();
     }
 }
 

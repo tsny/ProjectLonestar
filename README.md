@@ -29,3 +29,14 @@ Originally the project was worked on in Unreal and looked pretty great like I me
 
 [Here's a really pretty video of it](https://www.youtube.com/watch?v=ATOh75c0bQc&index=19&list=PLJBwf54kzZ-DsLQSUhFRbUjZXIO6FOq_4&t=0s)
 
+## Attributions
+
+#### Youtube
+Brackeys - UI
+
+#### Github
+@Stillwwater - Terminal
+
+#### Unity Forums
+Da Cookie - Singleton Scriptable Objects
+Desi Quintans - Flycam
