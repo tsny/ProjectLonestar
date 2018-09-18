@@ -23,9 +23,9 @@ public class AfterburnerHardpoint : Hardpoint
     private IEnumerator chargeCoroutine;
     private IEnumerator burnCoroutine;
 
-    public override void InitShipComponent(Ship sender, ShipStats stats)
+    public override void Setup(Ship sender)
     {
-        base.InitShipComponent(sender, stats);
+        base.Setup(sender);
         rb = sender.rb;
     }
 

@@ -70,9 +70,9 @@ public class HardpointSystem : ShipComponent
         chargeRate = stats.energyChargeRate;
     }
 
-    public override void InitShipComponent(Ship sender, ShipStats stats)
+    public override void Setup(Ship sender)
     {
-        base.InitShipComponent(sender, stats);
+        base.Setup(sender);
         cruiseEngine = sender.cruiseEngine;
     }
 

@@ -7,7 +7,7 @@ public class ShipComponent : MonoBehaviour
 {
     protected Ship owningShip;
 
-    public virtual void InitShipComponent(Ship sender, ShipStats stats)
+    public virtual void Setup(Ship sender)
     {
         owningShip = sender;
     }

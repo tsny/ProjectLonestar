@@ -57,9 +57,9 @@ public class ShipCamera : ShipComponent
         audioListener.enabled = false;
     }
 
-    public override void InitShipComponent(Ship sender, ShipStats stats)
+    public override void Setup(Ship sender)
     {
-        base.InitShipComponent(sender, stats);
+        base.Setup(sender);
         sender.Possession += HandleOwnerPossessed;
         engine = sender.engine;
     }

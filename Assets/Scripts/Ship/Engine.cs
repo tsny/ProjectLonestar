@@ -84,9 +84,9 @@ public class Engine : ShipComponent
     public event EventHandler DriftingChange;
     public delegate void EventHandler(bool drifting);
 
-    public override void InitShipComponent(Ship sender, ShipStats stats)
+    public override void Setup(Ship sender)
     {
-        base.InitShipComponent(sender, stats);
+        base.Setup(sender);
         turnSpeed = sender.engineStats.turnSpeed;
         cruiseEngine = sender.cruiseEngine;
         rb = sender.rb;

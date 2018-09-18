@@ -36,9 +36,9 @@ public class CruiseEngine : ShipComponent
         if (CruiseStateChanged != null) CruiseStateChanged(this);
     }
 
-    public override void InitShipComponent(Ship sender, ShipStats stats)
+    public override void Setup(Ship sender)
     {
-        base.InitShipComponent(sender, stats);
+        base.Setup(sender);
 
         sender.engine.ThrottleChanged += HandleThrottleChanged;
         sender.engine.DriftingChange += HandleDrifting;

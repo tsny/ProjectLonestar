@@ -2499,7 +2499,7 @@ MonoBehaviour:
   afterburnerHardpoint: {fileID: 114681986092633008}
   shieldHardpoint: {fileID: 114992891233242000}
   scannerHardpoint: {fileID: 114924268490386734}
-  tractorHardpoint: {fileID: 0}
+  tractorHardpoint: {fileID: 114182349002600078}
   cruiseEngine: {fileID: 0}
   energy: 100
   energyCapacity: 100

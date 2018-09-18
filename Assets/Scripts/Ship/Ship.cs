@@ -43,7 +43,7 @@ public class Ship : WorldObject
 
         foreach (var component in components)
         {
-            component.InitShipComponent(this, stats);
+            component.Setup(this);
         }
 
         base.Awake();

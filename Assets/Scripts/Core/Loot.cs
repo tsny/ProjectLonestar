@@ -55,7 +55,7 @@ public class Loot : WorldObject
 
         if (distanceToTarget < pickupRange)
         {
-            Inventory targetInventory = target.root.GetComponentInChildren<Inventory>();
+            Inventory targetInventory = GameSettings.Instance.playerInventory;
 
             if (targetInventory == null)
             {
