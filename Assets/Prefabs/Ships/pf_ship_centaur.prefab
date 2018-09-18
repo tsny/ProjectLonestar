@@ -98,7 +98,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &1123544652476174
 GameObject:
   m_ObjectHideFlags: 1
@@ -390,6 +390,7 @@ GameObject:
   - component: {fileID: 114039821875042540}
   - component: {fileID: 114969239178157234}
   - component: {fileID: 114314561816717210}
+  - component: {fileID: 114889744303056916}
   m_Layer: 0
   m_Name: PF_Ship_Centaur
   m_TagString: Untagged
@@ -413,7 +414,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &1816776409351388
 GameObject:
   m_ObjectHideFlags: 1
@@ -718,7 +719,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1110838530097842}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 17.400024}
+  m_LocalPosition: {x: 0, y: 5.36, z: 17.400024}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4928874223015392}
@@ -811,7 +812,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1731105088454010}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 21.7, y: 4.4716, z: 25.3}
+  m_LocalPosition: {x: 21.66, y: 4.4716, z: 25.3}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4363359676537772}
@@ -2336,7 +2337,6 @@ MonoBehaviour:
   slot: 6
   rank: 0
   active: 1
-  weapon: {fileID: 0}
   audioSource: {fileID: 82539974547494270}
 --- !u!114 &114165425904898910
 MonoBehaviour:
@@ -2352,7 +2352,6 @@ MonoBehaviour:
   slot: 2
   rank: 0
   active: 1
-  weapon: {fileID: 0}
   audioSource: {fileID: 82056361354212886}
 --- !u!114 &114182349002600078
 MonoBehaviour:
@@ -2365,7 +2364,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26ec0829f007a87429434278c0546be7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tractor: {fileID: 0}
   range: 20
   pullForce: 10
   inventory: {fileID: 114843555553186374}
@@ -2400,7 +2398,6 @@ MonoBehaviour:
   slot: 1
   rank: 0
   active: 1
-  weapon: {fileID: 0}
   audioSource: {fileID: 82674757958555714}
 --- !u!114 &114395436724679158
 MonoBehaviour:
@@ -2414,11 +2411,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   engineEffects:
-  - {fileID: 1528695556624724}
-  - {fileID: 1876244780789210}
-  chargeCruiseEffect: {fileID: 1794774825933662}
-  fullCruiseEffect: {fileID: 1593252236080804}
-  dustEffect: {fileID: 1110838530097842}
+  - {fileID: 198539898229111872}
+  - {fileID: 198836348276849634}
+  chargeCruiseEffect: {fileID: 198102737426447964}
+  fullCruiseEffect: {fileID: 198631860698540010}
+  dustEffect: {fileID: 198993074573449122}
   currentScale: 1
 --- !u!114 &114681986092633008
 MonoBehaviour:
@@ -2431,7 +2428,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f539068853ed88144816f64bfff8e096, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  afterburner: {fileID: 0}
   rb: {fileID: 0}
   charge: 100
   regenRate: 0.25
@@ -2452,7 +2448,6 @@ MonoBehaviour:
   slot: 5
   rank: 0
   active: 1
-  weapon: {fileID: 0}
   audioSource: {fileID: 82050184999988126}
 --- !u!114 &114763845051631152
 MonoBehaviour:
@@ -2468,7 +2463,6 @@ MonoBehaviour:
   slot: 3
   rank: 0
   active: 1
-  weapon: {fileID: 0}
   audioSource: {fileID: 82317354978225804}
 --- !u!114 &114843555553186374
 MonoBehaviour:
@@ -2500,20 +2494,30 @@ MonoBehaviour:
   invulnerable: 0
   hullHealth: 100
   hullFullHealth: 100
-  shipName: Centaur
-  shipClass: 0
-  faction: 1
-  cargoHoldCapacity: 30
   hardpointSystem: {fileID: 114890172326677854}
   aimPosition: {x: 0, y: 0, z: 0}
   stats: {fileID: 11400000, guid: b045a77c58c92314587fb581f8c8a7dd, type: 2}
   engine: {fileID: 0}
   cruiseEngine: {fileID: 0}
-  physics: {fileID: 0}
   shipCam: {fileID: 0}
   rb: {fileID: 0}
   components: []
   inventory: {fileID: 0}
+--- !u!114 &114889744303056916
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1731105088454010}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 197d5bd17b55524429cbaa151f47cb69, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rayCastOffset: 5
+  detectionDistance: 20
+  obstacleDetectedTime: 0
+  engine: {fileID: 0}
 --- !u!114 &114890172326677854
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2559,7 +2563,6 @@ MonoBehaviour:
   slot: 4
   rank: 0
   active: 1
-  weapon: {fileID: 0}
   audioSource: {fileID: 82061525696926652}
 --- !u!114 &114921829818448814
 MonoBehaviour:
@@ -2597,10 +2600,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7d516cd45b05ce41a5be3e19d36eb92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tractor: {fileID: 114182349002600078}
-  detectedObjects:
-  - {fileID: 0}
-  scanner: {fileID: 0}
+  scannerEntries: []
   scanFrequency: 10
 --- !u!114 &114969239178157234
 MonoBehaviour:
@@ -2650,7 +2650,7 @@ ParticleSystem:
   stopAction: 0
   looping: 1
   prewarm: 0
-  playOnAwake: 1
+  playOnAwake: 0
   useUnscaledTime: 0
   autoRandomSeed: 1
   useRigidbodyForVelocity: 1
@@ -11773,7 +11773,7 @@ ParticleSystem:
   stopAction: 0
   looping: 1
   prewarm: 0
-  playOnAwake: 1
+  playOnAwake: 0
   useUnscaledTime: 0
   autoRandomSeed: 1
   useRigidbodyForVelocity: 1
@@ -16363,7 +16363,7 @@ ParticleSystem:
   stopAction: 0
   looping: 1
   prewarm: 0
-  playOnAwake: 1
+  playOnAwake: 0
   useUnscaledTime: 0
   autoRandomSeed: 1
   useRigidbodyForVelocity: 1
@@ -20896,7 +20896,7 @@ ParticleSystem:
   stopAction: 0
   looping: 1
   prewarm: 1
-  playOnAwake: 1
+  playOnAwake: 0
   useUnscaledTime: 0
   autoRandomSeed: 1
   useRigidbodyForVelocity: 1
@@ -25429,7 +25429,7 @@ ParticleSystem:
   stopAction: 0
   looping: 1
   prewarm: 0
-  playOnAwake: 1
+  playOnAwake: 0
   useUnscaledTime: 0
   autoRandomSeed: 1
   useRigidbodyForVelocity: 1
@@ -29962,7 +29962,7 @@ ParticleSystem:
   stopAction: 0
   looping: 1
   prewarm: 0
-  playOnAwake: 1
+  playOnAwake: 0
   useUnscaledTime: 0
   autoRandomSeed: 1
   useRigidbodyForVelocity: 1
@@ -34495,7 +34495,7 @@ ParticleSystem:
   stopAction: 0
   looping: 1
   prewarm: 0
-  playOnAwake: 1
+  playOnAwake: 0
   useUnscaledTime: 0
   autoRandomSeed: 1
   useRigidbodyForVelocity: 1
@@ -34562,7 +34562,7 @@ ParticleSystem:
     startLifetime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 5
+      scalar: 2
       minScalar: 5
       maxCurve:
         serializedVersion: 2
@@ -34669,7 +34669,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 0.7896552, g: 0.7896552, b: 0.7896552, a: 1}
+      maxColor: {r: 0.6603774, g: 0.6603774, b: 0.6603774, a: 1}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -35109,12 +35109,12 @@ ParticleSystem:
     type: 5
     angle: 25
     length: 5
-    boxThickness: {x: 0, y: 0, z: 0}
-    radiusThickness: 1
-    donutRadius: 0.2
+    boxThickness: {x: 0.1, y: 0.1, z: 0}
+    radiusThickness: 0.18
+    donutRadius: 0.17
     m_Position: {x: 0, y: 0, z: 0}
     m_Rotation: {x: 0, y: 0, z: 0}
-    m_Scale: {x: 51.141106, y: 38.699722, z: 22.231438}
+    m_Scale: {x: 45, y: 32, z: 31.481022}
     placementMode: 0
     m_MeshMaterialIndex: 0
     m_MeshNormalOffset: 0
@@ -35137,7 +35137,7 @@ ParticleSystem:
     sphericalDirectionAmount: 0
     randomPositionAmount: 0
     radius:
-      value: 20
+      value: 0.57
       mode: 0
       spread: 0
       speed:
@@ -35256,7 +35256,7 @@ ParticleSystem:
     rateOverTime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 30
+      scalar: 22
       minScalar: 10
       maxCurve:
         serializedVersion: 2
@@ -35686,7 +35686,7 @@ ParticleSystem:
         m_RotationOrder: 4
     separateAxes: 0
   ColorModule:
-    enabled: 0
+    enabled: 1
     gradient:
       serializedVersion: 2
       minMaxState: 1
@@ -35981,7 +35981,7 @@ ParticleSystem:
     z:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0
+      scalar: -20
       minScalar: 0
       maxCurve:
         serializedVersion: 2
@@ -36457,12 +36457,12 @@ ParticleSystem:
         m_RotationOrder: 4
     inWorldSpace: 0
   InheritVelocityModule:
-    enabled: 1
+    enabled: 0
     m_Mode: 1
     m_Curve:
       serializedVersion: 2
       minMaxState: 0
-      scalar: -1
+      scalar: -3
       minScalar: 0
       maxCurve:
         serializedVersion: 2
@@ -37817,7 +37817,7 @@ ParticleSystem:
     separateAxes: 0
     range: {x: 0, y: 1}
   ColorBySpeedModule:
-    enabled: 1
+    enabled: 0
     gradient:
       serializedVersion: 2
       minMaxState: 1
@@ -39170,13 +39170,13 @@ ParticleSystemRenderer:
   m_RenderMode: 0
   m_SortMode: 0
   m_MinParticleSize: 0
-  m_MaxParticleSize: 0.5
-  m_CameraVelocityScale: 0
+  m_MaxParticleSize: 0.1
+  m_CameraVelocityScale: 1
   m_VelocityScale: 0
-  m_LengthScale: 2
+  m_LengthScale: 1
   m_SortingFudge: 0
   m_NormalDirection: 1
-  m_RenderAlignment: 0
+  m_RenderAlignment: 2
   m_Pivot: {x: 0, y: 0, z: 0}
   m_UseCustomVertexStreams: 0
   m_EnableGPUInstancing: 0
