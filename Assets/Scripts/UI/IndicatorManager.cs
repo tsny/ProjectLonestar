@@ -12,6 +12,17 @@ public class IndicatorManager : ShipUIElement
 
     public TargetIndicator selectedIndicator;
 
+    public override void SetShip(Ship ship)
+    {
+        base.SetShip(ship);
+
+        ClearIndicators();
+
+        ship.hardpointSystem.scannerHardpoint.EntryChanged += HandleEntryChanged;
+
+        ship.hardpointSystem.scannerHardpoint.scannerEntries.ForEach(x => HandleEntryChanged(x, true));
+    }
+
     private void HandleIndicatorSelected(TargetIndicator newIndicator)
     {
         if (selectedIndicator != null) selectedIndicator.Deselect();
@@ -28,7 +39,8 @@ public class IndicatorManager : ShipUIElement
 
     public void ClearIndicators()
     {
-        foreach (TargetIndicator indicator in indicators) RemoveIndicator(indicator);
+        //foreach (TargetIndicator indicator in indicators) RemoveIndicator(indicator);
+        indicators.ForEach(x => RemoveIndicator(x));
 
         indicatorPairs.Clear();
         indicators.Clear();
@@ -42,7 +54,6 @@ public class IndicatorManager : ShipUIElement
         selectedIndicator = null;
 
         if (selectedIndicator != null) selectedIndicator.Deselect();
-
     }
 
     public void AddIndicator(WorldObject newTarget)

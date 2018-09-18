@@ -77,9 +77,24 @@ public class TargetIndicator : MonoBehaviour
         enabled = false;
     }
 
+    // Make world object setup the target border/color/healthbar
+    public void SetTarget(WorldObject newTarget)
+    {
+        target = newTarget;
+
+        target.Killed += HandleTargetKilled;
+        target.TookDamage += HandleTargetTookDamage;
+
+        name = target.name;
+
+        SetHealthBarFill();
+        SetShieldBarFill();
+
+        enabled = true;
+    }
+
     private void Update()
     {
-        //if (HasTarget == false) enabled = false;
         RangeCheck();
 
         CalculatePosition();
@@ -214,21 +229,6 @@ public class TargetIndicator : MonoBehaviour
         newColor.a = 1 - distanceRatio;
 
         buttonImage.color = newColor;
-    }
-
-    public void SetTarget(WorldObject newTarget)
-    {
-        target = newTarget;
-
-        target.Killed += HandleTargetKilled;
-        target.TookDamage += HandleTargetTookDamage;
-
-        name = target.name;
-
-        SetHealthBarFill();
-        SetShieldBarFill();
-
-        enabled = true;
     }
 
     private void SetButtonColor(Item item)

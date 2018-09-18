@@ -4,7 +4,6 @@ using System.Collections.Generic;
 
 public class ScannerHardpoint : Hardpoint
 {
-    //public TractorHardpoint tractor;
     public List<WorldObject> scannerEntries;
     public Scanner Scanner
     {
@@ -48,11 +47,7 @@ public class ScannerHardpoint : Hardpoint
 
     public void ClearEntries()
     {
-        foreach (var entry in scannerEntries)
-        {
-            RemoveEntry(entry);
-        }
-
+        scannerEntries.ForEach(x => RemoveEntry(x));
         scannerEntries.Clear();
     }
 

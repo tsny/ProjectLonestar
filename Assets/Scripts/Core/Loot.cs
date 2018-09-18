@@ -8,7 +8,7 @@ public class Loot : WorldObject
     public bool beingLooted;
     public float pickupRange = 5;
     public float outOfBoundsRange = 100;
-    [ReadOnly]
+
     public float distanceToTarget;
 
     [Range(0, 1)]
