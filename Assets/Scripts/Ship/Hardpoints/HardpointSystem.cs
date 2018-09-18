@@ -70,6 +70,12 @@ public class HardpointSystem : ShipComponent
         chargeRate = stats.energyChargeRate;
     }
 
+    public override void InitShipComponent(Ship sender, ShipStats stats)
+    {
+        base.InitShipComponent(sender, stats);
+        cruiseEngine = sender.cruiseEngine;
+    }
+
     public void DemountAll()
     {
         foreach (Hardpoint hardpoint in hardpoints)
@@ -114,6 +120,8 @@ public class HardpointSystem : ShipComponent
 
     public void FireWeaponHardpoint(WeaponHardpoint hardpointToFire)
     {
+        if (CanFireWeapons == false) return;
+
         if (hardpointToFire.Weapon.energyDraw < energy)
         {
             if (hardpointToFire.Fire())
@@ -162,6 +170,8 @@ public class HardpointSystem : ShipComponent
 
     public void MountLoadout(Loadout newLoadout)
     {
+        if (newLoadout == null) return;
+
         DemountAll();
 
         foreach (Equipment equipment in newLoadout.equipment)

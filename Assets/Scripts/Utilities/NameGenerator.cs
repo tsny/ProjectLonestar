@@ -8,7 +8,7 @@ public class NameGenerator : MonoBehaviour
     static string path;
     static string jsonFile;
 
-    public static Name Generate(Gender gender)
+    public static Name Generate(Gender gender = Gender.Male)
     {
         switch(gender)
         {
@@ -50,6 +50,16 @@ public class NameGenerator : MonoBehaviour
 
         return null;
     }    
+
+    public static string GenerateFirstName(Gender gender = Gender.Male)
+    {
+        return Generate(gender).First;
+    }
+
+    public static string GenerateLastName(Gender gender = Gender.Male)
+    {
+        return Generate(gender).Last;
+    }
 
     public static string GenerateFullName(Gender gender = Gender.Male)
     {

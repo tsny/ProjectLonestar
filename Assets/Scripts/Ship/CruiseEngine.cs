@@ -41,7 +41,16 @@ public class CruiseEngine : ShipComponent
         base.InitShipComponent(sender, stats);
 
         sender.engine.ThrottleChanged += HandleThrottleChanged;
+        sender.engine.DriftingChange += HandleDrifting;
         rb = sender.rb;
+    }
+
+    private void HandleDrifting(bool drifting)
+    {
+        if (drifting)
+        {
+            StopAnyCruise();
+        }
     }
 
     private void HandleThrottleChanged(Engine sender, float newThrottle, float oldThrottle)

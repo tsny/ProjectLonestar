@@ -87,12 +87,18 @@ public class Engine : ShipComponent
     public override void InitShipComponent(Ship sender, ShipStats stats)
     {
         base.InitShipComponent(sender, stats);
-        turnSpeed = stats.turnSpeed;
+        turnSpeed = sender.engineStats.turnSpeed;
         cruiseEngine = sender.cruiseEngine;
         rb = sender.rb;
         mass = rb.mass;
         drag = rb.drag;
         sender.Possession += HandleOwnerPossession;
+        cruiseEngine.CruiseStateChanged += HandleCruiseChange;
+    }
+
+    private void HandleCruiseChange(CruiseEngine sender)
+    {
+        Drifting = false;
     }
 
     private void HandleOwnerPossession(PlayerController pc, Ship sender, bool possessed)

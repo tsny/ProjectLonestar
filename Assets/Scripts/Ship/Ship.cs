@@ -5,14 +5,15 @@ using UnityEngine;
 
 public class Ship : WorldObject
 {
-    [Header("Details")]
-    protected string pilotFirstName = "First Name";
-    protected string pilotLastName = "Last Name";
+    [Header("Stats")]
+    public PilotDetails pilotDetails;
+    public EngineStats engineStats;
+    public ShipDetails shipDetails;
+    public ShipStats stats;
 
-    [Header("References")]
+    [Header("Ship Components")]
     public HardpointSystem hardpointSystem;
     public Vector3 aimPosition;
-    public ShipStats stats;
     public Engine engine;
     public CruiseEngine cruiseEngine;
     public ShipCamera shipCam;
@@ -94,10 +95,36 @@ public class Ship : WorldObject
 
     protected override void SetHierarchyName()
     {
-        pilotFirstName = NameGenerator.Generate(Gender.Male).First;
-        pilotLastName = NameGenerator.Generate(Gender.Male).Last;
-
-        name =  pilotLastName + " - " + stats.shipName; 
     }
 
+    private void FixedUpdate()
+    {
+        if (cruiseEngine == null) return;
+
+        float currentMaxSpeed = 0;
+
+        switch (cruiseEngine.State)
+        {
+            case CruiseEngine.CruiseState.Off:
+                currentMaxSpeed = engineStats.maxAfterburnSpeed;
+                break;
+
+            case CruiseEngine.CruiseState.Charging:
+                currentMaxSpeed = engineStats.maxNormalSpeed;
+                break;
+
+            case CruiseEngine.CruiseState.On:
+                currentMaxSpeed = engineStats.maxCruiseSpeed;
+                break;
+
+            case CruiseEngine.CruiseState.Disrupted:
+                currentMaxSpeed = engineStats.maxAfterburnSpeed;
+                break;
+
+            default:
+                break;
+        }
+
+        rb.velocity = Vector3.ClampMagnitude(rb.velocity, currentMaxSpeed);
+    }
 }
