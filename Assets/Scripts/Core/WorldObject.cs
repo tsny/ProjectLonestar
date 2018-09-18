@@ -52,4 +52,9 @@ public class WorldObject : MonoBehaviour
         OnKilled();
         Destroy(gameObject);
     }
+
+    public virtual void SetupTargetIndicator(TargetIndicator indicator)
+    {
+        indicator.header.text = "World Object";
+    }
 }

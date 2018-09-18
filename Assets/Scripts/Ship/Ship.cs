@@ -18,7 +18,6 @@ public class Ship : WorldObject
     public ShipCamera shipCam;
     public Rigidbody rb;
     public List<ShipComponent> components;
-    public Inventory inventory;
 
     public delegate void PossessionEventHandler(PlayerController pc, Ship sender, bool possessed);
     public event PossessionEventHandler Possession;
@@ -27,7 +26,6 @@ public class Ship : WorldObject
     {
         hardpointSystem = GetComponentInChildren<HardpointSystem>();
         cruiseEngine = GetComponentInChildren<CruiseEngine>();
-        inventory = GetComponentInChildren<Inventory>();
         shipCam = GetComponentInChildren<ShipCamera>();
         engine = GetComponentInChildren<Engine>();
         rb = GetComponentInChildren<Rigidbody>();
@@ -89,10 +87,9 @@ public class Ship : WorldObject
         }
 
         hullHealth -= weapon.hullDamage;
+        OnTookDamage(false, weapon.hullDamage);
 
         if (hullHealth <= 0) Die();
-
-        OnTookDamage(false, weapon.hullDamage);
     }
 
     protected override void SetHierarchyName()

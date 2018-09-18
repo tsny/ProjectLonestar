@@ -10,6 +10,18 @@ public class FLTerminal : Terminal
         FindObjectOfType<MonoBehaviour>().StartCoroutine(VersionChecker.GetVersions());
     }
 
+    [RegisterCommand(Help = "Mounts a default loadout onto the current ship", MinArgCount = 0, MaxArgCount = 0)]
+    static void MountLoadout(CommandArg[] args)
+    {
+        if (PlayerControllerExistsInScene() == false) return;
+
+        var pc = FindObjectOfType<PlayerController>();
+
+        if (pc.controlledShip == null) return;
+
+        pc.controlledShip.hardpointSystem.MountLoadout(GameSettings.Instance.defaultLoadout);
+    }
+
     [RegisterCommand(Help = "Toggle GodMode on Current Ship", MinArgCount = 0, MaxArgCount = 0)]
     static void God(CommandArg[] args)
     {

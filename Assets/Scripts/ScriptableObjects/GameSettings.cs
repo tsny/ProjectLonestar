@@ -10,6 +10,7 @@ public class GameSettings : SingletonScriptableObject<GameSettings>
     public GameObject HUDPrefab;
 
     public Loadout defaultLoadout;
+    public Inventory playerInventory;
 
     public GameObject[] prefabsToSpawnAtLoad;
 
@@ -50,6 +51,6 @@ public class GameSettings : SingletonScriptableObject<GameSettings>
 
         playerController.Possess(playerShip);
 
-        var hud = playerController.SpawnHUD();
+        playerController.SpawnHUD();
     }
 }

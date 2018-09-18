@@ -15,14 +15,14 @@ public class ShipSpawner : ScriptableObject
     public static Ship SpawnShip(GameObject ship, ShipStats stats, Loadout loadout, Vector3 spawnPosition)
     {
         var shipRef = Instantiate(ship, spawnPosition, Quaternion.identity).GetComponent<Ship>();
-        shipRef.inventory.Initialize(loadout);
+        shipRef.hardpointSystem.MountLoadout(loadout);
         return shipRef;
     }
 
     public static Ship SpawnShip(GameObject ship, Loadout loadout, Vector3 spawnPosition)
     {
         var shipRef = Instantiate(ship, spawnPosition, Quaternion.identity).GetComponent<Ship>();
-        shipRef.inventory.Initialize(loadout);
+        shipRef.hardpointSystem.MountLoadout(loadout);
         return shipRef;
     }
 

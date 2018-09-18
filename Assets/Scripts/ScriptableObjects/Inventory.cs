@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [Serializable]
-public class Inventory : MonoBehaviour
+public class Inventory : ScriptableObject
 {
     public int Capacity { get { return items.Capacity; } }
     public int CurrentVolume { get { return items.Count; } }
@@ -27,12 +27,6 @@ public class Inventory : MonoBehaviour
     public List<Item> items;
     public GameObject lootPrefab;
     
-    public void Initialize(Loadout loadout)
-    {
-        items.AddRange(loadout.equipment.ToArray());
-        transform.parent.GetComponentInChildren<HardpointSystem>().MountLoadout(loadout);
-    }
-
     /// <summary>
     /// Adds an item to the inventory and returns a new item if the inventory is full 
     /// </summary>
@@ -92,9 +86,9 @@ public class Inventory : MonoBehaviour
         return null;
     }
 
-    public void JettisonItem(Item item)
+    public void JettisonItem(Item item, Vector3 spawnPosition)
     {
-        Loot loot = Instantiate(lootPrefab, transform.position - Vector3.down, Quaternion.identity).GetComponent<Loot>();
+        Loot loot = Instantiate(lootPrefab, spawnPosition - Vector3.down, Quaternion.identity).GetComponent<Loot>();
         loot.item = item;
     }
 }
