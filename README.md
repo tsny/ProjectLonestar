@@ -38,5 +38,6 @@ Brackeys - UI
 @Stillwwater - Terminal
 
 #### Unity Forums
-Da Cookie - Singleton Scriptable Objects
-Desi Quintans - Flycam
+QuantumRyan - Automatic Version Incrementor  
+Da Cookie - Singleton Scriptable Objects  
+Desi Quintans - Flycam  
