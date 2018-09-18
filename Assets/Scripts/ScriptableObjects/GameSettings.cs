@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEditor;
+using UnityEngine.SceneManagement;
 
 [CreateAssetMenu(menuName = "Settings/GameSettings")]
 public class GameSettings : SingletonScriptableObject<GameSettings>
@@ -12,11 +13,23 @@ public class GameSettings : SingletonScriptableObject<GameSettings>
 
     public GameObject[] prefabsToSpawnAtLoad;
 
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+    static void OnRuntimeMethod()
+    {
+        Instance.SpawnLoadPrefabs();
+        SceneManager.activeSceneChanged += HandleNewScene;
+    }
+
+    private static void HandleNewScene(Scene arg0, Scene arg1)
+    {
+        Instance.SpawnNewScenePrefabs();
+    }
+
     public void SpawnLoadPrefabs()
     {
         foreach (var prefab in prefabsToSpawnAtLoad)
         {
-            Instantiate(prefab);
+            DontDestroyOnLoad(Instantiate(prefab));
         }
     }
 
