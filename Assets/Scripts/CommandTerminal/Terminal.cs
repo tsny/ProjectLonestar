@@ -173,6 +173,8 @@ namespace CommandTerminal
             foreach (var command in Shell.Commands) {
                 Autocomplete.Register(command.Key);
             }
+
+            print("Type 'help' for a list of commands");
         }
 
         void OnGUI() {
