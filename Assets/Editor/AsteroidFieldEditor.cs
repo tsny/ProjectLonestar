@@ -1,46 +1,91 @@
-﻿using UnityEditor;
+﻿using System.Linq;
+using UnityEditor;
 using UnityEngine;
 using EGL = UnityEditor.EditorGUILayout;
 
 [CustomEditor(typeof(AsteroidField))]
 public class AsteroidFieldEditor : Editor 
 {
-    public bool scaleUsesRange;
+    AsteroidField field;
 
     public override void OnInspectorGUI()
     {
-        base.OnInspectorGUI();
+        field = (AsteroidField)target;
+
+        EGL.LabelField("Settings", EditorStyles.boldLabel);
+        field.hideFlags = (HideFlags) EGL.EnumPopup("Hide Flags", field.hideFlags);
+        field.desiredAsteroids = EGL.IntField("Desired Asteroids", field.desiredAsteroids);
         EGL.Space();
 
-        AsteroidField field = (AsteroidField)target;
-
-        var newAsteroidGameObject = (GameObject) EGL.ObjectField(new GUIContent("Asteroid Game Object", "The game object that represents the spawned asteroids"), field.AsteroidGameObject, typeof(GameObject), false);
-
-        field.AsteroidGameObject = newAsteroidGameObject ?? field.AsteroidGameObject;
-
-        field.InnerRadius = EGL.FloatField(new GUIContent("Inner Radius", "The inner radius of the field"), field.InnerRadius);
-        field.OuterRadius = EGL.Slider("Outer Radius", field.OuterRadius, field.InnerRadius, 10000 + field.InnerRadius);
-
+        EGL.LabelField("GameObject", EditorStyles.boldLabel);
+        ShowGameObjectInformation();
         EGL.Space();
 
-        scaleUsesRange = EGL.Toggle(new GUIContent("Scale uses range?", "Whether the asteroids spawned should pick a scale from a specified range."), scaleUsesRange);
+        EGL.LabelField("Radius", EditorStyles.boldLabel);
+        ShowRadiusInfromation();
+        EGL.Space();
 
-        if (scaleUsesRange)
+        EGL.LabelField("Scale", EditorStyles.boldLabel);
+        ShowScaleInformation();
+        EGL.Space();
+
+        ShowButtons();
+    }
+
+    private void ShowScaleInformation()
+    {
+        field.scaleUsesRange = EGL.Toggle(new GUIContent("Scale uses range?", "Whether the asteroids spawned should pick a scale from a specified range."), field.scaleUsesRange);
+
+        if (field.scaleUsesRange)
         {
-            field.AsteroidLowerScale = EGL.Slider("Lower range", field.AsteroidLowerScale, 0, 20);
-            field.AsteroidUpperScale = EGL.Slider("Upper range", field.AsteroidUpperScale, field.AsteroidLowerScale, field.AsteroidLowerScale + 20);
+            field.asteroidLowerScale = EGL.Slider("Lower range", field.asteroidLowerScale, 0, 20);
+            field.asteroidUpperScale = EGL.Slider("Upper range", field.asteroidUpperScale, field.asteroidLowerScale, field.asteroidLowerScale + 20);
         }
 
         else
         {
-            field.AsteroidScale = EGL.Slider("Scale", field.AsteroidScale, 0, 20);
+            field.asteroidScaleMultiplier = EGL.Slider("Scale Multiplier", field.asteroidScaleMultiplier, 0, 20);
+        }
+    }
+
+    private void ShowRadiusInfromation()
+    {
+        field.innerRadius = EGL.FloatField(new GUIContent("Inner Radius", "The inner radius of the field"), field.innerRadius);
+        field.outerRadius = EGL.Slider("Outer Radius", field.outerRadius, field.innerRadius, 10000 + field.innerRadius);
+    }
+
+    private void ShowGameObjectInformation()
+    {
+        field.useArrayOfAsteroids = EGL.Toggle("Use Array", field.useArrayOfAsteroids);
+
+        if (field.useArrayOfAsteroids)
+        {
+            SerializedObject serialObject = new SerializedObject(target);
+            SerializedProperty serialProperty = serialObject.FindProperty("asteroids");
+
+            EGL.PropertyField(serialProperty, new GUIContent("Asteroids"), true);
+
+            serialObject.ApplyModifiedProperties();
         }
 
-        using (new EditorGUI.DisabledScope(field.AsteroidGameObject == null))
+        else
+        {
+            var newAsteroidGameObject = (GameObject) EGL.ObjectField(new GUIContent("Asteroid Game Object", "The game object that represents the spawned asteroids"), field.asteroid, typeof(GameObject), false); 
+
+            if (GUI.changed)
+            {
+                field.asteroid = newAsteroidGameObject;
+            }
+        }
+    }
+
+    private void ShowButtons()
+    { 
+        using (new EditorGUI.DisabledScope(field.asteroid == null))
         {
             if(GUILayout.Button("Generate Field"))
             {
-                field.GenerateField(scaleUsesRange);
+                field.GenerateField();
             }
         }
 
