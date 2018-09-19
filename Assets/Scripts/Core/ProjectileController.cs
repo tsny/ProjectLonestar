@@ -4,6 +4,8 @@ public class ProjectileController : MonoBehaviour
 {
     public float distanceTraveled = 0f;
 
+    public GameObject owner;
+
     public Weapon weapon;
     public Vector3 target;
     public ParticleSystem mainEffect;
@@ -27,6 +29,7 @@ public class ProjectileController : MonoBehaviour
     public void Initialize(Ship owner, Weapon weapon)
     {
         this.weapon = weapon;
+        this.owner = owner.gameObject;
 
         Physics.IgnoreCollision(owner.GetComponentInChildren<Collider>(), collider);
 

@@ -92,7 +92,7 @@ Transform:
   m_Children:
   - {fileID: 4173790465708128}
   m_Father: {fileID: 4025886899334472}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4025886899334472
 Transform:
@@ -104,8 +104,8 @@ Transform:
   m_LocalPosition: {x: 28.28103, y: 20.459213, z: 39.731407}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 4415133987090020}
   - {fileID: 4025560103364470}
+  - {fileID: 4415133987090020}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -133,7 +133,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4025886899334472}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!54 &54008318287557044
 Rigidbody:
@@ -149,7 +149,7 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 112
-  m_CollisionDetection: 0
+  m_CollisionDetection: 2
 --- !u!114 &114910594663979154
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -162,6 +162,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   distanceTraveled: 0
+  owner: {fileID: 0}
   weapon: {fileID: 11400000, guid: 8cdb4af4d97ee484aaa94c7d339b79c6, type: 2}
   target: {x: 0, y: 0, z: 0}
   mainEffect: {fileID: 198617592353655714}

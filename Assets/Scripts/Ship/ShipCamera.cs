@@ -98,7 +98,8 @@ public class ShipCamera : ShipComponent
 
         if (hitInfo.collider != null)
         {
-            return hitInfo.collider.transform.position;
+            return hitInfo.point;
+            //return hitInfo.collider.transform.position;
         }
 
         else

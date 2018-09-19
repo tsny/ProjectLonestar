@@ -64,7 +64,9 @@ public class Loot : WorldObject
             }
 
             targetInventory.AddItem(item);
+
             Die();
+
             return;
         }
 
