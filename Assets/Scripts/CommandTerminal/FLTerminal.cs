@@ -17,9 +17,9 @@ public class FLTerminal : Terminal
 
         var pc = FindObjectOfType<PlayerController>();
 
-        if (pc.controlledShip == null) return;
+        if (pc.ship == null) return;
 
-        pc.controlledShip.hardpointSystem.MountLoadout(GameSettings.Instance.defaultLoadout);
+        pc.ship.hardpointSystem.MountLoadout(GameSettings.Instance.defaultLoadout);
     }
 
     [RegisterCommand(Help = "Toggle GodMode on Current Ship", MinArgCount = 0, MaxArgCount = 0)]
@@ -29,11 +29,11 @@ public class FLTerminal : Terminal
 
         var pc = FindObjectOfType<PlayerController>();
 
-        if (pc.controlledShip == null) return;
+        if (pc.ship == null) return;
 
-        pc.controlledShip.invulnerable = !pc.controlledShip.invulnerable;
+        pc.ship.invulnerable = !pc.ship.invulnerable;
 
-        print("Godmode : " + pc.controlledShip.invulnerable);
+        print("Godmode : " + pc.ship.invulnerable);
     }
 
     [RegisterCommand(Help = "Spawns a ship, args: player, empty", MinArgCount = 1, MaxArgCount = 1)]
@@ -65,7 +65,7 @@ public class FLTerminal : Terminal
         if (PlayerControllerExistsInScene() == false) return;
 
         var playerController = FindObjectOfType<PlayerController>();
-        playerController.controlledShip.hardpointSystem.EnableInfiniteEnergy();
+        playerController.ship.hardpointSystem.EnableInfiniteEnergy();
     }
 
     [RegisterCommand(Help = "Gives current ship unlimited afterburner energy", MinArgCount = 0, MaxArgCount = 0)]
@@ -73,18 +73,18 @@ public class FLTerminal : Terminal
     {
         if (PlayerControllerExistsInScene() == false) return;
 
-        var abHardpoint = FindObjectOfType<PlayerController>().controlledShip.hardpointSystem.afterburnerHardpoint;
+        var abHardpoint = FindObjectOfType<PlayerController>().ship.hardpointSystem.afterburnerHardpoint;
         abHardpoint.drain = abHardpoint.drain == 0 ? 100 : 0;
 
         print("Toggled infinite afterburner...");
     }
 
     [RegisterCommand(Help = "Unpossesses the current ship", MinArgCount = 0, MaxArgCount = 0)]
-    static void UnPossess(CommandArg[] args)
+    static void Release(CommandArg[] args)
     {
         if (PlayerControllerExistsInScene() == false) return;
 
-        FindObjectOfType<PlayerController>().Possess(null);
+        FindObjectOfType<PlayerController>().Release();
 
         print("Ship unpossessed");
     }
@@ -102,7 +102,7 @@ public class FLTerminal : Terminal
     {
         if (PlayerControllerExistsInScene() == false) return;
 
-        FindObjectOfType<PlayerController>().controlledShip.engine.throttlePower = args[0].Int;
+        FindObjectOfType<PlayerController>().ship.engine.throttlePower = args[0].Int;
     }
 
     [RegisterCommand(Name = "cruise.power", Help = "Change the current ship's cruise power", MinArgCount = 1, MaxArgCount = 1)]
@@ -110,7 +110,7 @@ public class FLTerminal : Terminal
     {
         if (PlayerControllerExistsInScene() == false) return;
 
-        FindObjectOfType<PlayerController>().controlledShip.cruiseEngine.cruisePower = args[0].Int;
+        FindObjectOfType<PlayerController>().ship.cruiseEngine.cruisePower = args[0].Int;
     }
 
     private static bool PlayerControllerExistsInScene()

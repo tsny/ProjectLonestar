@@ -19,13 +19,15 @@ public class ScannerUI : ShipUIElement
         RefreshScannerList();
     }
 
+    protected override void ClearShip()
+    {
+        scannerHardpoint.EntryChanged -= HandleScannerEntryChanged;
+        base.ClearShip();
+    }
+
     private void HandleScannerEntryChanged(WorldObject entry, bool added)
     {
-        if (added)
-        {
-            var newButton = Instantiate(scannerButtonPrefab, buttonVLG.transform).GetComponent<ScannerPanelButton>();
-            newButton.Setup(entry, ship);
-        }
+        if (added) CreatePanelButton(entry);
     }
 
     public ScannerPanelButton CreatePanelButton(WorldObject entry)
@@ -38,14 +40,19 @@ public class ScannerUI : ShipUIElement
 
     private void RefreshScannerList()
     {
-        foreach (Transform button in buttonVLG.transform)
-        {
-            Destroy(button.gameObject);
-        }
+        ClearScannerList();
 
         foreach (var entry in scannerHardpoint.scannerEntries)
         {
             CreatePanelButton(entry);
+        }
+    }
+
+    public void ClearScannerList()
+    {
+        foreach (Transform button in buttonVLG.transform)
+        {
+            Destroy(button.gameObject);
         }
     }
 }

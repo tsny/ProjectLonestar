@@ -66,6 +66,8 @@ public class CruiseEngine : ShipComponent
 
     public void StopAnyCruise()
     {
+        if (State == CruiseState.Off) return;
+
         if (State == CruiseState.Charging)
         {
             StopCoroutine(chargeCoroutine);

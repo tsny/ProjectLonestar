@@ -5,10 +5,10 @@ using System.Linq;
 
 public class ShipComponent : MonoBehaviour
 {
-    protected Ship owningShip;
+    protected Ship ship;
 
     public virtual void Setup(Ship sender)
     {
-        owningShip = sender;
+        ship = sender;
     }
 }

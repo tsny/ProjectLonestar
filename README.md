@@ -41,3 +41,6 @@ Brackeys - UI
 QuantumRyan - Automatic Version Incrementor  
 Da Cookie - Singleton Scriptable Objects  
 Desi Quintans - Flycam  
+
+#### Assets
+Splash screen background - Funerium.Deviantart.com

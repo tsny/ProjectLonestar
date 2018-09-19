@@ -40,7 +40,7 @@ public class WeaponHardpoint : Hardpoint
         if (Weapon == null || OnCooldown) return false;
 
         GameObject newProjectile = Instantiate(Weapon.projectile, transform.position, Quaternion.identity);
-        newProjectile.GetComponent<ProjectileController>().Initialize(owningShip, Weapon);
+        newProjectile.GetComponent<ProjectileController>().Initialize(ship, Weapon);
 
         audioSource.PlayOneShot(Weapon.clip);
 

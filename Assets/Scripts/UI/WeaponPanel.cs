@@ -18,6 +18,12 @@ public class WeaponPanel : ShipUIElement
         PopulatePanel();
     }
 
+    protected override void ClearShip()
+    {
+        ClearPanel();
+        base.ClearShip();
+    }
+
     private void PopulatePanel()
     {
         foreach (WeaponHardpoint weaponHardpoint in hardpointSystem.weaponHardpoints.Values)

@@ -5,6 +5,7 @@ using UnityEngine;
 public class ShipEffectManager : ShipComponent
 {
     public ParticleSystem[] engineEffects;
+    public TrailRenderer[] trailEffects;
     public ParticleSystem chargeCruiseEffect;
     public ParticleSystem fullCruiseEffect;
     public ParticleSystem dustEffect;
@@ -18,6 +19,25 @@ public class ShipEffectManager : ShipComponent
         base.Setup(sender);
         sender.cruiseEngine.CruiseStateChanged += HandleCruiseChanged;
         sender.Possession += HandleOwnerPossession;
+        sender.engine.DriftingChange += HandleDrifting;
+    }
+
+    private void HandleDrifting(bool drifting)
+    {
+        foreach (var trail in trailEffects)
+        {
+            if (drifting)
+            {
+                //trail.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+                trail.enabled = false;
+            }
+
+            else
+            {
+                //trail.Play();
+                trail.enabled = true;
+            }
+        }
     }
 
     private void HandleOwnerPossession(PlayerController pc, Ship sender, bool possessed)

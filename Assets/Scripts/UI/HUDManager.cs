@@ -22,18 +22,18 @@ public class HUDManager : MonoBehaviour
         mouseFlightText.text = "";
     }
 
-    public void InitializeHUD(PlayerController playerController)
+    public void SetPlayerController(PlayerController playerController)
     {
         this.playerController = playerController;
-        uiElements.ForEach(x => x.SetShip(playerController.controlledShip));
 
-        playerController.Possession += HandlePossession;
+        playerController.PossessedNewShip += HandlePossessedNewShip;
         playerController.MouseStateChanged += HandleMouseStateChange;
-        playerController.controlledShip.cruiseEngine.CruiseStateChanged += HandleCruiseChanged;
+        playerController.ship.cruiseEngine.CruiseStateChanged += HandleCruiseChanged;
 
-        if (playerController.controlledShip != null)
+        if (playerController.ship != null)
         {
-            SetCruiseText(playerController.controlledShip.cruiseEngine.State);
+            uiElements.ForEach(x => x.SetShip(playerController.ship));
+            SetCruiseText(playerController.ship.cruiseEngine.State);
         }
     }
 
@@ -42,9 +42,9 @@ public class HUDManager : MonoBehaviour
         SetCruiseText(sender.State);
     }
 
-    private void HandlePossession(PossessionEventArgs args)
+    private void HandlePossessedNewShip(PlayerController sender, PossessionEventArgs args)
     {
-        uiElements.ForEach(x => x.SetShip(playerController.controlledShip));
+        uiElements.ForEach(x => x.SetShip(playerController.ship));
     }
 
     private void HandleGamePaused(bool paused)

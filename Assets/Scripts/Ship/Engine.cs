@@ -30,9 +30,10 @@ public class Engine : ShipComponent
 
         set
         {
+            if (value == throttle) return;
             var oldThrottle = throttle;
             throttle = Mathf.Clamp(value, 0, 1);
-            if (ThrottleChanged != null) ThrottleChanged(this, throttle, oldThrottle);
+            OnThrottleChange(value, oldThrottle);
         }
     }
 
@@ -46,16 +47,17 @@ public class Engine : ShipComponent
 
         set
         {
+            if (value == strafe) return;
             var oldStrafe = strafe;
             strafe = Mathf.Clamp(value, -1, 1);
-            if (StrafeChanged != null) StrafeChanged(this, strafe, oldStrafe);
+            OnStrafeChange(value, oldStrafe);
         }
     }
     public float throttleChangeIncrement = .1f;
 
     public bool IsStrafing { get { return Strafe != 0; } }
 
-    public bool drifting;
+    private bool drifting;
     public bool Drifting
     {
         get
@@ -65,8 +67,9 @@ public class Engine : ShipComponent
 
         set
         {
+            if (value == drifting) return;
             drifting = value;
-            if (DriftingChange != null) DriftingChange(value);
+            OnDriftingChange(value);
         }
     }
 
@@ -90,15 +93,48 @@ public class Engine : ShipComponent
         turnSpeed = sender.engineStats.turnSpeed;
         cruiseEngine = sender.cruiseEngine;
         rb = sender.rb;
+
         mass = rb.mass;
         drag = rb.drag;
+
         sender.Possession += HandleOwnerPossession;
         cruiseEngine.CruiseStateChanged += HandleCruiseChange;
     }
 
-    private void HandleCruiseChange(CruiseEngine sender)
+    private void OnDriftingChange(bool isDrifting)
+    {
+        if (isDrifting)
+        {
+            rb.drag = driftDrag;
+            rb.mass = driftMass;
+        }
+
+        else
+        {
+            rb.drag = drag;
+            rb.mass = mass;
+        }
+
+        if (DriftingChange != null) DriftingChange(isDrifting);
+    }
+
+    private void OnStrafeChange(float newStrafe, float oldStrafe)
+    {
+        if (StrafeChanged != null) StrafeChanged(this, newStrafe, oldStrafe);
+    }
+
+    private void OnThrottleChange(float newThrottle, float oldThrottle)
     {
         Drifting = false;
+        if (ThrottleChanged != null) ThrottleChanged(this, newThrottle, oldThrottle);
+    }
+
+    private void HandleCruiseChange(CruiseEngine sender)
+    {
+        if (sender.State != CruiseEngine.CruiseState.Off)
+        {
+            Drifting = false;
+        }
     }
 
     private void HandleOwnerPossession(PlayerController pc, Ship sender, bool possessed)
@@ -122,7 +158,7 @@ public class Engine : ShipComponent
 
     private void ApplyThrottleForces()
     {
-        if (Throttle > 0)
+        if (Throttle > 0 && Drifting == false)
         {
             rb.AddForce(rb.transform.forward * Throttle * throttlePower);
         }
@@ -130,11 +166,13 @@ public class Engine : ShipComponent
 
     public void ThrottleUp()
     {
+        Drifting = false;
         Throttle = Mathf.MoveTowards(Throttle, 1, throttleChangeIncrement);
     }
 
     public void ThrottleDown()
     {
+        Drifting = false;
         Throttle = Mathf.MoveTowards(Throttle, 0, throttleChangeIncrement);
     }
 
@@ -161,22 +199,5 @@ public class Engine : ShipComponent
     {
         amount = Mathf.Clamp(amount, -1, 1);
         transform.Rotate(new Vector3(0, 0, turnSpeed * amount));
-    }
-
-    public void ToggleDrifting()
-    {
-        Drifting = !Drifting;
-
-        if (Drifting)
-        {
-            rb.drag = driftDrag;
-            rb.mass = driftMass;
-        }
-
-        else
-        {
-            rb.drag = drag;
-            rb.mass = mass;
-        }
     }
 }

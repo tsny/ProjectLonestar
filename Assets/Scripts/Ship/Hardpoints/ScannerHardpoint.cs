@@ -40,7 +40,7 @@ public class ScannerHardpoint : Hardpoint
 
         foreach (WorldObject scannedObject in scannedObjects)
         {
-            if (scannerEntries.Contains(scannedObject) || scannedObject == owningShip) continue;
+            if (scannerEntries.Contains(scannedObject) || scannedObject == ship) continue;
             AddEntry(scannedObject);
         }
     }
@@ -58,7 +58,7 @@ public class ScannerHardpoint : Hardpoint
 
     public void AddEntry(WorldObject objectToAdd)
     {
-        if (scannerEntries.Contains(objectToAdd) || objectToAdd == owningShip) return;
+        if (scannerEntries.Contains(objectToAdd) || objectToAdd == ship) return;
     
         scannerEntries.Add(objectToAdd);
 

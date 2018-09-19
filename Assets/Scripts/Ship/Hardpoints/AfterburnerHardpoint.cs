@@ -74,7 +74,7 @@ public class AfterburnerHardpoint : Hardpoint
             charge = Mathf.MoveTowards(charge, 0, drain * Time.deltaTime);
             if (charge <= 0) break;
 
-            rb.AddForce(rb.transform.forward * thrust);
+            rb.AddForce(rb.transform.forward * Afterburner.thrust);
             yield return new WaitForFixedUpdate();
         }
 

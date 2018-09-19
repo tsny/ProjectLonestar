@@ -26,7 +26,7 @@ public class ShipEditor : Editor
 
         if (!Application.isPlaying || playerController == null) return;
 
-        if (playerController.controlledShip != ship) ShowPossessionHandle();
+        if (playerController.ship != ship) ShowPossessionHandle();
     }
 
     private void ShowPossessionHandle()
@@ -41,7 +41,7 @@ public class ShipEditor : Editor
     {
         if (!Application.isPlaying || playerController == null) return;
 
-        if (playerController.controlledShip != ship)
+        if (playerController.ship != ship)
         {
             if (GUILayout.Button("Possess"))
             {

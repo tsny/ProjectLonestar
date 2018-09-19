@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    public bool PossessingPawn
+    public bool HasPawn
     {
         get
         {
-            return controlledShip != null;
+            return ship != null;
         }
     }
 
@@ -34,11 +34,13 @@ public class PlayerController : MonoBehaviour
     // The amount of time that the controller waits until it 
     // determines the player is trying to switch to manual mouse flight
     public float mouseHoldDelay = .1f;
-    public Ship controlledShip;
+
+    public Ship ship;
     public GameObject hudPrefab;
 
-    public delegate void PossessionEventHandler(PossessionEventArgs args);
-    public event PossessionEventHandler Possession;
+    public delegate void PossessionEventHandler(PlayerController sender, PossessionEventArgs args);
+    public event PossessionEventHandler PossessedNewShip;
+    public event PossessionEventHandler ReleasedShip;
 
     public delegate void MouseStateEventHandler(MouseState state);
     public event MouseStateEventHandler MouseStateChanged;
@@ -48,10 +50,21 @@ public class PlayerController : MonoBehaviour
         name = "PLAYER CONTROLLER";
     }
 
+    // This should be eleswhere
     public Ship SpawnPlayer(GameObject shipPrefab, Loadout loadout)
     {
-        controlledShip = ShipSpawner.SpawnShip(shipPrefab, Vector3.zero, loadout);
-        return controlledShip;
+        ship = ShipSpawner.SpawnShip(shipPrefab, Vector3.zero, loadout);
+        return ship;
+    }
+
+    protected virtual void OnPossessedNewShip(PossessionEventArgs args)
+    {
+        if (PossessedNewShip != null) PossessedNewShip(this, args);
+    }
+
+    protected virtual void OnReleasedShip(Ship releasedShip)
+    {
+        if (ReleasedShip != null) ReleasedShip(this, new PossessionEventArgs(null, releasedShip));
     }
 
     public HUDManager SpawnHUD()
@@ -63,7 +76,7 @@ public class PlayerController : MonoBehaviour
             hud = Instantiate(GameSettings.Instance.HUDPrefab).GetComponent<HUDManager>();
         }
 
-        hud.InitializeHUD(this);
+        hud.SetPlayerController(this);
 
         return hud;
     }
@@ -72,33 +85,36 @@ public class PlayerController : MonoBehaviour
     {
         if (newShip == null)
         {
-            Eject();
+            Release();
             return;
         }
 
-        var oldShip = controlledShip;
+        var oldShip = ship;
 
         if (oldShip != null)
         {
             oldShip.SetPossessed(this, false);
         }
 
-        controlledShip = newShip;
+        ship = newShip;
 
         newShip.SetPossessed(this, true);
 
-        if (Possession != null) Possession(new PossessionEventArgs(newShip, oldShip, this));
+        OnPossessedNewShip(new PossessionEventArgs(ship, oldShip));
 
         enabled = true;
     }
 
-    public void Eject()
+    public void Release()
     {
-        controlledShip.SetPossessed(this, false);
-        controlledShip = null;
+        ship.SetPossessed(this, false);
         MouseState = MouseState.Off;
         enabled = false;
+
         Instantiate(GameSettings.Instance.flycamPrefab);
+        OnReleasedShip(ship);
+
+        ship = null;
     }
 
     private void Update()
@@ -110,28 +126,28 @@ public class PlayerController : MonoBehaviour
             #region movement
             if(Input.GetKey(InputManager.ThrottleUpKey) || Input.GetAxis("Mouse ScrollWheel") > 0f)
             {
-                controlledShip.engine.ThrottleUp();
+                ship.engine.ThrottleUp();
             }
 
             if(Input.GetKey(InputManager.ThrottleDownKey) || Input.GetAxis("Mouse ScrollWheel") < 0f)
             {
-                controlledShip.engine.ThrottleDown();
+                ship.engine.ThrottleDown();
             }
 
             if(Input.GetKey(InputManager.StrafeLeftKey))
             {
-                controlledShip.engine.Strafe = -1; 
+                ship.engine.Strafe = -1; 
             }
 
             if(Input.GetKey(InputManager.StrafeRightKey))
             {
-                controlledShip.engine.Strafe = 1; 
+                ship.engine.Strafe = 1; 
             }
 
             // If neither strafe key is pressed, reset the ship's strafing
             if(!Input.GetKey(InputManager.StrafeRightKey) && !Input.GetKey(InputManager.StrafeLeftKey))
             {
-                controlledShip.engine.Strafe = 0; 
+                ship.engine.Strafe = 0; 
             }         
 
             if(Input.GetKeyDown(InputManager.ToggleMouseFlightKey))
@@ -141,12 +157,12 @@ public class PlayerController : MonoBehaviour
 
             if(Input.GetKeyDown(InputManager.AfterburnerKey))
             {
-                controlledShip.hardpointSystem.ToggleAfterburner(true);
+                ship.hardpointSystem.ToggleAfterburner(true);
             }
             
             else if(Input.GetKeyUp(InputManager.AfterburnerKey))
             {
-                controlledShip.hardpointSystem.ToggleAfterburner(false);
+                ship.hardpointSystem.ToggleAfterburner(false);
             }
 
             if(Input.GetKeyDown(InputManager.ManualMouseFlightKey))
@@ -163,12 +179,12 @@ public class PlayerController : MonoBehaviour
 
             if(Input.GetKey(KeyCode.LeftShift) && Input.GetKeyDown(InputManager.ThrottleUpKey))
             {
-                controlledShip.cruiseEngine.ToggleCruiseEngines();
+                ship.cruiseEngine.ToggleCruiseEngines();
             }
 
             if(Input.GetKeyDown(InputManager.KillEnginesKey))
             {
-                controlledShip.engine.ToggleDrifting();
+                ship.engine.Drifting = !ship.engine.Drifting;
             }
 
             #endregion
@@ -176,62 +192,62 @@ public class PlayerController : MonoBehaviour
             #region hardpoints
             if(Input.GetKey(InputManager.Hardpoint1Key))
             {
-                controlledShip.hardpointSystem.FireWeaponHardpoint(1);
+                ship.hardpointSystem.FireWeaponHardpoint(1);
             }
 
             if(Input.GetKey(InputManager.Hardpoint2Key))
             {
-                controlledShip.hardpointSystem.FireWeaponHardpoint(2);
+                ship.hardpointSystem.FireWeaponHardpoint(2);
             }
 
             if(Input.GetKey(InputManager.Hardpoint3Key))
             {
-                controlledShip.hardpointSystem.FireWeaponHardpoint(3);
+                ship.hardpointSystem.FireWeaponHardpoint(3);
             }
 
             if(Input.GetKey(InputManager.Hardpoint4Key))
             {
-                controlledShip.hardpointSystem.FireWeaponHardpoint(4);
+                ship.hardpointSystem.FireWeaponHardpoint(4);
             }
 
             if(Input.GetKey(InputManager.Hardpoint5Key))
             {
-                controlledShip.hardpointSystem.FireWeaponHardpoint(5);
+                ship.hardpointSystem.FireWeaponHardpoint(5);
             }
 
             if(Input.GetKey(InputManager.Hardpoint6Key))
             {
-                controlledShip.hardpointSystem.FireWeaponHardpoint(6);
+                ship.hardpointSystem.FireWeaponHardpoint(6);
             }
 
             if(Input.GetKey(InputManager.Hardpoint7Key))
             {
-                controlledShip.hardpointSystem.FireWeaponHardpoint(7);
+                ship.hardpointSystem.FireWeaponHardpoint(7);
             }
 
             if(Input.GetKey(InputManager.Hardpoint8Key))
             {
-                controlledShip.hardpointSystem.FireWeaponHardpoint(8);
+                ship.hardpointSystem.FireWeaponHardpoint(8);
             }
 
             if(Input.GetKey(InputManager.Hardpoint9Key))
             {
-                controlledShip.hardpointSystem.FireWeaponHardpoint(9);
+                ship.hardpointSystem.FireWeaponHardpoint(9);
             }
 
             if(Input.GetKey(InputManager.Hardpoint10Key))
             {
-                controlledShip.hardpointSystem.FireWeaponHardpoint(10);
+                ship.hardpointSystem.FireWeaponHardpoint(10);
             }
 
             if(Input.GetKey(InputManager.FireKey))
             {
-                controlledShip.hardpointSystem.FireActiveWeapons();
+                ship.hardpointSystem.FireActiveWeapons();
             }
 
             if (Input.GetKeyDown(InputManager.LootAllKey))
             {
-                controlledShip.hardpointSystem.tractorHardpoint.TractorAllLoot();
+                ship.hardpointSystem.tractorHardpoint.TractorAllLoot();
             }
 
             #endregion
@@ -245,7 +261,7 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        var engine = controlledShip.engine;
+        var engine = ship.engine;
 
         switch (mouseState)
         {
@@ -326,7 +342,6 @@ public class PlayerController : MonoBehaviour
 
 public class PossessionEventArgs : EventArgs
 {
-    public PlayerController playerController;
     public Ship newShip;
     public Ship oldShip;
 
@@ -338,16 +353,9 @@ public class PossessionEventArgs : EventArgs
         }
     }
 
-    public PossessionEventArgs(Ship newShip, Ship oldShip, PlayerController playerController)
+    public PossessionEventArgs(Ship newShip, Ship oldShip)
     {
         this.newShip = newShip;
-        this.oldShip = oldShip;
-        this.playerController = playerController;
-    }
-
-    public PossessionEventArgs(PlayerController playerController, Ship oldShip)
-    {
-        this.playerController = playerController;
         this.oldShip = oldShip;
     }
 }

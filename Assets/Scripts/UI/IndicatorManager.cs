@@ -12,15 +12,26 @@ public class IndicatorManager : ShipUIElement
 
     public TargetIndicator selectedIndicator;
 
-    public override void SetShip(Ship ship)
+    public override void SetShip(Ship newShip)
     {
-        base.SetShip(ship);
+        base.SetShip(newShip);
 
         ClearIndicators();
+        newShip.hardpointSystem.scannerHardpoint.EntryChanged += HandleEntryChanged;
+        newShip.hardpointSystem.scannerHardpoint.scannerEntries.ForEach(x => HandleEntryChanged(x, true));
+        FindObjectOfType<PlayerController>().ReleasedShip += HandleShipReleased;
+    }
 
-        ship.hardpointSystem.scannerHardpoint.EntryChanged += HandleEntryChanged;
+    private void HandleShipReleased(PlayerController sender, PossessionEventArgs args)
+    {
+        ClearShip();
+    }
 
-        ship.hardpointSystem.scannerHardpoint.scannerEntries.ForEach(x => HandleEntryChanged(x, true));
+    protected override void ClearShip()
+    {
+        ship.hardpointSystem.scannerHardpoint.EntryChanged -= HandleEntryChanged;
+        ClearIndicators();
+        base.ClearShip();
     }
 
     private void HandleIndicatorSelected(TargetIndicator newIndicator)
@@ -39,7 +50,6 @@ public class IndicatorManager : ShipUIElement
 
     public void ClearIndicators()
     {
-        //foreach (TargetIndicator indicator in indicators) RemoveIndicator(indicator);
         indicators.ForEach(x => RemoveIndicator(x));
 
         indicatorPairs.Clear();
@@ -47,7 +57,6 @@ public class IndicatorManager : ShipUIElement
 
         DeselectCurrentIndicator();
     }
-
 
     public void DeselectCurrentIndicator()
     {

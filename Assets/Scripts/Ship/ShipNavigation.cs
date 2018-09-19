@@ -20,7 +20,7 @@ public class ShipNavigation : ShipComponent
     // For testing
     public void FireAtPlayer()
     {
-        fireCoroutine = FireAtTargetCoroutine(FindObjectOfType<PlayerController>().controlledShip.transform);
+        fireCoroutine = FireAtTargetCoroutine(FindObjectOfType<PlayerController>().ship.transform);
         StartCoroutine(fireCoroutine);
     }
 
@@ -36,11 +36,11 @@ public class ShipNavigation : ShipComponent
     {
         for (; ;)
         {
-            Quaternion newRot = Quaternion.LookRotation(target.position - owningShip.transform.position);
-            transform.rotation = Quaternion.Slerp(owningShip.transform.rotation, newRot, turnSpeed * Time.deltaTime);
+            Quaternion newRot = Quaternion.LookRotation(target.position - ship.transform.position);
+            transform.rotation = Quaternion.Slerp(ship.transform.rotation, newRot, turnSpeed * Time.deltaTime);
             //transform.rotation = Quaternion.Slerp(owningShip.transform.rotation, newRot, turnSpeed * Time.deltaTime);
 
-            if (Quaternion.Angle(owningShip.transform.rotation, newRot) < angleThreshold) break;
+            if (Quaternion.Angle(ship.transform.rotation, newRot) < angleThreshold) break;
             yield return null;
         }
 
@@ -56,8 +56,8 @@ public class ShipNavigation : ShipComponent
         while (true)
         {
             yield return StartCoroutine(RotateTowardsTargetCoroutine(target, fireAngleThreshold));
-            owningShip.aimPosition = target.position;
-            owningShip.hardpointSystem.FireActiveWeapons();
+            ship.aimPosition = target.position;
+            ship.hardpointSystem.FireActiveWeapons();
             remainingShots--;
             print(remainingShots);
             if (remainingShots <= 0) break;

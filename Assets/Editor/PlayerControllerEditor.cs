@@ -13,7 +13,7 @@ public class PlayerControllerEditor : Editor
 
         playerController = target as PlayerController;
 
-        if (playerController.controlledShip != null)
+        if (playerController.ship != null)
         {
             ShowInspectorUnpossessionControls();
         }

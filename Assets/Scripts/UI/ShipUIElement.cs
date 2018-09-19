@@ -5,8 +5,18 @@ public class ShipUIElement : MonoBehaviour
 {
     public Ship ship;
 
-    public virtual void SetShip(Ship ship)
+    public virtual void SetShip(Ship newShip)
     {
-        this.ship = ship;
+        if (ship != null)
+        {
+            ClearShip();
+        }
+
+        ship = newShip;
+    }
+
+    protected virtual void ClearShip()
+    {
+        ship = null;
     }
 }

@@ -18,7 +18,7 @@ public class Ship : WorldObject
     public CruiseEngine cruiseEngine;
     public ShipCamera shipCam;
     public Rigidbody rb;
-    public List<ShipComponent> components;
+    public List<ShipComponent> shipComponents;
 
     public delegate void PossessionEventHandler(PlayerController pc, Ship sender, bool possessed);
     public event PossessionEventHandler Possession;
@@ -39,9 +39,9 @@ public class Ship : WorldObject
             print("No ship stats found, assigning default ship values...");
         }
 
-        GetComponentsInChildren(true, components);
+        GetComponentsInChildren(true, shipComponents);
 
-        foreach (var component in components)
+        foreach (var component in shipComponents)
         {
             component.Setup(this);
         }

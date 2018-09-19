@@ -73,7 +73,7 @@ public class ShipCamera : ShipComponent
     private void FixedUpdate()
     {
         CalculateOffsets();
-        owningShip.aimPosition = GetAimPosition();
+        ship.aimPosition = GetAimPosition();
 
         if (playerController.MouseState != MouseState.Off)
         {
