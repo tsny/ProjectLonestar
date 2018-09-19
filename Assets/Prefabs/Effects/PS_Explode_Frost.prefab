@@ -73,7 +73,7 @@ GameObject:
   - component: {fileID: 198918576488516308}
   - component: {fileID: 199728565965822330}
   m_Layer: 0
-  m_Name: Explode_cold
+  m_Name: PS_Explode_Frost
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

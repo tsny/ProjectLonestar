@@ -6,8 +6,8 @@ public class ProjectileController : MonoBehaviour
 
     public Weapon weapon;
     public Vector3 target;
-    public GameObject mainEffect;
-    public GameObject impactEffect;
+    public ParticleSystem mainEffect;
+    public ParticleSystem impactEffect;
 
     private new Collider collider;
     private Rigidbody rb;
@@ -34,6 +34,7 @@ public class ProjectileController : MonoBehaviour
 
         transform.LookAt(target);
         rb.AddForce(transform.forward * weapon.thrust, ForceMode.Impulse);
+        mainEffect.Play();
     }
 
     private void LateUpdate()
@@ -51,8 +52,8 @@ public class ProjectileController : MonoBehaviour
         WorldObject hitObject = collision.gameObject.GetComponent<WorldObject>();
         if (hitObject != null) hitObject.TakeDamage(weapon);
 
-        mainEffect.SetActive(false);
-        impactEffect.SetActive(true);
+        mainEffect.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+        impactEffect.Play();
 
         Destroy(gameObject, 2);
     }
