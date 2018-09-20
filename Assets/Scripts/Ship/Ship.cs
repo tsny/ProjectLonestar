@@ -35,7 +35,7 @@ public class Ship : MonoBehaviour, ITargetable
         rb = GetComponentInChildren<Rigidbody>();
         hull = GetComponentInChildren<Hull>();
 
-        hull.HealthDepleted += HandleHullHealthDepleted;
+        //hull.HealthDepleted += HandleHullHealthDepleted;
 
         if (stats == null)
         {
@@ -116,7 +116,7 @@ public class Ship : MonoBehaviour, ITargetable
 
     public void SetupTargetIndicator(TargetIndicator indicator)
     {
-        hull.TookDamage += indicator.HandleTargetTookDamage;
+        //hull.TookDamage += indicator.HandleTargetTookDamage;
     }
 
     public bool IsTargetable()

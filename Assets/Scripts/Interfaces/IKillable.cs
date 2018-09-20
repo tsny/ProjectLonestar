@@ -5,8 +5,13 @@ using UnityEngine;
 
 public interface IDamageable 
 {
+    float Health { get; set; }
+    float MaxHealth { get; set; }
+
     void TakeDamage(Weapon weapon);
-    void OnHealthDepleted(Weapon weapon);
+
+    event EventHandler<DamageEventArgs> TookDamage;
+    event EventHandler<DeathEventArgs> HealthDepleted;
 }
 
 public class DamageEventArgs : EventArgs

@@ -25,7 +25,7 @@ public class ShipStatusUI : ShipUIElement
         }
 
         ship.hardpointSystem.WeaponFired += HandleWeaponFired;
-        ship.hull.TookDamage += HandleTookDamage;
+        //ship.hull.TookDamage += HandleTookDamage;
     }
 
     private void HandleTookDamage(MonoBehaviour sender, DamageEventArgs e)
@@ -45,8 +45,8 @@ public class ShipStatusUI : ShipUIElement
 
     private void SetFillAmounts()
     {
-        healthBarImage.fillAmount = ship.hull.health / ship.hull.maxHealth;
-        shieldBarImage.fillAmount = ship.hardpointSystem.shieldHardpoint.health / ship.hardpointSystem.shieldHardpoint.capacity;
+        //healthBarImage.fillAmount = ship.hull.health / ship.hull.maxHealth;
+        //shieldBarImage.fillAmount = ship.hardpointSystem.shieldHardpoint.health / ship.hardpointSystem.shieldHardpoint.capacity;
         energyBarImage.fillAmount = ship.hardpointSystem.energy / ship.hardpointSystem.energyCapacity;
     }
 

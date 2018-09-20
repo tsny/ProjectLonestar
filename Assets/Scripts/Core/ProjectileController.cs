@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Linq;
 
 public class ProjectileController : MonoBehaviour
 {
@@ -52,10 +53,10 @@ public class ProjectileController : MonoBehaviour
         Destroy(rb);
         Destroy(collider);
 
-        HealthComponent healthComponent = collision.collider.transform.root.GetComponentInChildren<HealthComponent>();
-        if (healthComponent != null)
+        IDamageable damageableObject = collision.collider.transform.root.GetComponentInChildren<IDamageable>();
+        if (damageableObject != null)
         {
-            healthComponent.TakeDamage(weapon);
+            damageableObject.TakeDamage(weapon);
         }
 
         mainEffect.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);

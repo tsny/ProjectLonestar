@@ -1,13 +1,16 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 
-public class ShieldHardpoint : Hardpoint
+public class ShieldHardpoint : Hardpoint, IDamageable
 {
     private AudioSource hitSource;
 
     public float capacity;
-    public float health;
     public float regenRate;
+
+    public event EventHandler<DamageEventArgs> TookDamage;
+    public event EventHandler<DeathEventArgs> HealthDepleted;
 
     public Shield Shield
     {
@@ -21,9 +24,12 @@ public class ShieldHardpoint : Hardpoint
     {
         get
         {
-            return health > 0;
+            return Health > 0;
         }
     }
+
+    public float Health { get; set; }
+    public float MaxHealth { get; set; }
 
     protected override bool EquipmentMatchesHardpoint(Equipment equipment)
     {
@@ -40,7 +46,7 @@ public class ShieldHardpoint : Hardpoint
         base.OnMounted(newEquipment);
 
         capacity = Shield.capacity;
-        health = capacity;
+        Health = capacity;
         regenRate = Shield.regenRate;
     }
 
@@ -54,23 +60,22 @@ public class ShieldHardpoint : Hardpoint
 
     private void Recharge()
     {
-         health = Mathf.MoveTowards(health, capacity, regenRate * Time.deltaTime);
+         Health = Mathf.MoveTowards(Health, capacity, regenRate * Time.deltaTime);
     }
 
     public void TakeDamage(Weapon weapon)
     {
-        if (IsOnline == false)
-        {
-            //ship.GetComponent<Hull>().TakeDamage(weapon);
-            return;
-        }
-
-        health -= Damage.CalculateShieldDamage(weapon, Shield.type);
+        Health -= Damage.CalculateShieldDamage(weapon, Shield.type);
 
         hitSource.Play();
 
-        if (health <= 0) health = 0;
+        if (Health <= 0) Health = 0;
 
         StartCooldown();
+    }
+
+    public void OnHealthDepleted(Weapon weapon)
+    {
+        if (HealthDepleted != null) HealthDepleted(this, null);
     }
 }

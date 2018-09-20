@@ -6,7 +6,7 @@ using System;
 
 public class ScannerHardpoint : Hardpoint
 {
-    public List<ITargetable> scannerRegistry = new List<ITargetable>();
+    public List<ITargetable> targets = new List<ITargetable>();
     public Scanner Scanner
     {
         get
@@ -71,8 +71,8 @@ public class ScannerHardpoint : Hardpoint
 
     public void ClearEntries()
     {
-        scannerRegistry.ForEach(x => RemoveEntry(x));
-        scannerRegistry.Clear();
+        targets.ForEach(x => RemoveEntry(x));
+        targets.Clear();
     }
 
     private void HandleEntryKilled(ITargetable sender, DeathEventArgs e)
@@ -87,9 +87,9 @@ public class ScannerHardpoint : Hardpoint
 
     public void AddEntry(ITargetable targetToAdd)
     {
-        if (scannerRegistry.Contains(targetToAdd)) return;
+        if (targets.Contains(targetToAdd)) return;
     
-        scannerRegistry.Add(targetToAdd);
+        targets.Add(targetToAdd);
 
         targetToAdd.BecameUntargetable += HandleTargetBecameUntargetable;
 
@@ -98,9 +98,9 @@ public class ScannerHardpoint : Hardpoint
 
     public void RemoveEntry(ITargetable targetToRemove)
     {
-        if (!scannerRegistry.Contains(targetToRemove)) return;
+        if (!targets.Contains(targetToRemove)) return;
 
-        scannerRegistry.Remove(targetToRemove);
+        targets.Remove(targetToRemove);
 
         targetToRemove.BecameUntargetable -= HandleTargetBecameUntargetable;
 

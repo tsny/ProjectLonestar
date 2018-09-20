@@ -77,24 +77,19 @@ public class TargetIndicator : MonoBehaviour
         enabled = false;
     }
 
-    // Make world object setup the target border/color/healthbar
     public virtual void SetTarget(ITargetable newTarget)
     {
+        newTarget.SetupTargetIndicator(this);
+
         MonoBehaviour target = newTarget as MonoBehaviour;
 
         if (target == null) return;
 
         this.target = target.gameObject;
 
-        newTarget.SetupTargetIndicator(this);
-
-        //target.Killed += HandleTargetKilled;
-        //target.TookDamage += HandleTargetTookDamage;
-
-        SetHealthBarFill();
-        SetShieldBarFill();
-
         name = target.name;
+
+        Refresh();
 
         enabled = true;
     }
@@ -119,23 +114,9 @@ public class TargetIndicator : MonoBehaviour
         content.SetActive(false);
     }
 
-    protected virtual void HandleTargetKilled(ITargetable sender, DeathEventArgs e)
+    public void Refresh()
     {
-        //target.TookDamage -= HandleTargetTookDamage;
-        //target.Killed -= HandleTargetKilled;
-        if (TargetDestroyed != null) TargetDestroyed(this);
-        Destroy(gameObject);
-    }
-    
-    protected virtual void HandleTargetTookDamage(ITargetable sender, DamageEventArgs e)
-    {
-        SetHealthBarFill();
-        SetShieldBarFill();
-    }
-
-    public void HandleTargetTookDamage(MonoBehaviour sender, DamageEventArgs e)
-    {
-
+      
     }
 
     public virtual void Select()
@@ -252,31 +233,5 @@ public class TargetIndicator : MonoBehaviour
     private void ShowName(bool value)
     {
         header.gameObject.SetActive(value);
-    }
-
-    private void SetHealthBarFill()
-    {
-        //targetHealth = target.hull
-        //healthBarImage.fillAmount = target.hullHealth / target.hullFullHealth;
-    }
-
-    private void SetShieldBarFill()
-    {
-        //if (target is Ship == false)
-        //{
-        //    shieldBarImage.fillAmount = 0;
-        //    return;
-        //}
-
-        //var ship = target as Ship;
-        //var shieldHardpoint = ship.hardpointSystem.shieldHardpoint;
-
-        //if (shieldHardpoint.IsMounted == false)
-        //{
-        //    shieldBarImage.fillAmount = 0;
-        //    return;
-        //}
-
-        //shieldBarImage.fillAmount = shieldHardpoint.health / shieldHardpoint.capacity;
     }
 }

@@ -63,7 +63,7 @@ public class ScannerUI : ShipUIElement
     {
         ClearScannerList();
 
-        foreach (var target in scannerHardpoint.scannerRegistry)
+        foreach (var target in scannerHardpoint.targets)
         {
             CreatePanelButton(target);
         }

@@ -22,6 +22,8 @@ public class IndicatorManager : ShipUIElement
         newShip.hardpointSystem.scannerHardpoint.EntryRemoved += HandleScannerEntryRemoved;
 
         FindObjectOfType<PlayerController>().ReleasedShip += HandleShipReleased;
+
+        RefreshIndicators();
     }
 
     private void HandleScannerEntryRemoved(ScannerHardpoint sender, ITargetable entry)
@@ -55,16 +57,26 @@ public class IndicatorManager : ShipUIElement
         selectedIndicator = newIndicator;
     }
 
+    public void RefreshIndicators()
+    {
+        ClearIndicators();
+
+        foreach (var target in ship.hardpointSystem.scannerHardpoint.targets)
+        {
+            AddIndicator(target);
+        }
+    }
+
     public void ClearIndicators()
     {
+        DeselectCurrentIndicator();
+
         foreach (var value in indicatorPairs.Values)
         {
             Destroy(value);
         }
 
         indicatorPairs.Clear();
-
-        DeselectCurrentIndicator();
     }
 
     public void DeselectCurrentIndicator()
