@@ -390,6 +390,7 @@ GameObject:
   - component: {fileID: 114969239178157234}
   - component: {fileID: 114314561816717210}
   - component: {fileID: 114889744303056916}
+  - component: {fileID: 114010556433306682}
   m_Layer: 0
   m_Name: PF_Ship_Centaur
   m_TagString: Untagged
@@ -811,7 +812,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1731105088454010}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 21.66, y: 4.4716, z: 25.3}
+  m_LocalPosition: {x: 68, y: 4.4716, z: 25.3}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4363359676537772}
@@ -2307,6 +2308,22 @@ TrailRenderer:
   m_MinVertexDistance: 0
   m_Autodestruct: 0
   m_Emitting: 1
+--- !u!114 &114010556433306682
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1731105088454010}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f16a83e2a82d8e46b82aaa8ad6b5d46, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  health: 100
+  maxHealth: 100
+  invulnerable: 0
+  hullType: 0
+  shieldHardpoint: {fileID: 0}
 --- !u!114 &114039821875042540
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2477,9 +2494,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 89d5ed3f00e632a40bc78d97ba350294, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  invulnerable: 0
-  hullHealth: 100
-  hullFullHealth: 100
   pilotDetails: {fileID: 11400000, guid: 0e4162d9bfb61814e9801b68670a6bac, type: 2}
   engineStats: {fileID: 11400000, guid: 03bae706e6806dc48a6c222c5b4179ed, type: 2}
   shipDetails: {fileID: 11400000, guid: fe0dfa754dd6a08468063fea5943ef08, type: 2}
@@ -2491,6 +2505,7 @@ MonoBehaviour:
   shipCam: {fileID: 0}
   rb: {fileID: 0}
   shipComponents: []
+  hull: {fileID: 0}
 --- !u!114 &114889744303056916
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2588,7 +2603,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7d516cd45b05ce41a5be3e19d36eb92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scannerEntries: []
   scanFrequency: 10
 --- !u!114 &114969239178157234
 MonoBehaviour:

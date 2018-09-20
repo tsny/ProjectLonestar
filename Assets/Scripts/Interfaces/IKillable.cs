@@ -3,14 +3,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IKillable 
+public interface IDamageable 
 {
     void TakeDamage(Weapon weapon);
-    void Die();
+    void OnHealthDepleted(Weapon weapon);
 }
 
 public class DamageEventArgs : EventArgs
 {
+    public Weapon weapon;
     public bool shieldDamage;
     public float damage;
 
@@ -18,6 +19,11 @@ public class DamageEventArgs : EventArgs
     {
         this.shieldDamage = shieldDamage;
         this.damage = damage;
+    }
+
+    public DamageEventArgs(Weapon weapon)
+    {
+        this.weapon = weapon;
     }
 }
 

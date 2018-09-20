@@ -7,8 +7,8 @@ public class IndicatorManager : ShipUIElement
 {
     public GameObject indicatorPrefab;
     public Transform indicatorLayer;
-    public List<TargetIndicator> indicators = new List<TargetIndicator>();
-    public Dictionary<WorldObject, TargetIndicator> indicatorPairs = new Dictionary<WorldObject, TargetIndicator>();
+    //public List<TargetIndicator> indicators = new List<TargetIndicator>();
+    public Dictionary<ITargetable, TargetIndicator> indicatorPairs = new Dictionary<ITargetable, TargetIndicator>();
 
     public TargetIndicator selectedIndicator;
 
@@ -17,9 +17,21 @@ public class IndicatorManager : ShipUIElement
         base.SetShip(newShip);
 
         ClearIndicators();
-        newShip.hardpointSystem.scannerHardpoint.EntryChanged += HandleEntryChanged;
-        newShip.hardpointSystem.scannerHardpoint.scannerEntries.ForEach(x => HandleEntryChanged(x, true));
+
+        newShip.hardpointSystem.scannerHardpoint.EntryAdded += HandleScannerEntryAdded;
+        newShip.hardpointSystem.scannerHardpoint.EntryRemoved += HandleScannerEntryRemoved;
+
         FindObjectOfType<PlayerController>().ReleasedShip += HandleShipReleased;
+    }
+
+    private void HandleScannerEntryRemoved(ScannerHardpoint sender, ITargetable entry)
+    {
+        RemoveIndicator(entry);
+    }
+
+    private void HandleScannerEntryAdded(ScannerHardpoint sender, ITargetable entry)
+    {
+        AddIndicator(entry);
     }
 
     private void HandleShipReleased(PlayerController sender, PossessionEventArgs args)
@@ -29,31 +41,28 @@ public class IndicatorManager : ShipUIElement
 
     protected override void ClearShip()
     {
-        ship.hardpointSystem.scannerHardpoint.EntryChanged -= HandleEntryChanged;
         ClearIndicators();
         base.ClearShip();
     }
 
     private void HandleIndicatorSelected(TargetIndicator newIndicator)
     {
-        if (selectedIndicator != null) selectedIndicator.Deselect();
+        if (selectedIndicator != null)
+        {
+            selectedIndicator.Deselect();
+        }
 
         selectedIndicator = newIndicator;
     }
 
-    private void HandleEntryChanged(WorldObject entry, bool added)
-    {
-        if (added) AddIndicator(entry);
-
-        else RemoveIndicator(entry);
-    }
-
     public void ClearIndicators()
     {
-        indicators.ForEach(x => RemoveIndicator(x));
+        foreach (var value in indicatorPairs.Values)
+        {
+            Destroy(value);
+        }
 
         indicatorPairs.Clear();
-        indicators.Clear();
 
         DeselectCurrentIndicator();
     }
@@ -65,7 +74,7 @@ public class IndicatorManager : ShipUIElement
         if (selectedIndicator != null) selectedIndicator.Deselect();
     }
 
-    public void AddIndicator(WorldObject newTarget)
+    public void AddIndicator(ITargetable newTarget)
     {
         TargetIndicator newIndicator = Instantiate(indicatorPrefab, indicatorLayer).GetComponent<TargetIndicator>();
 
@@ -73,8 +82,6 @@ public class IndicatorManager : ShipUIElement
 
         newIndicator.Selected += HandleIndicatorSelected;
         newIndicator.TargetDestroyed += RemoveIndicator;
-
-        indicators.Add(newIndicator);
 
         indicatorPairs.Add(newTarget, newIndicator);
     }
@@ -91,10 +98,10 @@ public class IndicatorManager : ShipUIElement
         Destroy(indicatorToRemove.gameObject);
     }
 
-    public void RemoveIndicator(WorldObject worldObject)
+    public void RemoveIndicator(ITargetable target)
     {
         TargetIndicator pairedIndicator;
 
-        if (indicatorPairs.TryGetValue(worldObject, out pairedIndicator)) RemoveIndicator(pairedIndicator);
+        if (indicatorPairs.TryGetValue(target, out pairedIndicator)) RemoveIndicator(pairedIndicator);
     }
 }

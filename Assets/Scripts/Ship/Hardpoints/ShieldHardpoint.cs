@@ -59,7 +59,14 @@ public class ShieldHardpoint : Hardpoint
 
     public void TakeDamage(Weapon weapon)
     {
+        if (IsOnline == false)
+        {
+            //ship.GetComponent<Hull>().TakeDamage(weapon);
+            return;
+        }
+
         health -= Damage.CalculateShieldDamage(weapon, Shield.type);
+
         hitSource.Play();
 
         if (health <= 0) health = 0;

@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Ship : WorldObject
+public class Ship : MonoBehaviour, ITargetable
 {
     [Header("Stats")]
     public PilotDetails pilotDetails;
@@ -19,19 +19,23 @@ public class Ship : WorldObject
     public ShipCamera shipCam;
     public Rigidbody rb;
     public List<ShipComponent> shipComponents;
+    public Hull hull;
 
     public delegate void PossessionEventHandler(PlayerController pc, Ship sender, bool possessed);
     public event PossessionEventHandler Possession;
+    public event TargetEventHandler BecameTargetable;
+    public event TargetEventHandler BecameUntargetable;
 
-    protected override void Awake()
+    private void Awake()
     {
         hardpointSystem = GetComponentInChildren<HardpointSystem>();
         cruiseEngine = GetComponentInChildren<CruiseEngine>();
         shipCam = GetComponentInChildren<ShipCamera>();
         engine = GetComponentInChildren<Engine>();
         rb = GetComponentInChildren<Rigidbody>();
+        hull = GetComponentInChildren<Hull>();
 
-        hullHealth = hullFullHealth;
+        hull.HealthDepleted += HandleHullHealthDepleted;
 
         if (stats == null)
         {
@@ -45,8 +49,12 @@ public class Ship : WorldObject
         {
             component.Setup(this);
         }
+    }
 
-        base.Awake();
+    private void HandleHullHealthDepleted(MonoBehaviour sender, DeathEventArgs e)
+    {
+        if (BecameUntargetable != null) BecameUntargetable(this);
+        Destroy(gameObject);
     }
 
     public void SetPossessed(PlayerController pc, bool possessed)
@@ -70,24 +78,7 @@ public class Ship : WorldObject
         if (Possession != null) Possession(pc, this, possessed);
     }
 
-    public override void TakeDamage(Weapon weapon)
-    {
-        if (invulnerable) return;
-
-        if (hardpointSystem.shieldHardpoint.IsOnline)
-        {
-            hardpointSystem.shieldHardpoint.TakeDamage(weapon);
-            OnTookDamage(true, weapon.shieldDamage);
-            return;
-        }
-
-        hullHealth -= weapon.hullDamage;
-        OnTookDamage(false, weapon.hullDamage);
-
-        if (hullHealth <= 0) Die();
-    }
-
-    protected override void SetHierarchyName()
+    public void SetHierarchyName()
     {
         name = pilotDetails.FirstName + " - " + shipDetails.shipName;
     }
@@ -121,5 +112,15 @@ public class Ship : WorldObject
         }
 
         rb.velocity = Vector3.ClampMagnitude(rb.velocity, currentMaxSpeed);
+    }
+
+    public void SetupTargetIndicator(TargetIndicator indicator)
+    {
+        hull.TookDamage += indicator.HandleTargetTookDamage;
+    }
+
+    public bool IsTargetable()
+    {
+        return true;
     }
 }

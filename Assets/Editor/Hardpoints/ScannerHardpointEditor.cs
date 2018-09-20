@@ -26,7 +26,7 @@ public class ScannerHardpointEditor : Editor
 
         if (GUILayout.Button("Scan"))
         {
-            scannerHardpoint.Scan();
+            scannerHardpoint.ScanForTargets();
         }
 
         if (GUILayout.Button("Clear Entries"))

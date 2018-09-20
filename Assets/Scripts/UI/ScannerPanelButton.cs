@@ -4,27 +4,22 @@ using UnityEngine.UI;
 
 public class ScannerPanelButton : MonoBehaviour
 {
-    private WorldObject target;
+    private Transform target;
     private Ship owner;
     public Text text;
 
-    public void Setup(WorldObject target, Ship owner)
+    public void Setup(ITargetable target, Ship owner)
     {
-        this.target = target;
         this.owner = owner;
-        target.Killed += HandleTargetKilled;
+
+        var monoBehaviour = target as MonoBehaviour;
+
+        if (monoBehaviour != null)
+        {
+            this.target = monoBehaviour.transform;
+        }
 
         StartCoroutine(UpdateText());
-    }
-
-    private void HandleTargetKilled(WorldObject sender, DeathEventArgs e)
-    {
-        Destroy(gameObject);
-    }
-
-    private void OnDestroy()
-    {
-        target.Killed -= HandleTargetKilled;
     }
 
     private IEnumerator UpdateText()

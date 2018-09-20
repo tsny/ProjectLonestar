@@ -215,24 +215,30 @@ namespace CommandTerminal
         }
 
         void SetupLabels() {
-            label_style = new GUIStyle();
-            label_style.font = ConsoleFont;
+            label_style = new GUIStyle
+            {
+                font = ConsoleFont
+            };
             label_style.normal.textColor = ForegroundColor;
             label_style.wordWrap = true;
         }
 
         void SetupInput() {
-            input_style = new GUIStyle();
-            input_style.padding = new RectOffset(4, 4, 4, 4);
-            input_style.font = ConsoleFont;
-            input_style.fixedHeight = ConsoleFont.fontSize * 1.6f;
+            input_style = new GUIStyle
+            {
+                padding = new RectOffset(4, 4, 4, 4),
+                font = ConsoleFont,
+                fixedHeight = ConsoleFont.fontSize * 1.6f
+            };
             input_style.normal.textColor = InputColor;
 
-            var dark_background = new Color();
-            dark_background.r = BackgroundColor.r - InputContrast;
-            dark_background.g = BackgroundColor.g - InputContrast;
-            dark_background.b = BackgroundColor.b - InputContrast;
-            dark_background.a = InputAlpha;
+            var dark_background = new Color
+            {
+                r = BackgroundColor.r - InputContrast,
+                g = BackgroundColor.g - InputContrast,
+                b = BackgroundColor.b - InputContrast,
+                a = InputAlpha
+            };
 
             input_background_texture = new Texture2D(1, 1);
             input_background_texture.SetPixel(0, 0, dark_background);

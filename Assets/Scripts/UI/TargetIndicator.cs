@@ -42,7 +42,7 @@ public class TargetIndicator : MonoBehaviour
 
     [Header("Target")]
 
-    public WorldObject target;
+    public GameObject target;
 
     public GameObject healthObject;
     public GameObject shieldObject;
@@ -78,12 +78,18 @@ public class TargetIndicator : MonoBehaviour
     }
 
     // Make world object setup the target border/color/healthbar
-    public virtual void SetTarget(WorldObject newTarget)
+    public virtual void SetTarget(ITargetable newTarget)
     {
-        target = newTarget;
+        MonoBehaviour target = newTarget as MonoBehaviour;
 
-        target.Killed += HandleTargetKilled;
-        target.TookDamage += HandleTargetTookDamage;
+        if (target == null) return;
+
+        this.target = target.gameObject;
+
+        newTarget.SetupTargetIndicator(this);
+
+        //target.Killed += HandleTargetKilled;
+        //target.TookDamage += HandleTargetTookDamage;
 
         SetHealthBarFill();
         SetShieldBarFill();
@@ -113,18 +119,23 @@ public class TargetIndicator : MonoBehaviour
         content.SetActive(false);
     }
 
-    protected virtual void HandleTargetKilled(WorldObject sender, DeathEventArgs e)
+    protected virtual void HandleTargetKilled(ITargetable sender, DeathEventArgs e)
     {
-        target.TookDamage -= HandleTargetTookDamage;
-        target.Killed -= HandleTargetKilled;
+        //target.TookDamage -= HandleTargetTookDamage;
+        //target.Killed -= HandleTargetKilled;
         if (TargetDestroyed != null) TargetDestroyed(this);
         Destroy(gameObject);
     }
     
-    protected virtual void HandleTargetTookDamage(WorldObject sender, DamageEventArgs e)
+    protected virtual void HandleTargetTookDamage(ITargetable sender, DamageEventArgs e)
     {
         SetHealthBarFill();
         SetShieldBarFill();
+    }
+
+    public void HandleTargetTookDamage(MonoBehaviour sender, DamageEventArgs e)
+    {
+
     }
 
     public virtual void Select()
@@ -245,27 +256,27 @@ public class TargetIndicator : MonoBehaviour
 
     private void SetHealthBarFill()
     {
-        targetHealth = target.hullHealth;
-        healthBarImage.fillAmount = target.hullHealth / target.hullFullHealth;
+        //targetHealth = target.hull
+        //healthBarImage.fillAmount = target.hullHealth / target.hullFullHealth;
     }
 
     private void SetShieldBarFill()
     {
-        if (target is Ship == false)
-        {
-            shieldBarImage.fillAmount = 0;
-            return;
-        }
+        //if (target is Ship == false)
+        //{
+        //    shieldBarImage.fillAmount = 0;
+        //    return;
+        //}
 
-        var ship = target as Ship;
-        var shieldHardpoint = ship.hardpointSystem.shieldHardpoint;
+        //var ship = target as Ship;
+        //var shieldHardpoint = ship.hardpointSystem.shieldHardpoint;
 
-        if (shieldHardpoint.IsMounted == false)
-        {
-            shieldBarImage.fillAmount = 0;
-            return;
-        }
+        //if (shieldHardpoint.IsMounted == false)
+        //{
+        //    shieldBarImage.fillAmount = 0;
+        //    return;
+        //}
 
-        shieldBarImage.fillAmount = shieldHardpoint.health / shieldHardpoint.capacity;
+        //shieldBarImage.fillAmount = shieldHardpoint.health / shieldHardpoint.capacity;
     }
 }

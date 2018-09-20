@@ -31,9 +31,9 @@ public class FLTerminal : Terminal
 
         if (pc.ship == null) return;
 
-        pc.ship.invulnerable = !pc.ship.invulnerable;
+        //pc.ship.invulnerable = !pc.ship.invulnerable;
 
-        print("Godmode : " + pc.ship.invulnerable);
+        //print("Godmode : " + pc.ship.invulnerable);
     }
 
     [RegisterCommand(Help = "Spawns a ship, args: player, empty", MinArgCount = 1, MaxArgCount = 1)]

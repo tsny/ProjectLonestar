@@ -44,7 +44,7 @@ public class ProjectileController : MonoBehaviour
     {
         distanceTraveled = Vector3.Distance(transform.position, startPosition);
 
-        if(distanceTraveled > weapon.range) Destroy(gameObject);
+        if (distanceTraveled > weapon.range) Destroy(gameObject);
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -52,8 +52,11 @@ public class ProjectileController : MonoBehaviour
         Destroy(rb);
         Destroy(collider);
 
-        WorldObject hitObject = collision.gameObject.GetComponent<WorldObject>();
-        if (hitObject != null) hitObject.TakeDamage(weapon);
+        HealthComponent healthComponent = collision.collider.transform.root.GetComponentInChildren<HealthComponent>();
+        if (healthComponent != null)
+        {
+            healthComponent.TakeDamage(weapon);
+        }
 
         mainEffect.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
         impactEffect.Play();

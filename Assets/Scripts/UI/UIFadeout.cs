@@ -5,23 +5,35 @@ using UnityEngine.EventSystems;
 [RequireComponent(typeof(CanvasGroup))]
 public class UIFadeout : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
-    private CanvasGroup canvasGroup;
+    public PlayerController playerController;
 
     public float fadeDuration = 1;
     public float fadeInAlpha = 1;
     public float fadeOutAlpha = .2f;
     public float mouseExitDelay = .5f;
 
+    private CanvasGroup canvasGroup;
+
     public void OnPointerEnter(PointerEventData eventData)
     {
         StopAllCoroutines();
         StartCoroutine(FadeElement(true));
+
+        if (playerController != null)
+        {
+            playerController.inputAllowed = false;
+        }
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
         StopAllCoroutines();
         StartCoroutine(FadeElement(false));
+
+        if (playerController != null)
+        {
+            playerController.inputAllowed = true;
+        }
     }
 
     IEnumerator FadeElement(bool fadeIn)
@@ -41,5 +53,6 @@ public class UIFadeout : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     {
         canvasGroup = GetComponent<CanvasGroup>();
         StartCoroutine(FadeElement(false));
+        playerController = FindObjectOfType<PlayerController>();
     }
 }

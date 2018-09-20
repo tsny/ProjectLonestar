@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[Serializable]
+[Serializable, CreateAssetMenu(menuName = "Inventory")]
 public class Inventory : ScriptableObject
 {
     public int Capacity { get { return items.Capacity; } }

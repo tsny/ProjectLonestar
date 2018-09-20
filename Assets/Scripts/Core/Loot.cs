@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class Loot : WorldObject
+public class Loot : MonoBehaviour
 {
     public Item item;
     public Transform target;
@@ -14,13 +14,17 @@ public class Loot : WorldObject
     [Range(0, 1)]
     public float pullForce = .5f;
 
-    protected override void Awake()
+    void Awake()
     {
-        base.Awake();
         enabled = false;
     }
 
-    protected override void SetHierarchyName()
+    void LateUpdate()
+    {
+        if (beingLooted && target != null) GravitateTowardsLooter();
+    }
+
+    public void SetHierarchyName()
     {
         if (item == null) return;
         name = "loot_" + item.name + " x" + item.quantity;
@@ -29,8 +33,8 @@ public class Loot : WorldObject
     public void SetTarget(Transform newTarget, float pullForce)
     {
         target = newTarget;
-        beingLooted = true;
         this.pullForce = pullForce;
+        beingLooted = true;
 
         distanceToTarget = Vector3.Distance(transform.position, target.transform.position);
         enabled = true;
@@ -65,28 +69,12 @@ public class Loot : WorldObject
 
             targetInventory.AddItem(item);
 
-            Die();
+            Destroy(gameObject);
 
             return;
         }
 
         transform.LookAt(target.transform);
         transform.position = Vector3.Lerp(transform.position, target.transform.position, pullForce * Time.deltaTime);
-    }
-
-    private void LateUpdate()
-    {
-        if (beingLooted && target != null) GravitateTowardsLooter();
-    }
-
-    public override void TakeDamage(Weapon weapon)
-    {
-        base.TakeDamage(weapon);
-
-        hullHealth -= weapon.hullDamage;
-
-        if (hullHealth <= 0) Die();
-
-        OnTookDamage(false, weapon.hullDamage);
     }
 }
