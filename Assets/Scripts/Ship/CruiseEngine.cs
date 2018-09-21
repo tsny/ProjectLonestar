@@ -26,14 +26,14 @@ public class CruiseEngine : ShipComponent
     public float cruisePower = 300;
     public int cruiseMultiplier = 1;
 
-    public delegate void CruiseChangeEventHandler(CruiseEngine sender);
+    public delegate void CruiseChangeEventHandler(CruiseEngine sender, CruiseState newState);
     public event CruiseChangeEventHandler CruiseStateChanged;
 
     private IEnumerator chargeCoroutine;
 
     private void OnCruiseChange(CruiseState newState)
     {
-        if (CruiseStateChanged != null) CruiseStateChanged(this);
+        if (CruiseStateChanged != null) CruiseStateChanged(this, newState);
     }
 
     public void StopAnyCruise()

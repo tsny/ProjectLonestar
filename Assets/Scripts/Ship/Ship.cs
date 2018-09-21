@@ -71,7 +71,7 @@ public class Ship : MonoBehaviour, ITargetable
 
     private void FixedUpdate()
     {
-
+        ClampSpeeds();
     }
 
     public void FireAllWeapons()
