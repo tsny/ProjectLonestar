@@ -97,19 +97,19 @@ public class Ship : MonoBehaviour, ITargetable
 
         switch (cruiseEngine.State)
         {
-            case CruiseEngine.CruiseState.Off:
+            case CruiseState.Off:
                 currentMaxSpeed = engineStats.maxAfterburnSpeed;
                 break;
 
-            case CruiseEngine.CruiseState.Charging:
+            case CruiseState.Charging:
                 currentMaxSpeed = engineStats.maxNormalSpeed;
                 break;
 
-            case CruiseEngine.CruiseState.On:
+            case CruiseState.On:
                 currentMaxSpeed = engineStats.maxCruiseSpeed;
                 break;
 
-            case CruiseEngine.CruiseState.Disrupted:
+            case CruiseState.Disrupted:
                 currentMaxSpeed = engineStats.maxAfterburnSpeed;
                 break;
 

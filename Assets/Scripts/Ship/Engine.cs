@@ -122,7 +122,7 @@ public class Engine : ShipComponent
 
     private void HandleCruiseChange(CruiseEngine sender)
     {
-        if (sender.State != CruiseEngine.CruiseState.Off)
+        if (sender.State != CruiseState.Off)
         {
             Drifting = false;
         }

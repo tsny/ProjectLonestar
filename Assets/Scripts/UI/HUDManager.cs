@@ -37,7 +37,7 @@ public class HUDManager : MonoBehaviour
         }
     }
 
-    private void HandleCruiseChanged(CruiseEngine sender)
+    private void HandleCruiseChanged(CruiseEngine sender, CruiseState newState)
     {
         SetCruiseText(sender.State);
     }
@@ -57,23 +57,23 @@ public class HUDManager : MonoBehaviour
         SetMouseFlightText(state);
     }
 
-    private void SetCruiseText(CruiseEngine.CruiseState cruiseState)
+    private void SetCruiseText(CruiseState cruiseState)
     {
         switch (cruiseState)
         {
-            case CruiseEngine.CruiseState.Off:
+            case CruiseState.Off:
                 cruiseText.text = "Engines Nominal";
                 break;
 
-            case CruiseEngine.CruiseState.Charging:
+            case CruiseState.Charging:
                 cruiseText.text = "Charging Cruise...";
                 break;
 
-            case CruiseEngine.CruiseState.On:
+            case CruiseState.On:
                 cruiseText.text = "Cruising";
                 break;
 
-            case CruiseEngine.CruiseState.Disrupted:
+            case CruiseState.Disrupted:
                 cruiseText.text = "Disrupted";
                 break;
         }

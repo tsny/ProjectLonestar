@@ -53,25 +53,25 @@ public class ShipEffectManager : ShipComponent
         }
     }
 
-    private void HandleCruiseChanged(CruiseEngine sender)
+    private void HandleCruiseChanged(CruiseEngine sender, CruiseState newState)
     {
         switch (sender.State)
         {
-            case CruiseEngine.CruiseState.Off:
+            case CruiseState.Off:
                 chargeCruiseEffect.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
                 fullCruiseEffect.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
                 break;
 
-            case CruiseEngine.CruiseState.Charging:
+            case CruiseState.Charging:
                 chargeCruiseEffect.Play();
                 break;
 
-            case CruiseEngine.CruiseState.On:
+            case CruiseState.On:
                 chargeCruiseEffect.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
                 fullCruiseEffect.Play();
                 break;
 
-            case CruiseEngine.CruiseState.Disrupted:
+            case CruiseState.Disrupted:
                 chargeCruiseEffect.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
                 fullCruiseEffect.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
                 break;

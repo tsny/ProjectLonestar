@@ -33,12 +33,12 @@ public class HardpointSystem : ShipComponent
 
             switch (cruiseEngine.State)
             {
-                case CruiseEngine.CruiseState.Off:
-                case CruiseEngine.CruiseState.Disrupted:
+                case CruiseState.Off:
+                case CruiseState.Disrupted:
                     return true;
 
-                case CruiseEngine.CruiseState.Charging:
-                case CruiseEngine.CruiseState.On:
+                case CruiseState.Charging:
+                case CruiseState.On:
                     return false;
 
                 default:
@@ -47,7 +47,7 @@ public class HardpointSystem : ShipComponent
         }
     }
 
-    public delegate void WeaponFiredEventHandler(Weapon weapon);
+    public delegate void WeaponFiredEventHandler(WeaponHardpoint hardpointFired);
     public event WeaponFiredEventHandler WeaponFired;
 
     public void ToggleAfterburner(bool toggle)
@@ -86,12 +86,12 @@ public class HardpointSystem : ShipComponent
     {
         if (CanFireWeapons == false) return;
 
-        if (hardpointToFire.weapon.energyDraw < energy)
+        if (hardpointToFire.projectilePrefab.projectileStats.energyDraw < energy)
         {
             if (hardpointToFire.Fire())
             {
-                energy -= hardpointToFire.weapon.energyDraw;
-                if (WeaponFired != null) WeaponFired(hardpointToFire.weapon);
+                energy -= hardpointToFire.projectilePrefab.projectileStats.energyDraw;
+                if (WeaponFired != null) WeaponFired(hardpointToFire);
                 BeginCooldown();
             }
         }

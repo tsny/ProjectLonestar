@@ -1,10 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+public enum CruiseState { Off, Charging, On, Disrupted };
+
 public class CruiseEngine : ShipComponent
 {
-    public enum CruiseState { Off, Charging, On, Disrupted };
-
     public Rigidbody rb;
 
     private CruiseState state;

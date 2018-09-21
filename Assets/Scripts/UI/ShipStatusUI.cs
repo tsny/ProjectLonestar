@@ -28,7 +28,7 @@ public class ShipStatusUI : ShipUIElement
         SetFillAmounts();
     }
 
-    private void HandleWeaponFired(Weapon weapon)
+    private void HandleWeaponFired(WeaponHardpoint hardpointFired)
     {
         SetFillAmounts();
     }

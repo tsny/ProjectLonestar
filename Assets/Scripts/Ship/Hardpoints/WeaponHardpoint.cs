@@ -7,8 +7,9 @@ using UnityEngine;
 public class WeaponHardpoint : MonoBehaviour 
 {
     public AudioSource audioSource;
-    public Weapon weapon;
-    public Vector3 target;
+    public Vector3 aimPosition;
+
+    public Projectile projectilePrefab;
 
     public bool Active { get; set; }
     public bool IsOnCooldown
@@ -43,14 +44,6 @@ public class WeaponHardpoint : MonoBehaviour
             Deactivated(this, EventArgs.Empty);
     }
 
-    private void Awake()
-    {
-        if (weapon == null)
-            weapon = ScriptableObject.CreateInstance<Weapon>();
-
-        weapon = Instantiate(weapon);
-    }
-
     public void Toggle()
     {
         Active = !Active;
@@ -72,11 +65,10 @@ public class WeaponHardpoint : MonoBehaviour
 
     public bool Fire()
     {
-        if (weapon == null || IsOnCooldown) return false;
+        if (projectilePrefab == null || IsOnCooldown) return false;
 
-        GameObject newProjectile = Instantiate(weapon.projectile, transform.position, Quaternion.identity);
-
-        newProjectile.GetComponent<ProjectileController>().Initialize(weapon, target);
+        var newProjectile = Instantiate(projectilePrefab, transform.position, Quaternion.identity);
+        newProjectile.Initialize(aimPosition);
 
         //audioSource.PlayOneShot(weapon.clip);
 
@@ -87,8 +79,9 @@ public class WeaponHardpoint : MonoBehaviour
 
     private IEnumerator Cooldown()
     {
-        yield return new WaitForSeconds(weapon.cooldownDuration);
+        yield return new WaitForSeconds(projectilePrefab.projectileStats.cooldownDuration);
 
+        yield return null;
         cooldownCoroutine = null;
     }
 }
