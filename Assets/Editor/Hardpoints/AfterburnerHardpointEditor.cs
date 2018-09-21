@@ -1,34 +1,40 @@
 ﻿using UnityEngine;
+using EGL = UnityEditor.EditorGUILayout;
 using UnityEditor;
 
 [CustomEditor(typeof(AfterburnerHardpoint))]
 public class AfterburnerHardpointEditor : Editor
 {
+    AfterburnerHardpoint afterburner;
+
     public override void OnInspectorGUI()
     {
         base.OnInspectorGUI();
 
-        AfterburnerHardpoint afterburnerHardpoint = (AfterburnerHardpoint)target;
+        afterburner = target as AfterburnerHardpoint;
 
-        EditorGUI.BeginChangeCheck();
+        EGL.LabelField("Is Active?", afterburner.IsActive.ToString());
+        EGL.LabelField("Is On Cooldown?", afterburner.IsOnCooldown.ToString());
 
-            Afterburner newAfterburner = (Afterburner) EditorGUILayout.ObjectField("Afterburner", afterburnerHardpoint.CurrentEquipment, typeof(Afterburner), true);
+        ShowButtons();
+    }
 
-        if (EditorGUI.EndChangeCheck())
+    private void ShowButtons()
+    {
+        if (Application.isPlaying == false) return;
+
+        var buttonString = afterburner.IsActive ? "Deactivate" : "Activate";
+
+        if (GUILayout.Button(buttonString))
         {
-            if (newAfterburner == null)
+            if (afterburner.IsActive)
             {
-                afterburnerHardpoint.Demount();
+                afterburner.Deactivate();
             }
 
-            afterburnerHardpoint.TryMount(newAfterburner);
-        }
-
-        if (afterburnerHardpoint.IsMounted)
-        {
-            if (GUILayout.Button("Demount"))
+            else
             {
-                afterburnerHardpoint.Demount();
+                afterburner.Activate();
             }
         }
     }

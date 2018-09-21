@@ -36,34 +36,6 @@ public class CruiseEngine : ShipComponent
         if (CruiseStateChanged != null) CruiseStateChanged(this);
     }
 
-    public override void Setup(Ship sender)
-    {
-        base.Setup(sender);
-
-        sender.engine.ThrottleChanged += HandleThrottleChanged;
-        sender.engine.DriftingChange += HandleDrifting;
-        rb = sender.rb;
-    }
-
-    private void HandleDrifting(bool drifting)
-    {
-        if (drifting)
-        {
-            StopAnyCruise();
-        }
-    }
-
-    private void HandleThrottleChanged(Engine sender, float newThrottle, float oldThrottle)
-    {
-        if (newThrottle < oldThrottle)
-        {
-            if (State == CruiseState.On || State == CruiseState.Charging)
-            {
-                StopAnyCruise();
-            }
-        }
-    }
-
     public void StopAnyCruise()
     {
         if (State == CruiseState.Off) return;

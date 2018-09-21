@@ -6,8 +6,6 @@ public class Engine : ShipComponent
 {
     public Rigidbody rb;
 
-    // Move to Ship.cs
-    public CruiseEngine cruiseEngine;
     public float Speed
     {
         get
@@ -19,6 +17,12 @@ public class Engine : ShipComponent
     public float turnSpeed = 1;
     public float throttlePower = 1;
     public float strafePower = 1;
+    public float mass = 5;
+    public float drag = 5;
+    public float driftMass = 5;
+    public float driftDrag = .05f;
+
+    public EngineStats engineStats;
 
     private float throttle;
     public float Throttle
@@ -73,11 +77,6 @@ public class Engine : ShipComponent
         }
     }
 
-    public float mass = 5;
-    public float drag = 5;
-    public float driftMass = 5;
-    public float driftDrag = .05f;
-
     public delegate void ThrottleChangedEventHandler(Engine sender, float newThrottle, float oldThrottle);
     public event ThrottleChangedEventHandler ThrottleChanged;
 
@@ -87,18 +86,10 @@ public class Engine : ShipComponent
     public event EventHandler DriftingChange;
     public delegate void EventHandler(bool drifting);
 
-    public override void Setup(Ship sender)
+    private void Awake()
     {
-        base.Setup(sender);
-        turnSpeed = sender.engineStats.turnSpeed;
-        cruiseEngine = sender.cruiseEngine;
-        rb = sender.rb;
-
-        mass = rb.mass;
-        drag = rb.drag;
-
-        sender.Possession += HandleOwnerPossession;
-        cruiseEngine.CruiseStateChanged += HandleCruiseChange;
+        if (engineStats == null)
+            engineStats = Instantiate(ScriptableObject.CreateInstance<EngineStats>());
     }
 
     private void OnDriftingChange(bool isDrifting)
@@ -135,11 +126,6 @@ public class Engine : ShipComponent
         {
             Drifting = false;
         }
-    }
-
-    private void HandleOwnerPossession(PlayerController pc, Ship sender, bool possessed)
-    {
-        enabled = possessed;
     }
 
     private void FixedUpdate()

@@ -4,16 +4,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 
-public class ScannerHardpoint : Hardpoint
+public class ScannerHardpoint : MonoBehaviour
 {
     public List<ITargetable> targets = new List<ITargetable>();
-    public Scanner Scanner
-    {
-        get
-        {
-            return CurrentEquipment as Scanner;
-        }
-    }
+
+    public Scanner scanner;
 
     public int scanFrequency = 10;
 
@@ -21,11 +16,6 @@ public class ScannerHardpoint : Hardpoint
 
     public event EntryChangeEventHandler EntryAdded;
     public event EntryChangeEventHandler EntryRemoved;
-
-    protected override bool EquipmentMatchesHardpoint(Equipment equipment)
-    {
-        return equipment is Scanner;
-    }
 
     private void OnEntryAdded(ITargetable target)
     {
@@ -37,18 +27,9 @@ public class ScannerHardpoint : Hardpoint
         if (EntryRemoved != null) EntryRemoved(this, target);
     }
 
-    protected override void OnMounted(Equipment newEquipment)
-    {
-        base.OnMounted(newEquipment);
-
-        ScanForTargets();
-
-        StartCoroutine(ScanCoroutine());
-    }
-
     public void ScanForTargets()
     {
-        if (Scanner == null) return;
+        if (scanner == null) return;
 
         var scannedTargets = FindObjectsOfType<MonoBehaviour>().OfType<ITargetable>().ToList();
 

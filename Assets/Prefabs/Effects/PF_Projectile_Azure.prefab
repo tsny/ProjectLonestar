@@ -96,7 +96,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1966536139198568}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 28.28103, y: 20.459213, z: 58.82}
+  m_LocalPosition: {x: 11.271725, y: 6.57092, z: 5.2531853}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4625632035842980}
@@ -131,9 +131,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   distanceTraveled: 0
-  owner: {fileID: 0}
+  distanceTillColliderEnable: 2
   weapon: {fileID: 11400000, guid: 8cdb4af4d97ee484aaa94c7d339b79c6, type: 2}
-  target: {x: 0, y: 0, z: 0}
   mainEffect: {fileID: 198442820227616788}
   impactEffect: {fileID: 198619947721844536}
 --- !u!135 &135810790622354112
@@ -316,7 +315,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 0, g: 0.24264705, b: 0.16232252, a: 1}
-      maxColor: {r: 0.5514706, g: 0.77728206, b: 1, a: 1}
+      maxColor: {r: 0.8962264, g: 0.83877575, b: 0.080322154, a: 1}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -4795,7 +4794,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 0.16220188, g: 0.5691194, b: 0.764151, a: 1}
+      maxColor: {r: 0.90227634, g: 0.9433962, b: 0.10234961, a: 1}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -9215,7 +9214,7 @@ ParticleSystemRenderer:
   m_ReflectionProbeUsage: 0
   m_RenderingLayerMask: 4294967295
   m_Materials:
-  - {fileID: 2100000, guid: 6581259e75f22194599a14f8d09d7375, type: 2}
+  - {fileID: 2100000, guid: e49f6ce47a07fb047b736f90f89c3ad6, type: 2}
   - {fileID: 2100000, guid: 6581259e75f22194599a14f8d09d7375, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0

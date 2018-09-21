@@ -27,7 +27,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &1055441798636074
 GameObject:
   m_ObjectHideFlags: 1
@@ -470,6 +470,7 @@ MonoBehaviour:
   maxRange: 500
   animator: {fileID: 95694526470081222}
   buttonImage: {fileID: 114343093048514050}
+  camera: {fileID: 0}
 --- !u!114 &114853944373120608
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -5,8 +5,7 @@ using System.Linq;
 
 public class HardpointSystem : ShipComponent
 {
-    public List<Hardpoint> hardpoints = new List<Hardpoint>();
-    public Dictionary<int, WeaponHardpoint> weaponHardpoints = new Dictionary<int, WeaponHardpoint>();
+    public List<WeaponHardpoint> weaponHardpoints = new List<WeaponHardpoint>();
 
     [Header("Individual Hardpoints")]
 
@@ -51,43 +50,10 @@ public class HardpointSystem : ShipComponent
     public delegate void WeaponFiredEventHandler(Weapon weapon);
     public event WeaponFiredEventHandler WeaponFired;
 
-    private void Awake()
-    {
-        GetComponentsInChildren(true, hardpoints);
-
-        DesignateWeaponSlots();
-
-        foreach(Hardpoint hardpoint in hardpoints)
-        {
-            hardpoint.Mounted += HandleHardpointMounted;
-            hardpoint.Demounted += HandleHardpointDemounted;
-        }
-    }
-
-    public void SetStats(ShipStats stats)
-    {
-        energyCapacity = stats.energyCapacity;
-        chargeRate = stats.energyChargeRate;
-    }
-
-    public override void Setup(Ship sender)
-    {
-        base.Setup(sender);
-        cruiseEngine = sender.cruiseEngine;
-    }
-
-    public void DemountAll()
-    {
-        foreach (Hardpoint hardpoint in hardpoints)
-        {
-            hardpoint.Demount();
-        }
-    }
-
     public void ToggleAfterburner(bool toggle)
     {
         if (toggle) afterburnerHardpoint.Activate();
-        else afterburnerHardpoint.Disable();
+        else afterburnerHardpoint.Deactivate();
     }
 
     public void EnableInfiniteEnergy()
@@ -99,9 +65,9 @@ public class HardpointSystem : ShipComponent
 
     public void FireActiveWeapons()
     {
-        foreach (WeaponHardpoint hardpoint in weaponHardpoints.Values)
+        foreach (WeaponHardpoint hardpoint in weaponHardpoints)
         {
-            if (hardpoint.active)
+            if (hardpoint.Active)
             {
                 FireWeaponHardpoint(hardpoint);
             }
@@ -110,11 +76,9 @@ public class HardpointSystem : ShipComponent
 
     public void FireWeaponHardpoint(int hardpointSlot)
     {
-        WeaponHardpoint hardpointToFire;
-
-        if (weaponHardpoints.TryGetValue(hardpointSlot, out hardpointToFire))
+        if (weaponHardpoints[hardpointSlot] != null)
         {
-            FireWeaponHardpoint(hardpointToFire);
+            FireWeaponHardpoint(weaponHardpoints[hardpointSlot]);
         }
     }
 
@@ -122,12 +86,12 @@ public class HardpointSystem : ShipComponent
     {
         if (CanFireWeapons == false) return;
 
-        if (hardpointToFire.Weapon.energyDraw < energy)
+        if (hardpointToFire.weapon.energyDraw < energy)
         {
             if (hardpointToFire.Fire())
             {
-                energy -= hardpointToFire.Weapon.energyDraw;
-                if (WeaponFired != null) WeaponFired(hardpointToFire.Weapon);
+                energy -= hardpointToFire.weapon.energyDraw;
+                if (WeaponFired != null) WeaponFired(hardpointToFire.weapon);
                 BeginCooldown();
             }
         }
@@ -166,55 +130,6 @@ public class HardpointSystem : ShipComponent
         }
 
         rechargeEnumerator = null;
-    }
-
-    public void MountLoadout(Loadout newLoadout)
-    {
-        if (newLoadout == null) return;
-
-        DemountAll();
-
-        foreach (Equipment equipment in newLoadout.equipment)
-        {
-            foreach (Hardpoint hardpoint in hardpoints)
-            {
-                if (hardpoint.IsMounted) continue;
-
-                if (hardpoint.TryMount(equipment))
-                {
-                    break;
-                }
-            }
-        }
-    }
-
-    private void HandleHardpointDemounted(Hardpoint sender, Equipment oldEquipment)
-    {
-        WeaponHardpoint weaponHardpoint = sender as WeaponHardpoint;
-
-        if (weaponHardpoint == null) return;
-
-        weaponHardpoints.Remove(weaponHardpoint.slot);
-    }
-
-    private void HandleHardpointMounted(Hardpoint sender, Equipment newEquipment)
-    {
-        WeaponHardpoint weaponHardpoint = sender as WeaponHardpoint;
-
-        if (weaponHardpoint == null) return;
-
-        weaponHardpoints.Add(weaponHardpoint.slot, weaponHardpoint);
-    }
-
-    private void DesignateWeaponSlots()
-    {
-        int slotCounter = 1;
-
-        foreach (WeaponHardpoint weaponHardpoint in hardpoints.Where(x => x.GetType() == typeof(WeaponHardpoint)))
-        {
-            weaponHardpoint.slot = slotCounter;
-            slotCounter++;
-        }
     }
 
     private IEnumerator CooldownCoroutine()

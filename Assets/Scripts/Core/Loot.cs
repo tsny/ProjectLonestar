@@ -1,6 +1,7 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
-public class Loot : MonoBehaviour
+public class Loot : MonoBehaviour, ITargetable
 {
     public Item item;
     public Transform target;
@@ -11,40 +12,44 @@ public class Loot : MonoBehaviour
 
     public float distanceToTarget;
 
-    [Range(0, 1)]
+    [Range(0, 10)]
     public float pullForce = .5f;
 
-    void Awake()
-    {
-        enabled = false;
-    }
+    public event TargetEventHandler BecameTargetable;
+    public event TargetEventHandler BecameUntargetable;
 
-    void LateUpdate()
+    private void OnBecameUntargetable()
     {
-        if (beingLooted && target != null) GravitateTowardsLooter();
-    }
-
-    public void SetHierarchyName()
-    {
-        if (item == null) return;
-        name = "loot_" + item.name + " x" + item.quantity;
+        if (BecameUntargetable != null) BecameUntargetable(this);
     }
 
     public void SetTarget(Transform newTarget, float pullForce)
     {
-        target = newTarget;
-        this.pullForce = pullForce;
-        beingLooted = true;
+        ClearTarget();
 
+        target = newTarget;
+        beingLooted = true;
+        this.pullForce = pullForce;
         distanceToTarget = Vector3.Distance(transform.position, target.transform.position);
-        enabled = true;
+
+        StartCoroutine(GravitateCoroutine());
     }
 
     public void ClearTarget()
     {
+        StopAllCoroutines();
+
         target = null;
         beingLooted = false;
-        enabled = false;
+    }
+
+    private IEnumerator GravitateCoroutine()
+    {
+        for (; ;)
+        {
+            GravitateTowardsLooter();
+            yield return new WaitForFixedUpdate();
+        }
     }
 
     public void GravitateTowardsLooter()
@@ -64,17 +69,28 @@ public class Loot : MonoBehaviour
             if (targetInventory == null)
             {
                 ClearTarget();
+                print("ERROR: No inventory");
                 return;
             }
 
             targetInventory.AddItem(item);
 
+            OnBecameUntargetable();
             Destroy(gameObject);
-
             return;
         }
 
         transform.LookAt(target.transform);
         transform.position = Vector3.Lerp(transform.position, target.transform.position, pullForce * Time.deltaTime);
+    }
+
+    public bool IsTargetable()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void SetupTargetIndicator(TargetIndicator indicator)
+    {
+        //throw new System.NotImplementedException();
     }
 }

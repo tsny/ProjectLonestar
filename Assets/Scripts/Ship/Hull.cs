@@ -10,8 +10,33 @@ public class Hull : MonoBehaviour, IDamageable
     public event EventHandler<DamageEventArgs> TookDamage;
     public event EventHandler<DeathEventArgs> HealthDepleted;
 
-    public float Health { get; set; }
-    public float MaxHealth { get; set; }
+    [SerializeField] private float _health; 
+    public float Health
+    {
+        get
+        {
+            return _health;
+        }
+
+        set
+        {
+            _health = value;
+        }
+    }
+
+    [SerializeField] private float _maxHealth;
+    public float MaxHealth
+    {
+        get
+        {
+            return _maxHealth;
+        }
+
+        set
+        {
+            _maxHealth = value;
+        }
+    }
 
     protected void OnHealthDepleted(Weapon weapon)
     {

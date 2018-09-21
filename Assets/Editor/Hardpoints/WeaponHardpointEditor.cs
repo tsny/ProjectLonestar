@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using EGL = UnityEditor.EditorGUILayout;
 using UnityEditor;
 
 [CustomEditor(typeof(WeaponHardpoint))]
@@ -10,26 +11,11 @@ public class WeaponHardpointEditor : Editor
 
         WeaponHardpoint weaponHardpoint = (WeaponHardpoint)target;
 
-        EditorGUI.BeginChangeCheck();
+        if (Application.isPlaying == false) return;
 
-            Weapon newWeapon = (Weapon) EditorGUILayout.ObjectField("Weapon", weaponHardpoint.CurrentEquipment, typeof(Weapon), true);
-
-        if (EditorGUI.EndChangeCheck())
+        if (GUILayout.Button("Fire"))
         {
-            if (newWeapon == null)
-            {
-                weaponHardpoint.Demount();
-            }
-
-            weaponHardpoint.TryMount(newWeapon);
-        }
-
-        if (weaponHardpoint.IsMounted)
-        {
-            if (GUILayout.Button("Demount"))
-            {
-                weaponHardpoint.Demount();
-            }
+            weaponHardpoint.Fire();
         }
     }
 }

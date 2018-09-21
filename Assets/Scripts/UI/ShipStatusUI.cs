@@ -19,11 +19,6 @@ public class ShipStatusUI : ShipUIElement
 
         enabled = true;
 
-        if (ship.hardpointSystem.afterburnerHardpoint.IsMounted)
-        {
-            afterburnerHardpoint = ship.hardpointSystem.afterburnerHardpoint;
-        }
-
         ship.hardpointSystem.WeaponFired += HandleWeaponFired;
         //ship.hull.TookDamage += HandleTookDamage;
     }
@@ -48,6 +43,22 @@ public class ShipStatusUI : ShipUIElement
         //healthBarImage.fillAmount = ship.hull.health / ship.hull.maxHealth;
         //shieldBarImage.fillAmount = ship.hardpointSystem.shieldHardpoint.health / ship.hardpointSystem.shieldHardpoint.capacity;
         energyBarImage.fillAmount = ship.hardpointSystem.energy / ship.hardpointSystem.energyCapacity;
+    }
+
+    private void SetHealthFill()
+    {
+
+    }
+
+    private void SetShieldFill()
+    {
+
+    }
+
+    // TODO?
+    private void SetAbilityFill()
+    {
+
     }
 
     private void SetText()

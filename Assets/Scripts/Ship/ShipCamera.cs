@@ -27,13 +27,9 @@ public class ShipCamera : ShipComponent
     public float maxUpperPitch = 10;
     public float maxLowerPitch = -10;
     public float maxDistance = 10;
+    public float speed;
 
-    [Header("Other")]
-    [Space(5)]
-    public float aimRaycastDistance = 10000;
-
-    public PlayerController playerController;
-    public Engine engine;
+    public bool followShip = true;
 
     private Camera shipCam;
     private AudioListener audioListener;
@@ -57,28 +53,11 @@ public class ShipCamera : ShipComponent
         audioListener.enabled = false;
     }
 
-    public override void Setup(Ship sender)
-    {
-        base.Setup(sender);
-        sender.Possession += HandleOwnerPossessed;
-        engine = sender.engine;
-    }
-
-    private void HandleOwnerPossessed(PlayerController pc, Ship sender, bool possessed)
-    {
-        playerController = pc;
-        enabled = possessed;
-    }
-
     private void FixedUpdate()
     {
         CalculateOffsets();
-        ship.aimPosition = GetAimPosition();
 
-        if (playerController.MouseState != MouseState.Off)
-        {
-            FollowShip();
-        }
+        if (followShip) FollowShip();
 
         else
         {
@@ -87,19 +66,22 @@ public class ShipCamera : ShipComponent
         } 
     }
 
-    public Vector3 GetAimPosition()
+    public static Vector3 GetMousePointOnScreen(bool drawRay = false, float aimRaycastDistance = 10000)
     {
-        Ray ray = shipCam.ScreenPointToRay(Input.mousePosition);
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
         RaycastHit hitInfo;
 
-        Debug.DrawRay(ray.origin, ray.direction * aimRaycastDistance);
+        if (drawRay)
+        {
+            Debug.DrawRay(ray.origin, ray.direction * aimRaycastDistance);
+        }
 
         Physics.Raycast(ray, out hitInfo, aimRaycastDistance, ~LayerMask.GetMask("Player"));
 
         if (hitInfo.collider != null)
         {
             return hitInfo.point;
-            //return hitInfo.collider.transform.position;
         }
 
         else
@@ -112,7 +94,7 @@ public class ShipCamera : ShipComponent
     {
         var mouseCoords = PlayerController.GetMousePosition();
 
-        distanceOffset = Mathf.Clamp(engine.Speed / speedDivisor, 0, maxDistance);
+        distanceOffset = Mathf.Clamp(speed / speedDivisor, 0, maxDistance);
 
         pitchOffset = Mathf.Clamp(mouseCoords.y * pitchModifier, maxLowerPitch, maxUpperPitch);
         yawOffset = Mathf.Clamp(mouseCoords.x * yawModifier, -maxYaw, maxYaw);

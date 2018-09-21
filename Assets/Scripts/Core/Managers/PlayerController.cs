@@ -48,6 +48,12 @@ public class PlayerController : MonoBehaviour
     private void Awake()
     {
         name = "PLAYER CONTROLLER";
+
+        if (FindObjectsOfType<PlayerController>().Length > 1)
+        {
+            print("Trying to create PlayerController when one already exists in the scene...");
+            Destroy(gameObject);
+        }
     }
 
     // This should be eleswhere

@@ -19,7 +19,7 @@ public class FLTerminal : Terminal
 
         if (pc.ship == null) return;
 
-        pc.ship.hardpointSystem.MountLoadout(GameSettings.Instance.defaultLoadout);
+        //pc.ship.hardpointSystem.MountLoadout(GameSettings.Instance.defaultLoadout);
     }
 
     [RegisterCommand(Help = "Toggle GodMode on Current Ship", MinArgCount = 0, MaxArgCount = 0)]
@@ -74,7 +74,7 @@ public class FLTerminal : Terminal
         if (PlayerControllerExistsInScene() == false) return;
 
         var abHardpoint = FindObjectOfType<PlayerController>().ship.hardpointSystem.afterburnerHardpoint;
-        abHardpoint.drain = abHardpoint.drain == 0 ? 100 : 0;
+        abHardpoint.afterburner.drainRate = abHardpoint.afterburner.drainRate == 0 ? 100 : 0;
 
         print("Toggled infinite afterburner...");
     }

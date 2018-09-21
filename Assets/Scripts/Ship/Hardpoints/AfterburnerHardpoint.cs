@@ -1,84 +1,163 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 
-public class AfterburnerHardpoint : Hardpoint
+public class AfterburnerHardpoint : MonoBehaviour
 {
     public Rigidbody rb;
+    public Afterburner afterburner;
 
-    public float charge = 100;
-    public float regenRate = 1;
-    public float thrust = 1;
-    public float drain = 1;
+    public float charge;
 
-    public bool burning;
-
-    public Afterburner Afterburner
+    public bool IsActive
     {
         get
         {
-            return CurrentEquipment as Afterburner;
+            return burnCoroutine != null;
+        }
+    }
+    public bool IsOnCooldown
+    {
+        get
+        {
+            return cooldownCoroutine != null;
         }
     }
 
-    private IEnumerator chargeCoroutine;
+    private IEnumerator rechargeCoroutine;
     private IEnumerator burnCoroutine;
+    private IEnumerator cooldownCoroutine;
 
-    public override void Setup(Ship sender)
+    public event EventHandler<AfterburnerEventArgs> Activated;
+    public event EventHandler<AfterburnerEventArgs> Deactivated;
+
+    private void Awake()
     {
-        base.Setup(sender);
-        rb = sender.rb;
+        if (afterburner == null)
+            afterburner = ScriptableObject.CreateInstance<Afterburner>();
+
+        afterburner = Instantiate(afterburner);
+
+        if (rb == null)
+            rb = GetComponentInChildren<Rigidbody>();
+
+        charge = afterburner.capacity;
     }
 
-    protected override bool EquipmentMatchesHardpoint(Equipment equipment)
+    private void OnActivated()
     {
-        return equipment is Afterburner;
+        if (Activated != null)
+            Activated(this, new AfterburnerEventArgs(true));
+    }
+
+    private void OnDeactivated()
+    {
+        if (Deactivated != null)
+            Deactivated(this, new AfterburnerEventArgs(false));
     }
 
     public void Activate()
     {
-        if (OnCooldown || Afterburner == null || burning) return;
+        if (rb == null) return;
 
-        if (chargeCoroutine != null) StopCoroutine(chargeCoroutine);
+        if (IsActive) return;
+
         burnCoroutine = Burn();
         StartCoroutine(burnCoroutine);
+
+        OnActivated();
     }
 
-    public void Disable()
+    public void Deactivate()
     {
-        if (!burning) return;
+        if (!IsActive) return;
 
-        if (burnCoroutine != null) StopCoroutine(burnCoroutine);
-        chargeCoroutine = Charge();
-        StartCoroutine(chargeCoroutine);
+        if (burnCoroutine != null)
+            StopCoroutine(burnCoroutine);
+
+        burnCoroutine = null;
+
+        BeginRecharge();
+
+        OnDeactivated();
     }
 
-    private IEnumerator Charge()
+    public void BeginRecharge()
     {
-        burning = false;
+        rechargeCoroutine = Recharge();
+        StartCoroutine(rechargeCoroutine);
+    }
 
+    public void EndRecharge()
+    {
+        if (rechargeCoroutine != null)
+            StopCoroutine(rechargeCoroutine);
+
+        rechargeCoroutine = null;
+    }
+
+    public void BeginCooldown()
+    {
+        cooldownCoroutine = Cooldown();
+        StartCoroutine(cooldownCoroutine);
+    }
+
+    public void EndCooldown()
+    {
+        if (cooldownCoroutine != null)
+            StopCoroutine(cooldownCoroutine);
+
+        cooldownCoroutine = null;
+    }
+
+    private IEnumerator Recharge()
+    {
         for(; ;)
         {
-            charge = Mathf.MoveTowards(charge, 100, regenRate * Time.deltaTime);
+            charge = Mathf.MoveTowards(charge, 100, afterburner.regenRate * Time.deltaTime);
+
             if (charge >= 100) break;
 
             yield return null;
         }
+
+        rechargeCoroutine = null;
     }
 
     private IEnumerator Burn()
     {
-        burning = true;
+        EndRecharge();
 
         for(; ;)
         {
-            charge = Mathf.MoveTowards(charge, 0, drain * Time.deltaTime);
+            charge = Mathf.MoveTowards(charge, 0, afterburner.drainRate * Time.deltaTime);
             if (charge <= 0) break;
 
-            rb.AddForce(rb.transform.forward * Afterburner.thrust);
+            rb.AddForce(rb.transform.forward * afterburner.thrust);
             yield return new WaitForFixedUpdate();
         }
 
-        StartCooldown();
-        Disable();
+        burnCoroutine = null;
+
+        BeginCooldown();
+    }
+
+    private IEnumerator Cooldown()
+    {
+        yield return new WaitForSeconds(afterburner.cooldownDuration);
+
+        cooldownCoroutine = null;
+
+        BeginRecharge();
+    }
+}
+
+public class AfterburnerEventArgs : EventArgs
+{
+    public bool wasActivated;
+
+    public AfterburnerEventArgs(bool wasActivated)
+    {
+        this.wasActivated = wasActivated;
     }
 }

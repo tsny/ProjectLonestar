@@ -21,9 +21,9 @@ public class PlayerControllerEditor : Editor
 
     private void ShowInspectorUnpossessionControls()
     {
-        if (GUILayout.Button("Unpossess"))
+        if (GUILayout.Button("Release"))
         {
-            playerController.Possess(null);
+            playerController.Release();
         }
     }
 }

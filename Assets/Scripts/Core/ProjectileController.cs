@@ -4,11 +4,10 @@ using System.Linq;
 public class ProjectileController : MonoBehaviour
 {
     public float distanceTraveled = 0f;
-
-    public GameObject owner;
+    public float distanceTillColliderEnable = 2;
 
     public Weapon weapon;
-    public Vector3 target;
+
     public ParticleSystem mainEffect;
     public ParticleSystem impactEffect;
 
@@ -20,36 +19,40 @@ public class ProjectileController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         collider = GetComponent<Collider>();
-        gameObject.hideFlags = HideFlags.HideInHierarchy;
+        //gameObject.hideFlags = HideFlags.HideInHierarchy;
         distanceTraveled = 0f;
-        target = Vector3.zero;
         startPosition = transform.position;
+
+        collider.enabled = false;
     }
 
-    // Be sure to call this after instantiation
-    public void Initialize(Ship owner, Weapon weapon)
+    // Possible params: Collider[] colidersToIgnore
+    public void Initialize(Weapon weapon, Vector3 target)
     {
         this.weapon = weapon;
-        this.owner = owner.gameObject;
-
-        Physics.IgnoreCollision(owner.GetComponentInChildren<Collider>(), collider);
-
-        target = owner.aimPosition;
-
         transform.LookAt(target);
         rb.AddForce(transform.forward * weapon.thrust, ForceMode.Impulse);
         mainEffect.Play();
     }
 
-    private void LateUpdate()
+    private void Update()
     {
+        if (distanceTraveled > distanceTillColliderEnable)
+        {
+            collider.enabled = true;
+        }
+
         distanceTraveled = Vector3.Distance(transform.position, startPosition);
 
         if (distanceTraveled > weapon.range) Destroy(gameObject);
     }
 
+    // Maybe change this so that it spawns the particle systems and destroys immediately
+    // Right now we just disable the script
     private void OnCollisionEnter(Collision collision)
     {
+        enabled = false;
+
         Destroy(rb);
         Destroy(collider);
 

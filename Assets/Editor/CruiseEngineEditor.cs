@@ -11,9 +11,11 @@ public class CruiseEngineEditor : Editor
 
         var engine = target as CruiseEngine;
 
+        if (Application.isPlaying == false) return;
+
         EditorGUILayout.LabelField("Cruise State", engine.State.ToString());
 
-        if (Application.isPlaying && GUILayout.Button("Toggle Engines"))
+        if (GUILayout.Button("Toggle Engines"))
         {
             engine.ToggleCruiseEngines();
         }

@@ -1,50 +1,94 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using UnityEngine;
 
-[RequireComponent(typeof(AudioSource))]
-public class WeaponHardpoint : Hardpoint
+public class WeaponHardpoint : MonoBehaviour 
 {
-    public int slot;
-    public int rank;
-    public bool active;
+    public AudioSource audioSource;
+    public Weapon weapon;
+    public Vector3 target;
 
-    public Weapon Weapon
+    public bool Active { get; set; }
+    public bool IsOnCooldown
     {
         get
         {
-            return CurrentEquipment as Weapon;
+            return cooldownCoroutine != null;
         }
     }
 
-    public AudioSource audioSource;
+    private IEnumerator cooldownCoroutine;
 
-    protected override bool EquipmentMatchesHardpoint(Equipment equipment)
+    public event EventHandler<EventArgs> Fired;
+    public event EventHandler<EventArgs> Activated;
+    public event EventHandler<EventArgs> Deactivated;
+
+    private void OnFired()
     {
-        return equipment is Weapon;
+        if (Fired != null)
+            Fired(this, EventArgs.Empty);
+    }
+
+    private void OnActivated()
+    {
+        if (Activated != null)
+            Activated(this, EventArgs.Empty);
+    }
+
+    private void OnDeactivated()
+    {
+        if (Deactivated != null)
+            Deactivated(this, EventArgs.Empty);
+    }
+
+    private void Awake()
+    {
+        if (weapon == null)
+            weapon = ScriptableObject.CreateInstance<Weapon>();
+
+        weapon = Instantiate(weapon);
     }
 
     public void Toggle()
     {
-        active = !active;
+        Active = !Active;
     }
 
-    /// <summary>
-    /// Fires the equipped weapon
-    /// </summary>
-    /// <returns>
-    /// A bool respresenting if the hardpoint fired 
-    /// </returns>
+    public void BeginCooldown()
+    {
+        cooldownCoroutine = Cooldown();
+        StartCoroutine(cooldownCoroutine);
+    }
+
+    public void EndCooldown()
+    {
+        if (cooldownCoroutine != null)
+            StopCoroutine(cooldownCoroutine);
+
+        cooldownCoroutine = null;
+    }
+
     public bool Fire()
     {
-        if (Weapon == null || OnCooldown) return false;
+        if (weapon == null || IsOnCooldown) return false;
 
-        GameObject newProjectile = Instantiate(Weapon.projectile, transform.position, Quaternion.identity);
-        newProjectile.GetComponent<ProjectileController>().Initialize(ship, Weapon);
+        GameObject newProjectile = Instantiate(weapon.projectile, transform.position, Quaternion.identity);
 
-        audioSource.PlayOneShot(Weapon.clip);
+        newProjectile.GetComponent<ProjectileController>().Initialize(weapon, target);
 
-        StartCooldown();
+        //audioSource.PlayOneShot(weapon.clip);
+
+        BeginCooldown();
+
         return true;
+    }
+
+    private IEnumerator Cooldown()
+    {
+        yield return new WaitForSeconds(weapon.cooldownDuration);
+
+        cooldownCoroutine = null;
     }
 }

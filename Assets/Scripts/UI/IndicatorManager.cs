@@ -7,7 +7,6 @@ public class IndicatorManager : ShipUIElement
 {
     public GameObject indicatorPrefab;
     public Transform indicatorLayer;
-    //public List<TargetIndicator> indicators = new List<TargetIndicator>();
     public Dictionary<ITargetable, TargetIndicator> indicatorPairs = new Dictionary<ITargetable, TargetIndicator>();
 
     public TargetIndicator selectedIndicator;
@@ -93,7 +92,6 @@ public class IndicatorManager : ShipUIElement
         newIndicator.SetTarget(newTarget);
 
         newIndicator.Selected += HandleIndicatorSelected;
-        newIndicator.TargetDestroyed += RemoveIndicator;
 
         indicatorPairs.Add(newTarget, newIndicator);
     }
@@ -105,7 +103,6 @@ public class IndicatorManager : ShipUIElement
         if (indicatorToRemove == selectedIndicator) DeselectCurrentIndicator();
 
         indicatorToRemove.Selected -= HandleIndicatorSelected;
-        indicatorToRemove.TargetDestroyed -= RemoveIndicator;
         
         Destroy(indicatorToRemove.gameObject);
     }

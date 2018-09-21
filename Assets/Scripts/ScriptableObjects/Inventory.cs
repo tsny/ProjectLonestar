@@ -34,6 +34,8 @@ public class Inventory : ScriptableObject
     /// <returns></returns>
     public Item AddItem(Item item)
     {
+        item = (Item) CreateInstance(item.GetType().Name);
+
         if (item.canStack)
         {
             Item foundItem = FindNonFullStack(item);

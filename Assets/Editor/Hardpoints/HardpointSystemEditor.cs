@@ -10,11 +10,5 @@ public class HardpointSystemEditor : Editor
 
         HardpointSystem hardpointSystem = (HardpointSystem)target;
 
-        hardpointSystem.GetComponentsInChildren(true, hardpointSystem.hardpoints);
-
-        if (GUILayout.Button("Demount All"))
-        {
-            hardpointSystem.DemountAll(); 
-        }
     }
 }

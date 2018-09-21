@@ -7,12 +7,12 @@ public class ShipSpawner : ScriptableObject
     {
         var shipRef = Instantiate(ship, spawnPosition, Quaternion.identity).GetComponent<Ship>();
 
-        if (loadout == null)
-        {
-            loadout = CreateInstance<Loadout>();
-        }
+        //if (loadout == null)
+        //{
+        //    loadout = CreateInstance<Loadout>();
+        //}
 
-        shipRef.hardpointSystem.MountLoadout(loadout);
+        //shipRef.hardpointSystem.MountLoadout(loadout);
         return shipRef;
     }
 }

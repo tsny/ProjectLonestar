@@ -9,7 +9,7 @@ public class Ship : MonoBehaviour, ITargetable
     public PilotDetails pilotDetails;
     public EngineStats engineStats;
     public ShipDetails shipDetails;
-    public ShipStats stats;
+    //public ShipStats stats;
 
     [Header("Ship Components")]
     public HardpointSystem hardpointSystem;
@@ -18,7 +18,6 @@ public class Ship : MonoBehaviour, ITargetable
     public CruiseEngine cruiseEngine;
     public ShipCamera shipCam;
     public Rigidbody rb;
-    public List<ShipComponent> shipComponents;
     public Hull hull;
 
     public delegate void PossessionEventHandler(PlayerController pc, Ship sender, bool possessed);
@@ -35,23 +34,10 @@ public class Ship : MonoBehaviour, ITargetable
         rb = GetComponentInChildren<Rigidbody>();
         hull = GetComponentInChildren<Hull>();
 
-        //hull.HealthDepleted += HandleHullHealthDepleted;
-
-        if (stats == null)
-        {
-            stats = ScriptableObject.CreateInstance<ShipStats>();
-            print("No ship stats found, assigning default ship values...");
-        }
-
-        GetComponentsInChildren(true, shipComponents);
-
-        foreach (var component in shipComponents)
-        {
-            component.Setup(this);
-        }
+        hull.HealthDepleted += HandleHullHealthDepleted;
     }
 
-    private void HandleHullHealthDepleted(MonoBehaviour sender, DeathEventArgs e)
+    private void HandleHullHealthDepleted(object sender, DeathEventArgs e)
     {
         if (BecameUntargetable != null) BecameUntargetable(this);
         Destroy(gameObject);
@@ -85,6 +71,26 @@ public class Ship : MonoBehaviour, ITargetable
 
     private void FixedUpdate()
     {
+
+    }
+
+    public void FireAllWeapons()
+    {
+        //hardpointSystem.FireActive(ShipCamera.GetMousePointOnScreen);
+    }
+
+    public void SetupTargetIndicator(TargetIndicator indicator)
+    {
+        //hull.TookDamage += indicator.HandleTargetTookDamage;
+    }
+
+    public bool IsTargetable()
+    {
+        return true;
+    }
+
+    private void ClampSpeeds()
+    {
         if (cruiseEngine == null) return;
 
         float currentMaxSpeed = 0;
@@ -112,15 +118,5 @@ public class Ship : MonoBehaviour, ITargetable
         }
 
         rb.velocity = Vector3.ClampMagnitude(rb.velocity, currentMaxSpeed);
-    }
-
-    public void SetupTargetIndicator(TargetIndicator indicator)
-    {
-        //hull.TookDamage += indicator.HandleTargetTookDamage;
-    }
-
-    public bool IsTargetable()
-    {
-        return true;
     }
 }
