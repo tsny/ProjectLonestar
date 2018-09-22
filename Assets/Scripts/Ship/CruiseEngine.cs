@@ -22,14 +22,18 @@ public class CruiseEngine : ShipComponent
         }
     }
 
-    public float chargeDuration = 5;
-    public float cruisePower = 300;
-    public int cruiseMultiplier = 1;
+    public CruiseEngineStats stats;
 
     public delegate void CruiseChangeEventHandler(CruiseEngine sender, CruiseState newState);
     public event CruiseChangeEventHandler CruiseStateChanged;
 
     private IEnumerator chargeCoroutine;
+
+    private void Awake()
+    {
+        if (stats == null)
+            stats = Instantiate(ScriptableObject.CreateInstance<CruiseEngineStats>());
+    }
 
     private void OnCruiseChange(CruiseState newState)
     {
@@ -73,7 +77,7 @@ public class CruiseEngine : ShipComponent
     {
         if (State == CruiseState.On)
         {
-            rb.AddForce(rb.transform.forward * cruisePower * cruiseMultiplier);
+            rb.AddForce(rb.transform.forward * stats.thrust * stats.thrustMultiplier);
         }
     }
 
@@ -104,19 +108,7 @@ public class CruiseEngine : ShipComponent
     {
         State = CruiseState.Charging;
 
-        var timeElapsed = 0f;
-
-        for (;;)
-        {
-            timeElapsed += Time.deltaTime;
-
-            if (timeElapsed > chargeDuration)
-            {
-                break;
-            }
-
-            yield return null;
-        }
+        yield return new WaitForSeconds(stats.chargeDuration);
 
         chargeCoroutine = null;
         State = CruiseState.On;

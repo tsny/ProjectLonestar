@@ -131,7 +131,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   distanceTraveled: 0
-  projectileStats: {fileID: 11400000, guid: e95d2b92b5acf2a4f9b073d3be55e9dc, type: 2}
+  weaponStats: {fileID: 11400000, guid: 8cdb4af4d97ee484aaa94c7d339b79c6, type: 2}
   mainEffect: {fileID: 198442820227616788}
   impactEffect: {fileID: 198619947721844536}
 --- !u!135 &135810790622354112

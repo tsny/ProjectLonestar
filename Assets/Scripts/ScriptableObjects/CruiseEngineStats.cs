@@ -5,5 +5,6 @@ using System.Collections;
 public class CruiseEngineStats : ScriptableObject
 {
     public float thrust = 100;
+    public float chargeDuration = 5;
     public int thrustMultiplier = 1;
 }

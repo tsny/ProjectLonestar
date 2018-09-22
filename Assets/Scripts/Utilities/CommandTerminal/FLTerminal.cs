@@ -110,7 +110,7 @@ public class FLTerminal : Terminal
     {
         if (PlayerControllerExistsInScene() == false) return;
 
-        FindObjectOfType<PlayerController>().ship.cruiseEngine.cruisePower = args[0].Int;
+        FindObjectOfType<PlayerController>().ship.cruiseEngine.stats.thrust = args[0].Int;
     }
 
     private static bool PlayerControllerExistsInScene()

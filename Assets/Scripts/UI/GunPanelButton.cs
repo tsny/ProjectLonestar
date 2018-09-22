@@ -24,9 +24,9 @@ public class GunPanelButton : MonoBehaviour
         SetColor();
     }
 
-    public void Initialize(Gun weaponHardpoint)
+    public void Initialize(Gun gun)
     {
-        this.gun = weaponHardpoint;
+        this.gun = gun;
         SetName();
     }
 
