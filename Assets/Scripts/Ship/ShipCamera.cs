@@ -29,27 +29,27 @@ public class ShipCamera : ShipComponent
     public float maxDistance = 10;
     public float speed;
 
-    public bool followShip = true;
+    public bool isFollowingShip = true;
 
-    private Camera shipCam;
+    public new Camera camera;
     private AudioListener audioListener;
 
     private void Awake()
     {
-        shipCam = GetComponent<Camera>();
+        camera = GetComponent<Camera>();
         audioListener = GetComponent<AudioListener>();
         enabled = false;
     }
 
     private void OnEnable()
     {
-        shipCam.enabled = true;
+        camera.enabled = true;
         audioListener.enabled = true;
     }
 
     private void OnDisable()
     {
-        shipCam.enabled = false;
+        camera.enabled = false;
         audioListener.enabled = false;
     }
 
@@ -57,7 +57,7 @@ public class ShipCamera : ShipComponent
     {
         CalculateOffsets();
 
-        if (followShip) FollowShip();
+        if (isFollowingShip) FollowShip();
 
         else
         {
@@ -66,9 +66,12 @@ public class ShipCamera : ShipComponent
         } 
     }
 
-    public static Vector3 GetMousePointOnScreen(bool drawRay = false, float aimRaycastDistance = 10000)
+    public static Vector3 GetMousePositionInWorld(Camera camera = null, bool drawRay = false, float aimRaycastDistance = 10000)
     {
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        if (camera == null)
+            camera = Camera.main;
+
+        Ray ray = camera.ScreenPointToRay(Input.mousePosition);
 
         RaycastHit hitInfo;
 
@@ -92,7 +95,7 @@ public class ShipCamera : ShipComponent
 
     public void CalculateOffsets()
     {
-        var mouseCoords = PlayerController.GetMousePosition();
+        var mouseCoords = PlayerController.GetMousePositionOnScreen();
 
         distanceOffset = Mathf.Clamp(speed / speedDivisor, 0, maxDistance);
 

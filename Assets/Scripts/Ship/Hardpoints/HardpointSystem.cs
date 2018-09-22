@@ -3,9 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-public class HardpointSystem : ShipComponent
+public class HardpointSystem : MonoBehaviour
 {
     public List<WeaponHardpoint> weaponHardpoints = new List<WeaponHardpoint>();
+
+    public Ship ship;
 
     [Header("Individual Hardpoints")]
 
@@ -50,6 +52,11 @@ public class HardpointSystem : ShipComponent
     public delegate void WeaponFiredEventHandler(WeaponHardpoint hardpointFired);
     public event WeaponFiredEventHandler WeaponFired;
 
+    private void Awake()
+    {
+        ship = GetComponentInParent<Ship>();
+    }
+
     public void ToggleAfterburner(bool toggle)
     {
         if (toggle) afterburnerHardpoint.Activate();
@@ -63,32 +70,36 @@ public class HardpointSystem : ShipComponent
         chargeRate = 1000;
     }
 
-    public void FireActiveWeapons()
+    public void FireActiveWeapons(Vector3 target)
     {
         foreach (WeaponHardpoint hardpoint in weaponHardpoints)
         {
             if (hardpoint.Active)
             {
-                FireWeaponHardpoint(hardpoint);
+                FireWeaponHardpoint(hardpoint, target);
             }
         }
     }
 
-    public void FireWeaponHardpoint(int hardpointSlot)
+    public void FireWeaponHardpoint(int hardpointSlot, Vector3 target)
     {
+        hardpointSlot--;
+
+        if (hardpointSlot >= weaponHardpoints.Capacity || hardpointSlot < 0) return;
+
         if (weaponHardpoints[hardpointSlot] != null)
         {
-            FireWeaponHardpoint(weaponHardpoints[hardpointSlot]);
+            FireWeaponHardpoint(weaponHardpoints[hardpointSlot], target);
         }
     }
 
-    public void FireWeaponHardpoint(WeaponHardpoint hardpointToFire)
+    public void FireWeaponHardpoint(WeaponHardpoint hardpointToFire, Vector3 target)
     {
         if (CanFireWeapons == false) return;
 
         if (hardpointToFire.projectilePrefab.projectileStats.energyDraw < energy)
         {
-            if (hardpointToFire.Fire())
+            if (hardpointToFire.Fire(target, ship.GetComponentsInChildren<Collider>()))
             {
                 energy -= hardpointToFire.projectilePrefab.projectileStats.energyDraw;
                 if (WeaponFired != null) WeaponFired(hardpointToFire);

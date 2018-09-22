@@ -11,6 +11,6 @@ public class FireActiveAction : FLAction
 
     private void FireActive(StateController controller)
     {
-        controller.ship.hardpointSystem.FireActiveWeapons();
+        //controller.ship.hardpointSystem.FireActiveWeapons();
     }
 }

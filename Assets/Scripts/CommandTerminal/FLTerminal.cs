@@ -102,7 +102,7 @@ public class FLTerminal : Terminal
     {
         if (PlayerControllerExistsInScene() == false) return;
 
-        FindObjectOfType<PlayerController>().ship.engine.throttlePower = args[0].Int;
+        FindObjectOfType<PlayerController>().ship.engine.engineStats.enginePower = args[0].Int;
     }
 
     [RegisterCommand(Name = "cruise.power", Help = "Change the current ship's cruise power", MinArgCount = 1, MaxArgCount = 1)]

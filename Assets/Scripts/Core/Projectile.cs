@@ -4,7 +4,7 @@ using System.Linq;
 public class Projectile : MonoBehaviour
 {
     public float distanceTraveled = 0f;
-    public float distanceTillColliderEnable = 2;
+    //public float distanceTillColliderEnable = 2;
 
     public ProjectileStats projectileStats;
 
@@ -23,31 +23,30 @@ public class Projectile : MonoBehaviour
         if (projectileStats == null)
             projectileStats = Instantiate(ScriptableObject.CreateInstance<ProjectileStats>());
 
-        //gameObject.hideFlags = HideFlags.HideInHierarchy;
-
         distanceTraveled = 0f;
         startPosition = transform.position;
-
-        collider.enabled = false;
     }
 
-    // Possible params: Collider[] colidersToIgnore
-    public void Initialize(Vector3 target)
+    public void Initialize(Vector3 target, Collider[] collidersToIgnore = null)
     {
         transform.LookAt(target);
+
         rb.AddForce(transform.forward * projectileStats.thrust, ForceMode.Impulse);
+
+        if (collidersToIgnore != null)
+        {
+            foreach (var collider in collidersToIgnore)
+            {
+                Physics.IgnoreCollision(collider, this.collider);
+            }
+        }
+
         mainEffect.Play();
     }
 
     private void Update()
     {
-        if (distanceTraveled > distanceTillColliderEnable)
-        {
-            collider.enabled = true;
-        }
-
         distanceTraveled = Vector3.Distance(transform.position, startPosition);
-
         if (distanceTraveled > projectileStats.range) Destroy(gameObject);
     }
 
@@ -59,6 +58,8 @@ public class Projectile : MonoBehaviour
 
         Destroy(rb);
         Destroy(collider);
+
+        transform.position = collision.contacts[0].point;
 
         IDamageable damageableObject = collision.collider.transform.root.GetComponentInChildren<IDamageable>();
         if (damageableObject != null)

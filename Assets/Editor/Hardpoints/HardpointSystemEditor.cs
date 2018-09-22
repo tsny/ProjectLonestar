@@ -10,5 +10,11 @@ public class HardpointSystemEditor : Editor
 
         HardpointSystem hardpointSystem = (HardpointSystem)target;
 
+        if (Application.isPlaying == false) return;
+
+        if (GUILayout.Button("Fire Active Weapons"))
+        {
+            hardpointSystem.FireActiveWeapons(new Vector3());
+        }
     }
 }

@@ -1459,7 +1459,7 @@ Rigidbody:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1731105088454010}
   serializedVersion: 2
-  m_Mass: 5
+  m_Mass: 100
   m_Drag: 5
   m_AngularDrag: 10
   m_UseGravity: 0
@@ -2364,14 +2364,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rb: {fileID: 54334028879456994}
-  turnSpeed: 1
-  throttlePower: 300
-  strafePower: 200
+  transform: {fileID: 4709334792375274}
   mass: 5
   drag: 5
   driftMass: 5
   driftDrag: 0.1
-  engineStats: {fileID: 0}
+  engineStats: {fileID: 11400000, guid: 03bae706e6806dc48a6c222c5b4179ed, type: 2}
   throttleChangeIncrement: 0.1
 --- !u!114 &114165425904898910
 MonoBehaviour:
@@ -2574,7 +2572,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8e4ad5c530d67541bab506b6dc9b34d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  weaponHardpoints: []
+  weaponHardpoints:
+  - {fileID: 114318202317187816}
+  - {fileID: 114165425904898910}
+  - {fileID: 114763845051631152}
+  - {fileID: 114898708139772632}
+  - {fileID: 114750398125826666}
+  - {fileID: 114153537171405082}
+  ship: {fileID: 0}
   afterburnerHardpoint: {fileID: 114681986092633008}
   shieldHardpoint: {fileID: 114992891233242000}
   scannerHardpoint: {fileID: 114924268490386734}
@@ -2622,7 +2627,8 @@ MonoBehaviour:
   maxLowerPitch: -10
   maxDistance: 10
   speed: 0
-  followShip: 1
+  isFollowingShip: 1
+  camera: {fileID: 0}
 --- !u!114 &114924268490386734
 MonoBehaviour:
   m_ObjectHideFlags: 1

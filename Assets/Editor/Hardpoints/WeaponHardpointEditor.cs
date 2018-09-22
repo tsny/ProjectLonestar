@@ -13,9 +13,11 @@ public class WeaponHardpointEditor : Editor
 
         if (Application.isPlaying == false) return;
 
+        weaponHardpoint.Active = EGL.Toggle("Active", weaponHardpoint.Active);
+
         if (GUILayout.Button("Fire"))
         {
-            weaponHardpoint.Fire();
+            //weaponHardpoint.Fire();
         }
     }
 }

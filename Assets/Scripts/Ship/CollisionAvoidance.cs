@@ -54,13 +54,13 @@ public class CollisionAvoidance : ShipComponent
 
         else if (Physics.Raycast(up, transform.forward, out hit, detectionDistance))
         {
-            engine.Pitch(-engine.turnSpeed);
+            engine.Pitch(-engine.engineStats.turnSpeed);
             return true;
         }
 
         else if (Physics.Raycast(down, transform.forward, out hit, detectionDistance))
         {
-            engine.Pitch(engine.turnSpeed);
+            engine.Pitch(engine.engineStats.turnSpeed);
             return true;
         }
 

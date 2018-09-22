@@ -5,6 +5,7 @@ using System;
 public class Engine : ShipComponent 
 {
     public Rigidbody rb;
+    public new Transform transform;
 
     public float Speed
     {
@@ -14,9 +15,6 @@ public class Engine : ShipComponent
         }
     }
 
-    public float turnSpeed = 1;
-    public float throttlePower = 1;
-    public float strafePower = 1;
     public float mass = 5;
     public float drag = 5;
     public float driftMass = 5;
@@ -138,7 +136,7 @@ public class Engine : ShipComponent
     {
         if (Strafe != 0)
         {
-            rb.AddForce(rb.transform.right * Strafe * strafePower);
+            rb.AddForce(rb.transform.right * Strafe * engineStats.strafePower);
         }
     }
 
@@ -146,7 +144,7 @@ public class Engine : ShipComponent
     {
         if (Throttle > 0 && Drifting == false)
         {
-            rb.AddForce(rb.transform.forward * Throttle * throttlePower);
+            rb.AddForce(rb.transform.forward * Throttle * engineStats.enginePower);
         }
     }
 
@@ -172,18 +170,18 @@ public class Engine : ShipComponent
     public void Pitch(float amount)
     {
         amount = Mathf.Clamp(amount, -1, 1);
-        transform.Rotate(new Vector3(turnSpeed * -amount, 0, 0));
+        transform.Rotate(new Vector3(engineStats.turnSpeed * -amount, 0, 0));
     }
 
     public void Yaw(float amount)
     {
         amount = Mathf.Clamp(amount, -1, 1);
-        transform.Rotate(new Vector3(0, turnSpeed * amount, 0));
+        transform.Rotate(new Vector3(0, engineStats.turnSpeed * amount, 0));
     }
 
     public void Roll(float amount)
     {
         amount = Mathf.Clamp(amount, -1, 1);
-        transform.Rotate(new Vector3(0, 0, turnSpeed * amount));
+        transform.Rotate(new Vector3(0, 0, engineStats.turnSpeed * amount));
     }
 }

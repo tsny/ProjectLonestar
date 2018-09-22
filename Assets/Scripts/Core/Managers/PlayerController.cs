@@ -125,9 +125,7 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        GetMousePosition();
-
-        if(inputAllowed)
+        if(inputAllowed && ship != null)
         {
             #region movement
             if(Input.GetKey(InputManager.ThrottleUpKey) || Input.GetAxis("Mouse ScrollWheel") > 0f)
@@ -198,57 +196,57 @@ public class PlayerController : MonoBehaviour
             #region hardpoints
             if(Input.GetKey(InputManager.Hardpoint1Key))
             {
-                ship.hardpointSystem.FireWeaponHardpoint(1);
+                ship.hardpointSystem.FireWeaponHardpoint(1, ShipCamera.GetMousePositionInWorld(ship.shipCam.camera));
             }
 
             if(Input.GetKey(InputManager.Hardpoint2Key))
             {
-                ship.hardpointSystem.FireWeaponHardpoint(2);
+                ship.hardpointSystem.FireWeaponHardpoint(2, ShipCamera.GetMousePositionInWorld(ship.shipCam.camera));
             }
 
             if(Input.GetKey(InputManager.Hardpoint3Key))
             {
-                ship.hardpointSystem.FireWeaponHardpoint(3);
+                ship.hardpointSystem.FireWeaponHardpoint(3, ShipCamera.GetMousePositionInWorld(ship.shipCam.camera));
             }
 
             if(Input.GetKey(InputManager.Hardpoint4Key))
             {
-                ship.hardpointSystem.FireWeaponHardpoint(4);
+                ship.hardpointSystem.FireWeaponHardpoint(4, ShipCamera.GetMousePositionInWorld(ship.shipCam.camera));
             }
 
             if(Input.GetKey(InputManager.Hardpoint5Key))
             {
-                ship.hardpointSystem.FireWeaponHardpoint(5);
+                ship.hardpointSystem.FireWeaponHardpoint(5, ShipCamera.GetMousePositionInWorld(ship.shipCam.camera));
             }
 
             if(Input.GetKey(InputManager.Hardpoint6Key))
             {
-                ship.hardpointSystem.FireWeaponHardpoint(6);
+                ship.hardpointSystem.FireWeaponHardpoint(6, ShipCamera.GetMousePositionInWorld(ship.shipCam.camera));
             }
 
             if(Input.GetKey(InputManager.Hardpoint7Key))
             {
-                ship.hardpointSystem.FireWeaponHardpoint(7);
+                ship.hardpointSystem.FireWeaponHardpoint(7, ShipCamera.GetMousePositionInWorld(ship.shipCam.camera));
             }
 
             if(Input.GetKey(InputManager.Hardpoint8Key))
             {
-                ship.hardpointSystem.FireWeaponHardpoint(8);
+                ship.hardpointSystem.FireWeaponHardpoint(8, ShipCamera.GetMousePositionInWorld(ship.shipCam.camera));
             }
 
             if(Input.GetKey(InputManager.Hardpoint9Key))
             {
-                ship.hardpointSystem.FireWeaponHardpoint(9);
+                ship.hardpointSystem.FireWeaponHardpoint(9, ShipCamera.GetMousePositionInWorld(ship.shipCam.camera));
             }
 
             if(Input.GetKey(InputManager.Hardpoint10Key))
             {
-                ship.hardpointSystem.FireWeaponHardpoint(10);
+                ship.hardpointSystem.FireWeaponHardpoint(10, ShipCamera.GetMousePositionInWorld(ship.shipCam.camera));
             }
 
             if(Input.GetKey(InputManager.FireKey))
             {
-                ship.hardpointSystem.FireActiveWeapons();
+                ship.hardpointSystem.FireActiveWeapons(ShipCamera.GetMousePositionInWorld(ship.shipCam.camera));
             }
 
             if (Input.GetKeyDown(InputManager.LootAllKey))
@@ -269,6 +267,8 @@ public class PlayerController : MonoBehaviour
     {
         var engine = ship.engine;
 
+        if (engine == null) return;
+
         switch (mouseState)
         {
             case MouseState.Off:
@@ -277,8 +277,8 @@ public class PlayerController : MonoBehaviour
 
             case MouseState.Toggled:
             case MouseState.Held:
-                engine.Pitch(GetMousePosition().y);
-                engine.Yaw(GetMousePosition().x);
+                engine.Pitch(GetMousePositionOnScreen().y);
+                engine.Yaw(GetMousePositionOnScreen().x);
                 break;
 
             default:
@@ -304,7 +304,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    public static Vector2 GetMousePosition()
+    public static Vector2 GetMousePositionOnScreen()
     {
         int width = Screen.width;
         int height = Screen.height;

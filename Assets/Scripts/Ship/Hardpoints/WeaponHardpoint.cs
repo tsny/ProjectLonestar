@@ -4,14 +4,34 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using UnityEngine;
 
-public class WeaponHardpoint : MonoBehaviour 
+public class WeaponHardpoint : MonoBehaviour
 {
     public AudioSource audioSource;
     public Vector3 aimPosition;
 
     public Projectile projectilePrefab;
 
-    public bool Active { get; set; }
+    private bool _active = true;
+    public bool Active
+    {
+        get
+        {
+            return _active;
+        }
+        set
+        {
+            _active = value;
+            if (value)
+            {
+                OnActivated();
+            }
+            else
+            {
+                OnDeactivated();
+            }
+        }
+    }
+
     public bool IsOnCooldown
     {
         get
@@ -63,12 +83,13 @@ public class WeaponHardpoint : MonoBehaviour
         cooldownCoroutine = null;
     }
 
-    public bool Fire()
+    public bool Fire(Vector3 target, Collider[] collidersToIgnore = null)
     {
         if (projectilePrefab == null || IsOnCooldown) return false;
 
         var newProjectile = Instantiate(projectilePrefab, transform.position, Quaternion.identity);
-        newProjectile.Initialize(aimPosition);
+
+        newProjectile.Initialize(target, collidersToIgnore);
 
         //audioSource.PlayOneShot(weapon.clip);
 

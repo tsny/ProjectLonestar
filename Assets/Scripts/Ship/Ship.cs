@@ -56,17 +56,34 @@ public class Ship : MonoBehaviour, ITargetable
             transform.gameObject.layer = newLayer;
         }
 
+        // Enable Ship Camera
+        pc.MouseStateChanged += HandleMouseStateChanged;
+        HandleMouseStateChanged(pc.MouseState);
+        shipCam.enabled = true;
+
         OnPossession(pc, possessed);
+    }
+
+    private void HandleMouseStateChanged(MouseState state)
+    {
+        if (shipCam == null) return;
+
+        switch (state)
+        {
+            case MouseState.Off:
+                shipCam.isFollowingShip = false;
+                break;
+
+            case MouseState.Toggled:
+            case MouseState.Held:
+                shipCam.isFollowingShip = true;
+                break;
+        }
     }
 
     protected void OnPossession(PlayerController pc, bool possessed)
     {
         if (Possession != null) Possession(pc, this, possessed);
-    }
-
-    public void SetHierarchyName()
-    {
-        name = pilotDetails.FirstName + " - " + shipDetails.shipName;
     }
 
     private void FixedUpdate()
@@ -76,7 +93,8 @@ public class Ship : MonoBehaviour, ITargetable
 
     public void FireAllWeapons()
     {
-        //hardpointSystem.FireActive(ShipCamera.GetMousePointOnScreen);
+        // change
+        hardpointSystem.FireActiveWeapons(ShipCamera.GetMousePositionInWorld(shipCam.camera));
     }
 
     public void SetupTargetIndicator(TargetIndicator indicator)

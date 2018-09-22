@@ -57,7 +57,7 @@ public class ShipNavigation : ShipComponent
         {
             yield return StartCoroutine(RotateTowardsTargetCoroutine(target, fireAngleThreshold));
             ship.aimPosition = target.position;
-            ship.hardpointSystem.FireActiveWeapons();
+            //ship.hardpointSystem.FireActiveWeapons();
             remainingShots--;
             print(remainingShots);
             if (remainingShots <= 0) break;
