@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class TractorHardpoint : MonoBehaviour
+public class TractorHardpoint : Hardpoint
 { 
-    public TractorBeam tractor;
+    public TractorBeamStats tractor;
 
     public void TractorAllLoot()
     {
@@ -17,13 +17,7 @@ public class TractorHardpoint : MonoBehaviour
 
             loot.SetTarget(transform, tractor.pullForce);
         }
+
+        StartCooldown(tractor.cooldownDuration);
     }
-
 }
-
-
-
-
-
-
-

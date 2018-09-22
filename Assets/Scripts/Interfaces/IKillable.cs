@@ -8,7 +8,7 @@ public interface IDamageable
     float Health { get; set; }
     float MaxHealth { get; set; }
 
-    void TakeDamage(Weapon weapon);
+    void TakeDamage(WeaponStats weapon);
 
     event EventHandler<DamageEventArgs> TookDamage;
     event EventHandler<DeathEventArgs> HealthDepleted;
@@ -16,7 +16,7 @@ public interface IDamageable
 
 public class DamageEventArgs : EventArgs
 {
-    public Weapon weapon;
+    public WeaponStats weapon;
     public bool shieldDamage;
     public float damage;
 
@@ -26,7 +26,7 @@ public class DamageEventArgs : EventArgs
         this.damage = damage;
     }
 
-    public DamageEventArgs(Weapon weapon)
+    public DamageEventArgs(WeaponStats weapon)
     {
         this.weapon = weapon;
     }
@@ -34,11 +34,11 @@ public class DamageEventArgs : EventArgs
 
 public class DeathEventArgs : EventArgs
 {
-    public Weapon weaponUsed;
+    public WeaponStats weaponUsed;
     public Vector3 deathLocation;
     public DateTime timeOfDeath;
 
-    public DeathEventArgs(Weapon weaponUsed, Vector3 deathLocation)
+    public DeathEventArgs(WeaponStats weaponUsed, Vector3 deathLocation)
     {
         this.weaponUsed = weaponUsed;
         this.deathLocation = deathLocation;

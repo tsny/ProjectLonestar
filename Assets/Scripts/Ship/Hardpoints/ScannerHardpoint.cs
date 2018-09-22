@@ -8,7 +8,7 @@ public class ScannerHardpoint : MonoBehaviour
 {
     public List<ITargetable> targets = new List<ITargetable>();
 
-    public Scanner scanner;
+    public ScannerStats scanner;
 
     public int scanFrequency = 10;
 

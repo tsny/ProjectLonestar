@@ -13,7 +13,7 @@ public class ShieldHardpoint : Hardpoint
     public event EventHandler<DamageEventArgs> TookDamage;
     public event EventHandler<DeathEventArgs> HealthDepleted;
 
-    public Shield Shield { get; set; }
+    public ShieldStats shield;
 
     public bool IsOnline
     {
@@ -41,18 +41,18 @@ public class ShieldHardpoint : Hardpoint
          energy = Mathf.MoveTowards(energy, capacity, regenRate * Time.deltaTime);
     }
 
-    public void TakeDamage(Weapon weapon)
+    public void TakeDamage(WeaponStats weapon)
     {
-        energy -= Damage.CalculateShieldDamage(weapon, Shield.type);
+        energy -= Damage.CalculateShieldDamage(weapon, shield.type);
 
         hitSource.Play();
 
         if (energy <= 0) energy = 0;
 
-        StartCooldown(Shield.cooldownDuration);
+        StartCooldown(shield.cooldownDuration);
     }
 
-    public void OnHealthDepleted(Weapon weapon)
+    public void OnHealthDepleted(WeaponStats weapon)
     {
         if (HealthDepleted != null) HealthDepleted(this, null);
     }

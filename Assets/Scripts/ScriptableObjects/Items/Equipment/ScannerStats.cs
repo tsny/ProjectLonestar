@@ -2,7 +2,7 @@
 using System.Collections;
 
 [CreateAssetMenu(menuName = "Item/Scanner")]
-public class Scanner : Equipment
+public class ScannerStats : Equipment
 {
     public float range;
 }

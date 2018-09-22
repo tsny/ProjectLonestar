@@ -97,11 +97,11 @@ public class HardpointSystem : MonoBehaviour
     {
         if (CanFireWeapons == false) return;
 
-        if (hardpointToFire.projectilePrefab.projectileStats.energyDraw < energy)
+        if (hardpointToFire.projectilePrefab.weaponStats.energyDraw < energy)
         {
             if (hardpointToFire.Fire(target, ship.GetComponentsInChildren<Collider>()))
             {
-                energy -= hardpointToFire.projectilePrefab.projectileStats.energyDraw;
+                energy -= hardpointToFire.projectilePrefab.weaponStats.energyDraw;
                 if (WeaponFired != null) WeaponFired(hardpointToFire);
                 BeginCooldown();
             }

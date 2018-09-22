@@ -1,6 +1,6 @@
 ﻿public static class Damage
 {
-    public static float CalculateShieldDamage(Weapon weapon, ShieldType shieldtype)
+    public static float CalculateShieldDamage(WeaponStats weapon, ShieldType shieldtype)
     {
         float calculatedDamage = 0f;
         float damageModifier = 1f;

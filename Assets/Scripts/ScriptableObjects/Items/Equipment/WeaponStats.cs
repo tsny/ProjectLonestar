@@ -2,7 +2,7 @@
 using System.Collections;
 
 [CreateAssetMenu(menuName = "Item/Weapon")]
-public class Weapon : Equipment
+public class WeaponStats : Equipment
 {
     public string fullName;
 

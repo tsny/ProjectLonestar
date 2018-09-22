@@ -5,7 +5,7 @@ using UnityEngine;
 public class AfterburnerHardpoint : MonoBehaviour
 {
     public Rigidbody rb;
-    public Afterburner afterburner;
+    public AfterburnerStats afterburner;
 
     public float charge;
 
@@ -34,7 +34,7 @@ public class AfterburnerHardpoint : MonoBehaviour
     private void Awake()
     {
         if (afterburner == null)
-            afterburner = ScriptableObject.CreateInstance<Afterburner>();
+            afterburner = ScriptableObject.CreateInstance<AfterburnerStats>();
 
         afterburner = Instantiate(afterburner);
 

@@ -2,7 +2,7 @@
 using System.Collections;
 
 [CreateAssetMenu(menuName = "Item/Afterburner")]
-public class Afterburner : Equipment
+public class AfterburnerStats : Equipment
 {
     public float drainRate = 1;
     public float capacity = 100;

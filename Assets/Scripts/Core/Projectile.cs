@@ -6,7 +6,7 @@ public class Projectile : MonoBehaviour
     public float distanceTraveled = 0f;
     //public float distanceTillColliderEnable = 2;
 
-    public ProjectileStats projectileStats;
+    public WeaponStats weaponStats;
 
     public ParticleSystem mainEffect;
     public ParticleSystem impactEffect;
@@ -20,8 +20,8 @@ public class Projectile : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         collider = GetComponent<Collider>();
 
-        if (projectileStats == null)
-            projectileStats = Instantiate(ScriptableObject.CreateInstance<ProjectileStats>());
+        if (weaponStats == null)
+            weaponStats = Instantiate(ScriptableObject.CreateInstance<WeaponStats>());
 
         distanceTraveled = 0f;
         startPosition = transform.position;
@@ -31,7 +31,7 @@ public class Projectile : MonoBehaviour
     {
         transform.LookAt(target);
 
-        rb.AddForce(transform.forward * projectileStats.thrust, ForceMode.Impulse);
+        rb.AddForce(transform.forward * weaponStats.thrust, ForceMode.Impulse);
 
         if (collidersToIgnore != null)
         {
@@ -47,7 +47,7 @@ public class Projectile : MonoBehaviour
     private void Update()
     {
         distanceTraveled = Vector3.Distance(transform.position, startPosition);
-        if (distanceTraveled > projectileStats.range) Destroy(gameObject);
+        if (distanceTraveled > weaponStats.range) Destroy(gameObject);
     }
 
     // Maybe change this so that it spawns the particle systems and destroys immediately
@@ -64,7 +64,7 @@ public class Projectile : MonoBehaviour
         IDamageable damageableObject = collision.collider.transform.root.GetComponentInChildren<IDamageable>();
         if (damageableObject != null)
         {
-            //damageableObject.TakeDamage(projectileStats);
+            damageableObject.TakeDamage(weaponStats);
         }
 
         mainEffect.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);

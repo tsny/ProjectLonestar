@@ -69,7 +69,7 @@ public class WeaponHardpoint : Hardpoint
 
         //audioSource.PlayOneShot(weapon.clip);
 
-        StartCooldown(projectilePrefab.projectileStats.cooldownDuration);
+        StartCooldown(projectilePrefab.weaponStats.cooldownDuration);
 
         return true;
     }
