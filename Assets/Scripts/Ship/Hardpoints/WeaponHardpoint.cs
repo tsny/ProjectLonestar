@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using UnityEngine;
 
-public class WeaponHardpoint : MonoBehaviour
+public class WeaponHardpoint : Hardpoint
 {
     public AudioSource audioSource;
     public Vector3 aimPosition;
@@ -31,16 +31,6 @@ public class WeaponHardpoint : MonoBehaviour
             }
         }
     }
-
-    public bool IsOnCooldown
-    {
-        get
-        {
-            return cooldownCoroutine != null;
-        }
-    }
-
-    private IEnumerator cooldownCoroutine;
 
     public event EventHandler<EventArgs> Fired;
     public event EventHandler<EventArgs> Activated;
@@ -69,20 +59,6 @@ public class WeaponHardpoint : MonoBehaviour
         Active = !Active;
     }
 
-    public void BeginCooldown()
-    {
-        cooldownCoroutine = Cooldown();
-        StartCoroutine(cooldownCoroutine);
-    }
-
-    public void EndCooldown()
-    {
-        if (cooldownCoroutine != null)
-            StopCoroutine(cooldownCoroutine);
-
-        cooldownCoroutine = null;
-    }
-
     public bool Fire(Vector3 target, Collider[] collidersToIgnore = null)
     {
         if (projectilePrefab == null || IsOnCooldown) return false;
@@ -93,16 +69,8 @@ public class WeaponHardpoint : MonoBehaviour
 
         //audioSource.PlayOneShot(weapon.clip);
 
-        BeginCooldown();
+        StartCooldown(projectilePrefab.projectileStats.cooldownDuration);
 
         return true;
-    }
-
-    private IEnumerator Cooldown()
-    {
-        yield return new WaitForSeconds(projectilePrefab.projectileStats.cooldownDuration);
-
-        yield return null;
-        cooldownCoroutine = null;
     }
 }

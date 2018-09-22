@@ -2,57 +2,35 @@
 using System.Collections;
 using UnityEngine;
 
-public class ShieldHardpoint : Hardpoint, IDamageable
+public class ShieldHardpoint : Hardpoint
 {
     private AudioSource hitSource;
 
+    public float energy;
     public float capacity;
     public float regenRate;
 
     public event EventHandler<DamageEventArgs> TookDamage;
     public event EventHandler<DeathEventArgs> HealthDepleted;
 
-    public Shield Shield
-    {
-        get
-        {
-            return CurrentEquipment as Shield;
-        }
-    }
+    public Shield Shield { get; set; }
 
     public bool IsOnline
     {
         get
         {
-            return Health > 0;
+            return energy > 0;
         }
     }
 
-    public float Health { get; set; }
-    public float MaxHealth { get; set; }
-
-    protected override bool EquipmentMatchesHardpoint(Equipment equipment)
-    {
-        return equipment is Shield;
-    }
-
-    private void Awake()
-    {
+     private void Awake()
+     {
         hitSource = GetComponent<AudioSource>();
-    }
-
-    protected override void OnMounted(Equipment newEquipment)
-    {
-        base.OnMounted(newEquipment);
-
-        capacity = Shield.capacity;
-        Health = capacity;
-        regenRate = Shield.regenRate;
-    }
+     }
 
     private void Update()
     {
-        if (!OnCooldown)
+        if (!IsOnCooldown)
         {
             Recharge();
         }
@@ -60,18 +38,18 @@ public class ShieldHardpoint : Hardpoint, IDamageable
 
     private void Recharge()
     {
-         Health = Mathf.MoveTowards(Health, capacity, regenRate * Time.deltaTime);
+         energy = Mathf.MoveTowards(energy, capacity, regenRate * Time.deltaTime);
     }
 
     public void TakeDamage(Weapon weapon)
     {
-        Health -= Damage.CalculateShieldDamage(weapon, Shield.type);
+        energy -= Damage.CalculateShieldDamage(weapon, Shield.type);
 
         hitSource.Play();
 
-        if (Health <= 0) Health = 0;
+        if (energy <= 0) energy = 0;
 
-        StartCooldown();
+        StartCooldown(Shield.cooldownDuration);
     }
 
     public void OnHealthDepleted(Weapon weapon)

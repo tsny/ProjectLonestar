@@ -35,6 +35,12 @@ public class Ship : MonoBehaviour, ITargetable
         hull = GetComponentInChildren<Hull>();
 
         hull.HealthDepleted += HandleHullHealthDepleted;
+        engine.DriftingChange += HandleDriftingChange;
+    }
+
+    private void HandleDriftingChange(bool drifting)
+    {
+        throw new NotImplementedException();
     }
 
     private void HandleHullHealthDepleted(object sender, DeathEventArgs e)
@@ -93,7 +99,6 @@ public class Ship : MonoBehaviour, ITargetable
 
     public void FireAllWeapons()
     {
-        // change
         hardpointSystem.FireActiveWeapons(ShipCamera.GetMousePositionInWorld(shipCam.camera));
     }
 

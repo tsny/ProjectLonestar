@@ -14,9 +14,9 @@ public class ShipEffectManager : ShipComponent
 
     private Vector3 originalScale;
 
-    public override void Setup(Ship sender)
+    public override void Initialize(Ship sender)
     {
-        base.Setup(sender);
+        base.Initialize(sender);
         sender.cruiseEngine.CruiseStateChanged += HandleCruiseChanged;
         sender.Possession += HandleOwnerPossession;
         sender.engine.DriftingChange += HandleDrifting;

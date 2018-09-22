@@ -36,11 +36,11 @@ public class ShipNavigation : ShipComponent
     {
         for (; ;)
         {
-            Quaternion newRot = Quaternion.LookRotation(target.position - ship.transform.position);
-            transform.rotation = Quaternion.Slerp(ship.transform.rotation, newRot, turnSpeed * Time.deltaTime);
+            Quaternion newRot = Quaternion.LookRotation(target.position - owningShip.transform.position);
+            transform.rotation = Quaternion.Slerp(owningShip.transform.rotation, newRot, turnSpeed * Time.deltaTime);
             //transform.rotation = Quaternion.Slerp(owningShip.transform.rotation, newRot, turnSpeed * Time.deltaTime);
 
-            if (Quaternion.Angle(ship.transform.rotation, newRot) < angleThreshold) break;
+            if (Quaternion.Angle(owningShip.transform.rotation, newRot) < angleThreshold) break;
             yield return null;
         }
 
@@ -56,7 +56,7 @@ public class ShipNavigation : ShipComponent
         while (true)
         {
             yield return StartCoroutine(RotateTowardsTargetCoroutine(target, fireAngleThreshold));
-            ship.aimPosition = target.position;
+            owningShip.aimPosition = target.position;
             //ship.hardpointSystem.FireActiveWeapons();
             remainingShots--;
             print(remainingShots);
