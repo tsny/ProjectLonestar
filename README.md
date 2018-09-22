@@ -1,4 +1,4 @@
-![Logo](https://puu.sh/BtrYV/757fce6420.png)
+![Logo](http://puu.sh/BzjHB/36bf929588.png)
 
 ## Note
 
