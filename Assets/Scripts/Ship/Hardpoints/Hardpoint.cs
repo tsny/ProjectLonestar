@@ -15,13 +15,13 @@ public class Hardpoint : ShipComponent
 
     private IEnumerator cooldownCoroutine;
 
-    protected virtual void StartCooldown(float duration)
+    public virtual void StartCooldown(float duration)
     {
         cooldownCoroutine = Cooldown(duration);
         StartCoroutine(cooldownCoroutine);
     }
 
-    protected virtual void EndCooldown()
+    public virtual void EndCooldown()
     {
         StopCoroutine(cooldownCoroutine);
         cooldownCoroutine = null;

@@ -9,6 +9,9 @@ public class Hull : ShipComponent, IDamageable
     public event EventHandler<DamageEventArgs> TookDamage;
     public event EventHandler<DeathEventArgs> HealthDepleted;
 
+    [SerializeField] private float _health = 100;
+    [SerializeField] private float _maxHealth = 100;
+
     public float Health
     {
         get
@@ -32,10 +35,7 @@ public class Hull : ShipComponent, IDamageable
         }
     }
 
-    public Shield shieldHardpoint;
-
-    [SerializeField] private float _health = 100;
-    [SerializeField] private float _maxHealth = 100;
+    public Shield shield;
 
     protected void OnHealthDepleted(WeaponStats weapon)
     {
@@ -51,13 +51,15 @@ public class Hull : ShipComponent, IDamageable
     {
         if (invulnerable) return;
 
-        if (shieldHardpoint != null)
+        if (shield != null)
         {
-            if (shieldHardpoint.IsOnline)
+            if (shield.IsOnline)
             {
-                shieldHardpoint.TakeDamage(weapon);
+                shield.TakeDamage(weapon);
                 return;
             }
+
+            shield.StartCooldown(weapon.cooldownDuration);
         }
 
         Health -= weapon.hullDamage;
