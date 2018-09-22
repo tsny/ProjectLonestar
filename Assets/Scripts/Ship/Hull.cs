@@ -32,7 +32,7 @@ public class Hull : ShipComponent, IDamageable
         }
     }
 
-    public ShieldHardpoint shieldHardpoint;
+    public Shield shieldHardpoint;
 
     [SerializeField] private float _health = 100;
     [SerializeField] private float _maxHealth = 100;

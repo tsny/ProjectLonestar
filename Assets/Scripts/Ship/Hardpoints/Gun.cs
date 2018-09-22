@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
 using UnityEngine;
 
-public class WeaponHardpoint : Hardpoint
+public class Gun : Hardpoint
 {
     public AudioSource audioSource;
     public Vector3 aimPosition;

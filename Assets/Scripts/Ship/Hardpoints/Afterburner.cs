@@ -2,7 +2,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class AfterburnerHardpoint : MonoBehaviour
+public class Afterburner : Hardpoint
 {
     public Rigidbody rb;
     public AfterburnerStats afterburner;
@@ -14,13 +14,6 @@ public class AfterburnerHardpoint : MonoBehaviour
         get
         {
             return burnCoroutine != null;
-        }
-    }
-    public bool IsOnCooldown
-    {
-        get
-        {
-            return cooldownCoroutine != null;
         }
     }
 
@@ -100,14 +93,6 @@ public class AfterburnerHardpoint : MonoBehaviour
     {
         cooldownCoroutine = Cooldown();
         StartCoroutine(cooldownCoroutine);
-    }
-
-    public void EndCooldown()
-    {
-        if (cooldownCoroutine != null)
-            StopCoroutine(cooldownCoroutine);
-
-        cooldownCoroutine = null;
     }
 
     private IEnumerator Recharge()

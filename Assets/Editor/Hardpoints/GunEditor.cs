@@ -2,18 +2,18 @@
 using EGL = UnityEditor.EditorGUILayout;
 using UnityEditor;
 
-[CustomEditor(typeof(WeaponHardpoint))]
-public class WeaponHardpointEditor : Editor
+[CustomEditor(typeof(Gun))]
+public class GunEditor : Editor
 {
     public override void OnInspectorGUI()
     {
         base.OnInspectorGUI();
 
-        WeaponHardpoint weaponHardpoint = (WeaponHardpoint)target;
+        Gun gun = (Gun)target;
 
         if (Application.isPlaying == false) return;
 
-        weaponHardpoint.Active = EGL.Toggle("Active", weaponHardpoint.Active);
+        gun.Active = EGL.Toggle("Active", gun.Active);
 
         if (GUILayout.Button("Fire"))
         {

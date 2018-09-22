@@ -2,16 +2,16 @@
 using EGL = UnityEditor.EditorGUILayout;
 using UnityEditor;
 
-[CustomEditor(typeof(AfterburnerHardpoint))]
-public class AfterburnerHardpointEditor : Editor
+[CustomEditor(typeof(Afterburner))]
+public class AfterburnerEditor : Editor
 {
-    AfterburnerHardpoint afterburner;
+    Afterburner afterburner;
 
     public override void OnInspectorGUI()
     {
         base.OnInspectorGUI();
 
-        afterburner = target as AfterburnerHardpoint;
+        afterburner = target as Afterburner;
 
         EGL.LabelField("Is Active?", afterburner.IsActive.ToString());
         EGL.LabelField("Is On Cooldown?", afterburner.IsOnCooldown.ToString());

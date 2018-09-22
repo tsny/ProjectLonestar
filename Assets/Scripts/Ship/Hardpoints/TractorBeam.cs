@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class TractorHardpoint : Hardpoint
+public class TractorBeam : Hardpoint
 { 
     public TractorBeamStats tractor;
 

@@ -6,5 +6,5 @@ using System.Collections.Generic;
 public class Loadout : ScriptableObject 
 {
     public List<Equipment> equipment = new List<Equipment>();
-    public Dictionary<int, WeaponHardpoint> weapons = new Dictionary<int, WeaponHardpoint>();
+    public Dictionary<int, Gun> guns = new Dictionary<int, Gun>();
 }

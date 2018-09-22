@@ -10,7 +10,7 @@ public class ScannerUI : ShipUIElement
 
     private Dictionary<ITargetable, GameObject> targetObjectPairs = new Dictionary<ITargetable, GameObject>();
 
-    private ScannerHardpoint scannerHardpoint;
+    private Scanner scannerHardpoint;
 
     public override void SetShip(Ship ship)
     {
@@ -24,7 +24,7 @@ public class ScannerUI : ShipUIElement
         RefreshScannerList();
     }
 
-    private void HandleScannerTargetRemoved(ScannerHardpoint sender, ITargetable entry)
+    private void HandleScannerTargetRemoved(Scanner sender, ITargetable entry)
     {
         GameObject value;
 
@@ -34,7 +34,7 @@ public class ScannerUI : ShipUIElement
         }
     }
 
-    private void HandleScannerTargetAdded(ScannerHardpoint sender, ITargetable entry)
+    private void HandleScannerTargetAdded(Scanner sender, ITargetable entry)
     {
         CreatePanelButton(entry);
     }

@@ -2573,14 +2573,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8e4ad5c530d67541bab506b6dc9b34d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  weaponHardpoints:
+  guns:
   - {fileID: 114318202317187816}
   - {fileID: 114165425904898910}
   - {fileID: 114763845051631152}
   - {fileID: 114898708139772632}
   - {fileID: 114750398125826666}
   - {fileID: 114153537171405082}
-  ship: {fileID: 0}
   afterburnerHardpoint: {fileID: 114681986092633008}
   shieldHardpoint: {fileID: 114992891233242000}
   scannerHardpoint: {fileID: 114924268490386734}

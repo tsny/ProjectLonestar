@@ -2,7 +2,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class ShieldHardpoint : Hardpoint
+public class Shield : Hardpoint
 {
     private AudioSource hitSource;
 

@@ -3,18 +3,16 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-public class HardpointSystem : MonoBehaviour
+public class HardpointSystem : ShipComponent
 {
-    public List<WeaponHardpoint> weaponHardpoints = new List<WeaponHardpoint>();
-
-    public Ship ship;
+    public List<Gun> guns = new List<Gun>();
 
     [Header("Individual Hardpoints")]
 
-    public AfterburnerHardpoint afterburnerHardpoint;
-    public ShieldHardpoint shieldHardpoint;
-    public ScannerHardpoint scannerHardpoint;
-    public TractorHardpoint tractorHardpoint;
+    public Afterburner afterburnerHardpoint;
+    public Shield shieldHardpoint;
+    public Scanner scannerHardpoint;
+    public TractorBeam tractorHardpoint;
     public CruiseEngine cruiseEngine;
 
     [Header("Energy")]
@@ -49,13 +47,8 @@ public class HardpointSystem : MonoBehaviour
         }
     }
 
-    public delegate void WeaponFiredEventHandler(WeaponHardpoint hardpointFired);
+    public delegate void WeaponFiredEventHandler(Gun gunFired);
     public event WeaponFiredEventHandler WeaponFired;
-
-    private void Awake()
-    {
-        ship = GetComponentInParent<Ship>();
-    }
 
     public void ToggleAfterburner(bool toggle)
     {
@@ -72,11 +65,11 @@ public class HardpointSystem : MonoBehaviour
 
     public void FireActiveWeapons(Vector3 target)
     {
-        foreach (WeaponHardpoint hardpoint in weaponHardpoints)
+        foreach (Gun guns in guns)
         {
-            if (hardpoint.Active)
+            if (guns.Active)
             {
-                FireWeaponHardpoint(hardpoint, target);
+                FireWeaponHardpoint(guns, target);
             }
         }
     }
@@ -85,24 +78,24 @@ public class HardpointSystem : MonoBehaviour
     {
         hardpointSlot--;
 
-        if (hardpointSlot >= weaponHardpoints.Capacity || hardpointSlot < 0) return;
+        if (hardpointSlot >= guns.Capacity || hardpointSlot < 0) return;
 
-        if (weaponHardpoints[hardpointSlot] != null)
+        if (guns[hardpointSlot] != null)
         {
-            FireWeaponHardpoint(weaponHardpoints[hardpointSlot], target);
+            FireWeaponHardpoint(guns[hardpointSlot], target);
         }
     }
 
-    public void FireWeaponHardpoint(WeaponHardpoint hardpointToFire, Vector3 target)
+    public void FireWeaponHardpoint(Gun gunToFire, Vector3 target)
     {
         if (CanFireWeapons == false) return;
 
-        if (hardpointToFire.projectilePrefab.weaponStats.energyDraw < energy)
+        if (gunToFire.projectilePrefab.weaponStats.energyDraw < energy)
         {
-            if (hardpointToFire.Fire(target, ship.GetComponentsInChildren<Collider>()))
+            if (gunToFire.Fire(target, owningShip.GetComponentsInChildren<Collider>()))
             {
-                energy -= hardpointToFire.projectilePrefab.weaponStats.energyDraw;
-                if (WeaponFired != null) WeaponFired(hardpointToFire);
+                energy -= gunToFire.projectilePrefab.weaponStats.energyDraw;
+                if (WeaponFired != null) WeaponFired(gunToFire);
                 BeginCooldown();
             }
         }

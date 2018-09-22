@@ -2,9 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System;
 
-public class ScannerHardpoint : MonoBehaviour
+public class Scanner : Hardpoint
 {
     public List<ITargetable> targets = new List<ITargetable>();
 
@@ -12,7 +11,7 @@ public class ScannerHardpoint : MonoBehaviour
 
     public int scanFrequency = 10;
 
-    public delegate void EntryChangeEventHandler(ScannerHardpoint sender, ITargetable entry);
+    public delegate void EntryChangeEventHandler(Scanner sender, ITargetable entry);
 
     public event EntryChangeEventHandler EntryAdded;
     public event EntryChangeEventHandler EntryRemoved;

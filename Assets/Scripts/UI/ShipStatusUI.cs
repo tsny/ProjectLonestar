@@ -11,7 +11,7 @@ public class ShipStatusUI : ShipUIElement
     public Text afterburnerText;
     public Text speedText;
 
-    public AfterburnerHardpoint afterburnerHardpoint;
+    public Afterburner afterburnerHardpoint;
 
     public override void SetShip(Ship ship)
     {
@@ -28,7 +28,7 @@ public class ShipStatusUI : ShipUIElement
         SetFillAmounts();
     }
 
-    private void HandleWeaponFired(WeaponHardpoint hardpointFired)
+    private void HandleWeaponFired(Gun gunFired)
     {
         SetFillAmounts();
     }

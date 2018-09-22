@@ -2,9 +2,9 @@
 using UnityEngine.UI;
 using System.Collections;
 
-public class WeaponPanelButton : MonoBehaviour
+public class GunPanelButton : MonoBehaviour
 {
-    public WeaponHardpoint weaponHardpoint;
+    public Gun gun;
     public Image image;
     public Button button;
     public Text text;
@@ -19,14 +19,14 @@ public class WeaponPanelButton : MonoBehaviour
 
     public void ToggleHardpoint()
     {
-        weaponHardpoint.Toggle();
+        gun.Toggle();
         SetName();
         SetColor();
     }
 
-    public void Initialize(WeaponHardpoint weaponHardpoint)
+    public void Initialize(Gun weaponHardpoint)
     {
-        this.weaponHardpoint = weaponHardpoint;
+        this.gun = weaponHardpoint;
         SetName();
     }
 

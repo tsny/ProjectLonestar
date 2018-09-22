@@ -1,14 +1,14 @@
 ﻿using UnityEditor;
 using UnityEngine;
 
-[CustomEditor(typeof(ScannerHardpoint))]
-public class ScannerHardpointEditor : Editor 
+[CustomEditor(typeof(Scanner))]
+public class ScannerEditor : Editor 
 {
     public override void OnInspectorGUI()
     {
         base.OnInspectorGUI();
 
-        ScannerHardpoint scannerHardpoint = (ScannerHardpoint)target;
+        Scanner scannerHardpoint = (Scanner)target;
 
         if (Application.isPlaying == false) return;
 

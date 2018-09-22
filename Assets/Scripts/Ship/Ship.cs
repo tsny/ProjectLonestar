@@ -1,5 +1,5 @@
-﻿using CommandTerminal;
-using System;
+﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -33,6 +33,9 @@ public class Ship : MonoBehaviour, ITargetable
         engine = GetComponentInChildren<Engine>();
         rb = GetComponentInChildren<Rigidbody>();
         hull = GetComponentInChildren<Hull>();
+
+        var components = GetComponentsInChildren<ShipComponent>();
+        components.ToList().ForEach(x => x.Initialize(this));
 
         hull.HealthDepleted += HandleHullHealthDepleted;
         engine.DriftingChange += HandleDriftingChange;

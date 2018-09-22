@@ -25,12 +25,12 @@ public class IndicatorManager : ShipUIElement
         RefreshIndicators();
     }
 
-    private void HandleScannerEntryRemoved(ScannerHardpoint sender, ITargetable entry)
+    private void HandleScannerEntryRemoved(Scanner sender, ITargetable entry)
     {
         RemoveIndicator(entry);
     }
 
-    private void HandleScannerEntryAdded(ScannerHardpoint sender, ITargetable entry)
+    private void HandleScannerEntryAdded(Scanner sender, ITargetable entry)
     {
         AddIndicator(entry);
     }
