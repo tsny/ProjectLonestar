@@ -26,17 +26,7 @@ public class ShipEffectManager : ShipComponent
     {
         foreach (var trail in trailEffects)
         {
-            if (drifting)
-            {
-                //trail.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
-                trail.enabled = false;
-            }
-
-            else
-            {
-                //trail.Play();
-                trail.enabled = true;
-            }
+            trail.enabled = !drifting;
         }
     }
 
@@ -57,11 +47,6 @@ public class ShipEffectManager : ShipComponent
     {
         switch (sender.State)
         {
-            case CruiseState.Off:
-                chargeCruiseEffect.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
-                fullCruiseEffect.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
-                break;
-
             case CruiseState.Charging:
                 chargeCruiseEffect.Play();
                 break;
@@ -71,6 +56,7 @@ public class ShipEffectManager : ShipComponent
                 fullCruiseEffect.Play();
                 break;
 
+            case CruiseState.Off:
             case CruiseState.Disrupted:
                 chargeCruiseEffect.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
                 fullCruiseEffect.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);

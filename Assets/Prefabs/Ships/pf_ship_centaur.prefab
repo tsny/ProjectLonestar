@@ -826,8 +826,8 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1731105088454010}
-  m_LocalRotation: {x: -0, y: -0.5536456, z: -0, w: 0.83275235}
-  m_LocalPosition: {x: 11.473806, y: -0.018462181, z: -0.71067375}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 21.66, y: 4.4716, z: 25.3}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4363359676537772}
@@ -2350,6 +2350,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   audioSource: {fileID: 82539974547494270}
   aimPosition: {x: 0, y: 0, z: 0}
+  projectileSpawnPoint: {fileID: 0}
   projectilePrefab: {fileID: 114668111320221088, guid: 7ec3ee62c9fb5a640b6e98490ffa867b,
     type: 2}
 --- !u!114 &114163767227593546
@@ -2365,10 +2366,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rb: {fileID: 54334028879456994}
   transform: {fileID: 4709334792375274}
-  mass: 5
-  drag: 5
-  driftMass: 5
-  driftDrag: 0.1
   engineStats: {fileID: 11400000, guid: 03bae706e6806dc48a6c222c5b4179ed, type: 2}
   throttleChangeIncrement: 0.1
 --- !u!114 &114165425904898910
@@ -2384,6 +2381,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   audioSource: {fileID: 82056361354212886}
   aimPosition: {x: 0, y: 0, z: 0}
+  projectileSpawnPoint: {fileID: 0}
   projectilePrefab: {fileID: 114668111320221088, guid: 7ec3ee62c9fb5a640b6e98490ffa867b,
     type: 2}
 --- !u!114 &114182349002600078
@@ -2428,6 +2426,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   audioSource: {fileID: 82674757958555714}
   aimPosition: {x: 0, y: 0, z: 0}
+  projectileSpawnPoint: {fileID: 0}
   projectilePrefab: {fileID: 114668111320221088, guid: 7ec3ee62c9fb5a640b6e98490ffa867b,
     type: 2}
 --- !u!114 &114395436724679158
@@ -2463,9 +2462,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rb: {fileID: 54334028879456994}
-  chargeDuration: 5
-  cruisePower: 300
-  cruiseMultiplier: 1
+  stats: {fileID: 0}
 --- !u!114 &114681986092633008
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2493,9 +2490,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   invulnerable: 0
   hullType: 0
-  shieldHardpoint: {fileID: 0}
   _health: 100
   _maxHealth: 100
+  shield: {fileID: 0}
 --- !u!114 &114750398125826666
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2509,6 +2506,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   audioSource: {fileID: 82050184999988126}
   aimPosition: {x: 0, y: 0, z: 0}
+  projectileSpawnPoint: {fileID: 0}
   projectilePrefab: {fileID: 114668111320221088, guid: 7ec3ee62c9fb5a640b6e98490ffa867b,
     type: 2}
 --- !u!114 &114763845051631152
@@ -2524,6 +2522,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   audioSource: {fileID: 82317354978225804}
   aimPosition: {x: 0, y: 0, z: 0}
+  projectileSpawnPoint: {fileID: 0}
   projectilePrefab: {fileID: 114668111320221088, guid: 7ec3ee62c9fb5a640b6e98490ffa867b,
     type: 2}
 --- !u!114 &114843565123289172
@@ -2540,6 +2539,7 @@ MonoBehaviour:
   pilotDetails: {fileID: 11400000, guid: 0e4162d9bfb61814e9801b68670a6bac, type: 2}
   engineStats: {fileID: 11400000, guid: 03bae706e6806dc48a6c222c5b4179ed, type: 2}
   shipDetails: {fileID: 11400000, guid: fe0dfa754dd6a08468063fea5943ef08, type: 2}
+  physicsStats: {fileID: 11400000, guid: 09937077fa1cb6a4e9a628d260081623, type: 2}
   hardpointSystem: {fileID: 114890172326677854}
   aimPosition: {x: 0, y: 0, z: 0}
   engine: {fileID: 0}
@@ -2602,6 +2602,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   audioSource: {fileID: 82061525696926652}
   aimPosition: {x: 0, y: 0, z: 0}
+  projectileSpawnPoint: {fileID: 0}
   projectilePrefab: {fileID: 114668111320221088, guid: 7ec3ee62c9fb5a640b6e98490ffa867b,
     type: 2}
 --- !u!114 &114921829818448814
@@ -2640,7 +2641,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7d516cd45b05ce41a5be3e19d36eb92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scanner: {fileID: 0}
+  scanner: {fileID: 11400000, guid: 841ad790abc8c314496cc5d2982befa3, type: 2}
   scanFrequency: 10
 --- !u!114 &114992891233242000
 MonoBehaviour:

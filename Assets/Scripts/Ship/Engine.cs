@@ -15,11 +15,6 @@ public class Engine : ShipComponent
         }
     }
 
-    public float mass = 5;
-    public float drag = 5;
-    public float driftMass = 5;
-    public float driftDrag = .05f;
-
     public EngineStats engineStats;
 
     private float throttle;
@@ -92,18 +87,6 @@ public class Engine : ShipComponent
 
     private void OnDriftingChange(bool isDrifting)
     {
-        if (isDrifting)
-        {
-            rb.drag = driftDrag;
-            rb.mass = driftMass;
-        }
-
-        else
-        {
-            rb.drag = drag;
-            rb.mass = mass;
-        }
-
         if (DriftingChange != null) DriftingChange(isDrifting);
     }
 

@@ -9,6 +9,7 @@ public class Ship : MonoBehaviour, ITargetable
     public PilotDetails pilotDetails;
     public EngineStats engineStats;
     public ShipDetails shipDetails;
+    public ShipPhysicsStats physicsStats;
     //public ShipStats stats;
 
     [Header("Ship Components")]
@@ -43,7 +44,7 @@ public class Ship : MonoBehaviour, ITargetable
 
     private void HandleDriftingChange(bool drifting)
     {
-        throw new NotImplementedException();
+        ShipPhysicsStats.HandleDrifting(rb, physicsStats, drifting);
     }
 
     private void HandleHullHealthDepleted(object sender, DeathEventArgs e)
@@ -97,7 +98,7 @@ public class Ship : MonoBehaviour, ITargetable
 
     private void FixedUpdate()
     {
-        ClampSpeeds();
+        ShipPhysicsStats.ClampShipVelocity(rb, physicsStats, cruiseEngine.State);
     }
 
     public void FireAllWeapons()
@@ -113,36 +114,5 @@ public class Ship : MonoBehaviour, ITargetable
     public bool IsTargetable()
     {
         return true;
-    }
-
-    private void ClampSpeeds()
-    {
-        if (cruiseEngine == null) return;
-
-        float currentMaxSpeed = 0;
-
-        switch (cruiseEngine.State)
-        {
-            case CruiseState.Off:
-                currentMaxSpeed = engineStats.maxAfterburnSpeed;
-                break;
-
-            case CruiseState.Charging:
-                currentMaxSpeed = engineStats.maxNormalSpeed;
-                break;
-
-            case CruiseState.On:
-                currentMaxSpeed = engineStats.maxCruiseSpeed;
-                break;
-
-            case CruiseState.Disrupted:
-                currentMaxSpeed = engineStats.maxAfterburnSpeed;
-                break;
-
-            default:
-                break;
-        }
-
-        rb.velocity = Vector3.ClampMagnitude(rb.velocity, currentMaxSpeed);
     }
 }

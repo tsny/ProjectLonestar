@@ -5,6 +5,7 @@ public class Gun : Hardpoint
 {
     public AudioSource audioSource;
     public Vector3 aimPosition;
+    public Transform projectileSpawnPoint;
 
     public Projectile projectilePrefab;
 
@@ -60,7 +61,9 @@ public class Gun : Hardpoint
     {
         if (projectilePrefab == null || IsOnCooldown) return false;
 
-        var newProjectile = Instantiate(projectilePrefab, transform.position, Quaternion.identity);
+        var spawnPoint = projectileSpawnPoint == null ? transform : projectileSpawnPoint;
+
+        var newProjectile = Instantiate(projectilePrefab, spawnPoint.position, Quaternion.identity);
 
         newProjectile.Initialize(target, collidersToIgnore);
 
