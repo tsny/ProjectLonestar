@@ -73,7 +73,7 @@ public class FLTerminal : Terminal
     {
         if (PlayerControllerExistsInScene() == false) return;
 
-        var abHardpoint = FindObjectOfType<PlayerController>().ship.hardpointSystem.afterburnerHardpoint;
+        var abHardpoint = FindObjectOfType<PlayerController>().ship.hardpointSystem.afterburner;
         abHardpoint.afterburner.drainRate = abHardpoint.afterburner.drainRate == 0 ? 100 : 0;
 
         print("Toggled infinite afterburner...");

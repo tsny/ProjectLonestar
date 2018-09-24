@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-public class Scanner : Hardpoint
+public class Scanner : Hardpoint 
 {
     public List<ITargetable> targets = new List<ITargetable>();
 
@@ -11,19 +11,12 @@ public class Scanner : Hardpoint
 
     public int scanFrequency = 10;
 
-    public delegate void EntryChangeEventHandler(Scanner sender, ITargetable entry);
+    public event ScannedEventHandler ScannerUpdated;
+    public delegate void ScannedEventHandler(Scanner sender, List<ITargetable> targets);
 
-    public event EntryChangeEventHandler EntryAdded;
-    public event EntryChangeEventHandler EntryRemoved;
-
-    private void OnEntryAdded(ITargetable target)
+    private void Start()
     {
-        if (EntryAdded != null) EntryAdded(this, target);
-    }
-
-    private void OnEntryRemoved(ITargetable target)
-    {
-        if (EntryRemoved != null) EntryRemoved(this, target);
+        StartCoroutine(ScanCoroutine());
     }
 
     public void ScanForTargets()
@@ -32,59 +25,25 @@ public class Scanner : Hardpoint
 
         var scannedTargets = FindObjectsOfType<MonoBehaviour>().OfType<ITargetable>().ToList();
 
-        RemoveSelfFromScanner(scannedTargets);
+        ValidateNewTargets(scannedTargets);
 
-        AddTargetsToRegistry(scannedTargets);
+        targets = scannedTargets;
+
+        if (ScannerUpdated != null) ScannerUpdated(this, targets);
     }
 
-    private void AddTargetsToRegistry(List<ITargetable> newTargets)
+    public void ClearList()
     {
-        newTargets.ForEach(x => AddEntry(x));
-    }
-
-    private void RemoveSelfFromScanner(List<ITargetable> targets)
-    {
-        var targetsToIgnore = transform.root.gameObject.GetComponentsInChildren<MonoBehaviour>().OfType<ITargetable>();
-
-        targets.RemoveAll(x => targetsToIgnore.Contains(x));
-    }
-
-    public void ClearEntries()
-    {
-        targets.ForEach(x => RemoveEntry(x));
         targets.Clear();
+
+        if (ScannerUpdated != null) ScannerUpdated(this, targets);
     }
 
-    private void HandleEntryKilled(ITargetable sender, DeathEventArgs e)
+    private void ValidateNewTargets(List<ITargetable> newTargets)
     {
-        RemoveEntry(sender);
-    }
+        var targetsToIgnore = owningShip.GetComponentsInChildren<MonoBehaviour>().OfType<ITargetable>();
 
-    private void HandleTargetBecameUntargetable(ITargetable sender)
-    {
-        RemoveEntry(sender);
-    }
-
-    public void AddEntry(ITargetable targetToAdd)
-    {
-        if (targets.Contains(targetToAdd)) return;
-    
-        targets.Add(targetToAdd);
-
-        targetToAdd.BecameUntargetable += HandleTargetBecameUntargetable;
-
-        OnEntryAdded(targetToAdd);
-    }
-
-    public void RemoveEntry(ITargetable targetToRemove)
-    {
-        if (!targets.Contains(targetToRemove)) return;
-
-        targets.Remove(targetToRemove);
-
-        targetToRemove.BecameUntargetable -= HandleTargetBecameUntargetable;
-
-        OnEntryRemoved(targetToRemove);
+        newTargets.RemoveAll(x => targetsToIgnore.Contains(x));
     }
 
     private IEnumerator ScanCoroutine()

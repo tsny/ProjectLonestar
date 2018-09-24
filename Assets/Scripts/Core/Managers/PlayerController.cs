@@ -251,7 +251,7 @@ public class PlayerController : MonoBehaviour
 
             if (Input.GetKeyDown(InputManager.LootAllKey))
             {
-                ship.hardpointSystem.tractorHardpoint.TractorAllLoot();
+                ship.hardpointSystem.tractorBeam.TractorAllLoot();
             }
 
             #endregion

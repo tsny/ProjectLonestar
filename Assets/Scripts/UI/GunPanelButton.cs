@@ -32,13 +32,13 @@ public class GunPanelButton : MonoBehaviour
 
     private void SetName()
     {
-        //var activeString = (weaponHardpoint.active) ? " - Active" : " - Inactive";
+        var activeString = (gun.IsActive) ? " - Active" : " - Inactive";
 
-        //text.text = weaponHardpoint.CurrentEquipment.name + activeString;
+        text.text = gun.projectilePrefab.weaponStats.name + activeString;
     }
 
     private void SetColor()
     {
-        //image.color = (weaponHardpoint.active) ? enabledColor : disabledColor;
+        image.color = (gun.IsActive) ? enabledColor : disabledColor;
     }
 }

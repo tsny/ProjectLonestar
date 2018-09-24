@@ -9,10 +9,10 @@ public class HardpointSystem : ShipComponent
 
     [Header("Individual Hardpoints")]
 
-    public Afterburner afterburnerHardpoint;
-    public Shield shieldHardpoint;
-    public Scanner scannerHardpoint;
-    public TractorBeam tractorHardpoint;
+    public Afterburner afterburner;
+    public Shield shield;
+    public Scanner scanner;
+    public TractorBeam tractorBeam;
     public CruiseEngine cruiseEngine;
 
     [Header("Energy")]
@@ -52,8 +52,8 @@ public class HardpointSystem : ShipComponent
 
     public void ToggleAfterburner(bool toggle)
     {
-        if (toggle) afterburnerHardpoint.Activate();
-        else afterburnerHardpoint.Deactivate();
+        if (toggle) afterburner.Activate();
+        else afterburner.Deactivate();
     }
 
     public void EnableInfiniteEnergy()
@@ -67,7 +67,7 @@ public class HardpointSystem : ShipComponent
     {
         foreach (Gun guns in guns)
         {
-            if (guns.Active)
+            if (guns.IsActive)
             {
                 FireWeaponHardpoint(guns, target);
             }

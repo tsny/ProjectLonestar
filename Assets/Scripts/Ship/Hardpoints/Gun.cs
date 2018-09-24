@@ -9,16 +9,16 @@ public class Gun : Hardpoint
 
     public Projectile projectilePrefab;
 
-    private bool _active = true;
-    public bool Active
+    private bool _isActive = true;
+    public bool IsActive
     {
         get
         {
-            return _active;
+            return _isActive;
         }
         set
         {
-            _active = value;
+            _isActive = value;
             if (value)
             {
                 OnActivated();
@@ -54,7 +54,7 @@ public class Gun : Hardpoint
 
     public void Toggle()
     {
-        Active = !Active;
+        IsActive = !IsActive;
     }
 
     public bool Fire(Vector3 target, Collider[] collidersToIgnore = null)

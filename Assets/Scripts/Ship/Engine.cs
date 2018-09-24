@@ -70,7 +70,7 @@ public class Engine : ShipComponent
         }
     }
 
-    public delegate void ThrottleChangedEventHandler(Engine sender, float newThrottle, float oldThrottle);
+    public delegate void ThrottleChangedEventHandler(Engine sender, ThrottleChangeEventArgs e);
     public event ThrottleChangedEventHandler ThrottleChanged;
 
     public delegate void StrafeChangedEventHandler(Engine sender, float newStrafe, float oldStrafe);
@@ -98,7 +98,7 @@ public class Engine : ShipComponent
     private void OnThrottleChange(float newThrottle, float oldThrottle)
     {
         Drifting = false;
-        if (ThrottleChanged != null) ThrottleChanged(this, newThrottle, oldThrottle);
+        if (ThrottleChanged != null) ThrottleChanged(this, new ThrottleChangeEventArgs(newThrottle, oldThrottle));
     }
 
     private void HandleCruiseChange(CruiseEngine sender)
@@ -166,5 +166,25 @@ public class Engine : ShipComponent
     {
         amount = Mathf.Clamp(amount, -1, 1);
         transform.Rotate(new Vector3(0, 0, engineStats.turnSpeed * amount));
+    }
+}
+
+public class ThrottleChangeEventArgs
+{
+    public float newThrottle;
+    public float oldThrottle;
+
+    public ThrottleChangeEventArgs(float newThrottle, float oldThrottle)
+    {
+        this.newThrottle = newThrottle;
+        this.oldThrottle = oldThrottle;
+    }
+
+    public bool IsAccelerating
+    {
+        get
+        {
+            return newThrottle > oldThrottle;
+        }
     }
 }

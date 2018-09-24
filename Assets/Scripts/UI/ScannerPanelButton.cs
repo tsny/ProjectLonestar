@@ -4,20 +4,26 @@ using UnityEngine.UI;
 
 public class ScannerPanelButton : MonoBehaviour
 {
-    private Transform target;
+    private ITargetable target;
+    private Transform targetTransform;
     private Ship owner;
     public Text text;
 
     public void Setup(ITargetable target, Ship owner)
     {
+        this.target = target;
         this.owner = owner;
 
-        var monoBehaviour = target as MonoBehaviour;
+        var component = target as MonoBehaviour;
 
-        if (monoBehaviour != null)
+        if (component == null)
         {
-            this.target = monoBehaviour.transform;
+            Destroy(gameObject);
+            return;
         }
+
+        targetTransform = component.transform;
+        name = component.name;
 
         StartCoroutine(UpdateText());
     }
@@ -26,8 +32,10 @@ public class ScannerPanelButton : MonoBehaviour
     {
         for (; ;)
         {
-            var distance = (int) Vector3.Distance(target.transform.position, owner.transform.position) + "M";
-            text.text = target.name + " " + distance;
+            if (targetTransform == null || owner == null) break;
+
+            var distance = (int) Vector3.Distance(targetTransform.transform.position, owner.transform.position) + "M";
+            text.text = targetTransform.name + " " + distance;
 
             yield return new WaitForSeconds(2);
         }

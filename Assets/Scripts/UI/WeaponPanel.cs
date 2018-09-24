@@ -26,12 +26,12 @@ public class WeaponPanel : ShipUIElement
 
     private void PopulatePanel()
     {
-        //foreach (WeaponHardpoint weaponHardpoint in hardpointSystem.weaponHardpoints.Values)
-        //{
-        //    //if (!weaponHardpoint.IsMounted) continue;
+        foreach (Gun gun in hardpointSystem.guns)
+        {
+            if (gun.projectilePrefab == null) continue;
 
-        //    Instantiate(weaponPanelButton, vlg.transform).GetComponent<WeaponPanelButton>().Initialize(weaponHardpoint);
-        //}
+            Instantiate(weaponPanelButton, vlg.transform).GetComponent<GunPanelButton>().Initialize(gun);
+        }
     }
 
     private void ClearPanel()

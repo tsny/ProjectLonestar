@@ -114,8 +114,11 @@ public class AsteroidField : MonoBehaviour
     {
         var colliders = asteroid.GetComponentsInChildren<Collider>();
 
-        colliders.ToList().ForEach(x => DestroyImmediate(x));
+        if (colliders.Length == 0)
+        {
+            asteroid.AddComponent<SphereCollider>();
+        }
 
-        asteroid.AddComponent<SphereCollider>();
+        //colliders.ToList().ForEach(x => DestroyImmediate(x));
     }
 }

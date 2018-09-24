@@ -2580,10 +2580,10 @@ MonoBehaviour:
   - {fileID: 114898708139772632}
   - {fileID: 114750398125826666}
   - {fileID: 114153537171405082}
-  afterburnerHardpoint: {fileID: 114681986092633008}
-  shieldHardpoint: {fileID: 114992891233242000}
-  scannerHardpoint: {fileID: 114924268490386734}
-  tractorHardpoint: {fileID: 114182349002600078}
+  afterburner: {fileID: 114681986092633008}
+  shield: {fileID: 114992891233242000}
+  scanner: {fileID: 114924268490386734}
+  tractorBeam: {fileID: 114182349002600078}
   cruiseEngine: {fileID: 0}
   energy: 100
   energyCapacity: 100

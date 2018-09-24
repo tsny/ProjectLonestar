@@ -8,18 +8,18 @@ public class ScannerEditor : Editor
     {
         base.OnInspectorGUI();
 
-        Scanner scannerHardpoint = (Scanner)target;
+        Scanner scanner = (Scanner)target;
 
         if (Application.isPlaying == false) return;
 
         if (GUILayout.Button("Scan"))
         {
-            scannerHardpoint.ScanForTargets();
+            scanner.ScanForTargets();
         }
 
         if (GUILayout.Button("Clear Entries"))
         {
-            scannerHardpoint.ClearEntries();
+            scanner.ClearList();
         }
     }
 } 

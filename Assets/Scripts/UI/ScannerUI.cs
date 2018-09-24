@@ -2,36 +2,31 @@
 using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 public class ScannerUI : ShipUIElement
 {
     public GameObject scannerButtonPrefab;
     public VerticalLayoutGroup buttonVLG;
 
-    private Dictionary<ITargetable, GameObject> targetObjectPairs = new Dictionary<ITargetable, GameObject>();
-
-    private Scanner scannerHardpoint;
+    private Dictionary<ITargetable, ScannerPanelButton> targetButtonPairs = new Dictionary<ITargetable, ScannerPanelButton>();
+    private Scanner scanner;
 
     public override void SetShip(Ship ship)
     {
         base.SetShip(ship);
 
-        scannerHardpoint = ship.hardpointSystem.scannerHardpoint;
+        scanner = ship.hardpointSystem.scanner;
+        scanner.ScannerUpdated += HandleNewScan;
 
-        scannerHardpoint.EntryAdded += HandleScannerTargetAdded;
-        scannerHardpoint.EntryRemoved += HandleScannerTargetRemoved;
-
-        RefreshScannerList();
+        RefreshPanel();
     }
 
-    private void HandleScannerTargetRemoved(Scanner sender, ITargetable entry)
+    private void HandleNewScan(Scanner sender, List<ITargetable> targets)
     {
-        GameObject value;
+        ClearPanel();
 
-        if (targetObjectPairs.TryGetValue(entry, out value))
-        {
-            Destroy(value);
-        }
+        targets.ForEach(x => CreatePanelButton(x));
     }
 
     private void HandleScannerTargetAdded(Scanner sender, ITargetable entry)
@@ -41,10 +36,7 @@ public class ScannerUI : ShipUIElement
 
     protected override void ClearShip()
     {
-        scannerHardpoint.EntryAdded -= HandleScannerTargetAdded;
-        scannerHardpoint.EntryRemoved -= HandleScannerTargetRemoved;
-
-        ClearScannerList();
+        ClearPanel();
 
         base.ClearShip();
     }
@@ -52,31 +44,55 @@ public class ScannerUI : ShipUIElement
     public ScannerPanelButton CreatePanelButton(ITargetable target)
     {
         var newButton = Instantiate(scannerButtonPrefab, buttonVLG.transform).GetComponent<ScannerPanelButton>();
+
         newButton.Setup(target, ship);
 
-        targetObjectPairs.Add(target, newButton.gameObject);
+        targetButtonPairs.Add(target, newButton);
+
+        target.BecameUntargetable += HandleTargetBecameUntargetable;
 
         return newButton;
     }
 
-    private void RefreshScannerList()
+    private void HandleTargetBecameUntargetable(ITargetable sender)
     {
-        ClearScannerList();
+        RemovePanelButton(sender);
+    }
 
-        foreach (var target in scannerHardpoint.targets)
+    public void RemovePanelButton(ITargetable targetToRemove)
+    {
+        ScannerPanelButton button;
+
+        if (targetButtonPairs.TryGetValue(targetToRemove, out button))
+        {
+            Destroy(button.gameObject);
+            targetButtonPairs.Remove(targetToRemove);
+            targetToRemove.BecameUntargetable -= HandleTargetBecameUntargetable;
+        }
+    }
+
+    public void PopulatePanel()
+    {
+        foreach (var target in scanner.targets)
         {
             CreatePanelButton(target);
         }
     }
 
-    public void ClearScannerList()
+    private void RefreshPanel()
     {
-        foreach (Transform button in buttonVLG.transform)
-        {
-            Destroy(button.gameObject);
-        }
+        ClearPanel();
+        PopulatePanel();
+    }
 
-        targetObjectPairs.Clear();
+    public void ClearPanel()
+    {
+        var keys = targetButtonPairs.Keys.ToList();
+
+        foreach (var key in keys)
+        {
+            RemovePanelButton(key);
+        }
     }
 }
  

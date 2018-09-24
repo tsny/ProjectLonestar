@@ -40,10 +40,31 @@ public class Ship : MonoBehaviour, ITargetable
 
         hull.HealthDepleted += HandleHullHealthDepleted;
         engine.DriftingChange += HandleDriftingChange;
+        engine.ThrottleChanged += HandleThrottleChange;
+        cruiseEngine.CruiseStateChanged += HandleCruiseChange;
+    }
+
+    private void HandleCruiseChange(CruiseEngine sender, CruiseState newState)
+    {
+        if (newState == CruiseState.Charging)
+            engine.Drifting = false;
+    }
+
+    private void HandleThrottleChange(Engine sender, ThrottleChangeEventArgs e)
+    {
+        if (e.IsAccelerating == false)
+        {
+            cruiseEngine.StopAnyCruise();
+        }
     }
 
     private void HandleDriftingChange(bool drifting)
     {
+        if (cruiseEngine != null && drifting)
+        {
+            cruiseEngine.StopAnyCruise();
+        }
+
         ShipPhysicsStats.HandleDrifting(rb, physicsStats, drifting);
     }
 

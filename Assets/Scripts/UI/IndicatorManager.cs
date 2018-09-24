@@ -13,16 +13,16 @@ public class IndicatorManager : ShipUIElement
 
     public override void SetShip(Ship newShip)
     {
-        base.SetShip(newShip);
+        //base.SetShip(newShip);
 
-        ClearIndicators();
+        //ClearIndicators();
 
-        newShip.hardpointSystem.scannerHardpoint.EntryAdded += HandleScannerEntryAdded;
-        newShip.hardpointSystem.scannerHardpoint.EntryRemoved += HandleScannerEntryRemoved;
+        //newShip.hardpointSystem.scanner.EntryAdded += HandleScannerEntryAdded;
+        //newShip.hardpointSystem.scanner.EntryRemoved += HandleScannerEntryRemoved;
 
-        FindObjectOfType<PlayerController>().ReleasedShip += HandleShipReleased;
+        //FindObjectOfType<PlayerController>().ReleasedShip += HandleShipReleased;
 
-        RefreshIndicators();
+        //RefreshIndicators();
     }
 
     private void HandleScannerEntryRemoved(Scanner sender, ITargetable entry)
@@ -60,7 +60,7 @@ public class IndicatorManager : ShipUIElement
     {
         ClearIndicators();
 
-        foreach (var target in ship.hardpointSystem.scannerHardpoint.targets)
+        foreach (var target in ship.hardpointSystem.scanner.targets)
         {
             AddIndicator(target);
         }
