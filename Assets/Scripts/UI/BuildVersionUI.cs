@@ -15,7 +15,7 @@ public class BuildVersionUI : MonoBehaviour
     protected void Start()
     {
         text.text = "Fetching build info...";
-        StartCoroutine(VersionChecker.GetVersions(this));
+        StartCoroutine(VersionChecker.GetVersions("https://itch.io/api/1/x/wharf/latest?target=tsny/project-lonestar&channel_name=win", this));
     }
 
     public void SetText(string liveVersion)

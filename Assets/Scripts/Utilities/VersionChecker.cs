@@ -4,9 +4,9 @@ using System.Collections;
 
 public class VersionChecker : ScriptableObject
 {
-    public static IEnumerator GetVersions(MonoBehaviour caller = null, bool printToConsole = false)
+    public static IEnumerator GetVersions(string url, MonoBehaviour caller = null, bool printToConsole = false)
     {
-        var url = "https://itch.io/api/1/x/wharf/latest?target=tsny/project-lonestar&channel_name=win";
+        // Example URL: "https://itch.io/api/1/x/wharf/latest?target=tsny/project-lonestar&channel_name=win"
 
         using (UnityWebRequest www = UnityWebRequest.Get(url))
         {
