@@ -26,6 +26,11 @@ public class Ship : MonoBehaviour, ITargetable
     public event TargetEventHandler BecameTargetable;
     public event TargetEventHandler BecameUntargetable;
 
+    private void OnBecameTargetable()
+    {
+        if (BecameTargetable != null) BecameTargetable(this);
+    }
+
     private void Awake()
     {
         hardpointSystem = GetComponentInChildren<HardpointSystem>();
@@ -129,6 +134,7 @@ public class Ship : MonoBehaviour, ITargetable
 
     public void SetupTargetIndicator(TargetIndicator indicator)
     {
+        indicator.header.text = shipDetails.shipName;
         //hull.TookDamage += indicator.HandleTargetTookDamage;
     }
 

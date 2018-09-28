@@ -10,10 +10,10 @@ public class Shield : Hardpoint
     public float capacity;
     public float regenRate;
 
-    public event EventHandler<DamageEventArgs> TookDamage;
+    //public event EventHandler<DamageEventArgs> TookDamage;
     public event EventHandler<DeathEventArgs> HealthDepleted;
 
-    public ShieldStats shield;
+    public ShieldStats shieldStats;
 
     public bool IsOnline
     {
@@ -43,13 +43,13 @@ public class Shield : Hardpoint
 
     public void TakeDamage(WeaponStats weapon)
     {
-        energy -= Damage.CalculateShieldDamage(weapon, shield.type);
+        energy -= Damage.CalculateShieldDamage(weapon, shieldStats.type);
 
         hitSource.Play();
 
         if (energy <= 0) energy = 0;
 
-        StartCooldown(shield.cooldownDuration);
+        StartCooldown(shieldStats.cooldownDuration);
     }
 
     public void OnHealthDepleted(WeaponStats weapon)

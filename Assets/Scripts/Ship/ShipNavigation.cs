@@ -24,6 +24,12 @@ public class ShipNavigation : ShipComponent
         StartCoroutine(fireCoroutine);
     }
 
+    public void RotateAtTarget(Transform target, float angleThreshold)
+    {
+        rotateCoroutine = RotateTowardsTargetCoroutine(target, angleThreshold);
+        StartCoroutine(rotateCoroutine);
+    }
+
     public void GotoTarget(Transform target)
     {
         //RotateTowardsTarget(target);

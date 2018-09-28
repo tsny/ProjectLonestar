@@ -23,6 +23,11 @@ public class Loot : MonoBehaviour, ITargetable
         if (BecameUntargetable != null) BecameUntargetable(this);
     }
 
+    private void OnBecameTargetable()
+    {
+        if (BecameTargetable != null) BecameTargetable(this);
+    }
+
     public void SetTarget(Transform newTarget, float pullForce)
     {
         ClearTarget();
@@ -91,6 +96,6 @@ public class Loot : MonoBehaviour, ITargetable
 
     public void SetupTargetIndicator(TargetIndicator indicator)
     {
-        //throw new System.NotImplementedException();
+        indicator.header.text = item.name ?? "Empty Loot";
     }
 }

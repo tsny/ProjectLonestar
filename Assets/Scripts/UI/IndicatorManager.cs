@@ -13,30 +13,26 @@ public class IndicatorManager : ShipUIElement
 
     public override void SetShip(Ship newShip)
     {
-        //base.SetShip(newShip);
+        base.SetShip(newShip);
 
-        //ClearIndicators();
+        ClearIndicators();
 
-        //newShip.hardpointSystem.scanner.EntryAdded += HandleScannerEntryAdded;
-        //newShip.hardpointSystem.scanner.EntryRemoved += HandleScannerEntryRemoved;
+        newShip.hardpointSystem.scanner.ScannerUpdated += HandleScannerUpdated;
 
-        //FindObjectOfType<PlayerController>().ReleasedShip += HandleShipReleased;
-
-        //RefreshIndicators();
+        FindObjectOfType<PlayerController>().ReleasedShip += HandleShipReleased;
     }
 
-    private void HandleScannerEntryRemoved(Scanner sender, ITargetable entry)
+    private void HandleScannerUpdated(Scanner sender, List<ITargetable> targets)
     {
-        RemoveIndicator(entry);
-    }
-
-    private void HandleScannerEntryAdded(Scanner sender, ITargetable entry)
-    {
-        AddIndicator(entry);
+        foreach (var target in targets)
+        {
+            AddIndicator(target);
+        }
     }
 
     private void HandleShipReleased(PlayerController sender, PossessionEventArgs args)
     {
+        ClearIndicators();
         ClearShip();
     }
 
@@ -56,23 +52,13 @@ public class IndicatorManager : ShipUIElement
         selectedIndicator = newIndicator;
     }
 
-    public void RefreshIndicators()
-    {
-        ClearIndicators();
-
-        foreach (var target in ship.hardpointSystem.scanner.targets)
-        {
-            AddIndicator(target);
-        }
-    }
-
     public void ClearIndicators()
     {
         DeselectCurrentIndicator();
 
         foreach (var value in indicatorPairs.Values)
         {
-            Destroy(value);
+            Destroy(value.gameObject);
         }
 
         indicatorPairs.Clear();
@@ -93,7 +79,14 @@ public class IndicatorManager : ShipUIElement
 
         newIndicator.Selected += HandleIndicatorSelected;
 
+        newTarget.BecameUntargetable += HandleTargetBecameUntargetable;
+
         indicatorPairs.Add(newTarget, newIndicator);
+    }
+
+    private void HandleTargetBecameUntargetable(ITargetable sender)
+    {
+        RemoveIndicator(sender);
     }
 
     public void RemoveIndicator(TargetIndicator indicatorToRemove)
@@ -103,7 +96,7 @@ public class IndicatorManager : ShipUIElement
         if (indicatorToRemove == selectedIndicator) DeselectCurrentIndicator();
 
         indicatorToRemove.Selected -= HandleIndicatorSelected;
-        
+
         Destroy(indicatorToRemove.gameObject);
     }
 
@@ -111,6 +104,10 @@ public class IndicatorManager : ShipUIElement
     {
         TargetIndicator pairedIndicator;
 
-        if (indicatorPairs.TryGetValue(target, out pairedIndicator)) RemoveIndicator(pairedIndicator);
+        if (indicatorPairs.TryGetValue(target, out pairedIndicator))
+        {
+            RemoveIndicator(pairedIndicator);
+            target.BecameUntargetable -= HandleTargetBecameUntargetable;
+        }
     }
 }

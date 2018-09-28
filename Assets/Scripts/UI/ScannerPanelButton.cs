@@ -4,14 +4,14 @@ using UnityEngine.UI;
 
 public class ScannerPanelButton : MonoBehaviour
 {
-    private ITargetable target;
+    //private ITargetable target;
     private Transform targetTransform;
     private Ship owner;
     public Text text;
 
     public void Setup(ITargetable target, Ship owner)
     {
-        this.target = target;
+        //this.target = target;
         this.owner = owner;
 
         var component = target as MonoBehaviour;

@@ -16,7 +16,7 @@ public class TargetIndicator : MonoBehaviour
     {
         get
         {
-            Vector3 targetViewportPoint = camera.WorldToScreenPoint(target.transform.position);
+            Vector3 targetViewportPoint = Camera.main.WorldToScreenPoint(target.transform.position);
             return targetViewportPoint.z > 0;
         }
     }
@@ -75,6 +75,7 @@ public class TargetIndicator : MonoBehaviour
     private void Awake()
     {
         enabled = false;
+        content.SetActive(false);
     }
 
     public virtual void SetTarget(ITargetable newTarget)
@@ -90,8 +91,6 @@ public class TargetIndicator : MonoBehaviour
         this.target = target.gameObject;
 
         name = target.name;
-
-        Refresh();
 
         enabled = true;
     }
@@ -109,11 +108,6 @@ public class TargetIndicator : MonoBehaviour
     {
         ShowHealthBars(false);
         ShowName(false);
-    }
-
-    public void Refresh()
-    {
-      
     }
 
     public virtual void Select()

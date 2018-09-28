@@ -59,7 +59,7 @@ public class Hull : ShipComponent, IDamageable
                 return;
             }
 
-            shield.StartCooldown(weapon.cooldownDuration);
+            shield.StartCooldown(shield.shieldStats.cooldownDuration);
         }
 
         Health -= weapon.hullDamage;
