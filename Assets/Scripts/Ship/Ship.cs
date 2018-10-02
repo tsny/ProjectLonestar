@@ -31,6 +31,11 @@ public class Ship : MonoBehaviour, ITargetable
         if (BecameTargetable != null) BecameTargetable(this);
     }
 
+    protected void OnPossession(PlayerController pc, bool possessed)
+    {
+        if (Possession != null) Possession(pc, this, possessed);
+    }
+
     private void Awake()
     {
         hardpointSystem = GetComponentInChildren<HardpointSystem>();
@@ -51,8 +56,10 @@ public class Ship : MonoBehaviour, ITargetable
 
     private void HandleCruiseChange(CruiseEngine sender, CruiseState newState)
     {
-        if (newState == CruiseState.Charging)
-            engine.Drifting = false;
+        if (newState == CruiseState.Charging) 
+		{
+			engine.Drifting = false;
+		}
     }
 
     private void HandleThrottleChange(Engine sender, ThrottleChangeEventArgs e)
@@ -117,11 +124,6 @@ public class Ship : MonoBehaviour, ITargetable
         }
     }
 
-    protected void OnPossession(PlayerController pc, bool possessed)
-    {
-        if (Possession != null) Possession(pc, this, possessed);
-    }
-
     private void FixedUpdate()
     {
         ShipPhysicsStats.ClampShipVelocity(rb, physicsStats, cruiseEngine.State);
@@ -135,11 +137,16 @@ public class Ship : MonoBehaviour, ITargetable
     public void SetupTargetIndicator(TargetIndicator indicator)
     {
         indicator.header.text = shipDetails.shipName;
+		
+		// Check if this ship has a shield and toggle shield bar based on that
+		
         //hull.TookDamage += indicator.HandleTargetTookDamage;
     }
 
     public bool IsTargetable()
     {
+		// Do some kind of check if ship has cloak
+
         return true;
     }
 }
