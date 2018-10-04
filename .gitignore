@@ -266,8 +266,6 @@ __pycache__/
 /Assets/3rd Party
 
 # Unity
-*.csproj
-*.sln
 *.collabignore
 
 UnityPackageManager/
