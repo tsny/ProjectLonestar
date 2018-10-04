@@ -13,7 +13,7 @@ I've been working on this project for quite sometime, about 2 years ago I began 
 
 ## Development
 
-#### [Trello board](https://trello.com/b/tgyAz2pZ)
+The old trello board has been moved to [GitHub Projects!](https://github.com/tsny/ProjectLonestar/projects/1)
 
 #### [Youtube Devblog Playlist](https://www.youtube.com/embed/videoseries?list=PLJBwf54kzZ-DsLQSUhFRbUjZXIO6FOq_4)
 
