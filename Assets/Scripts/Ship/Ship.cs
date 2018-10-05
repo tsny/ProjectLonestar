@@ -57,9 +57,9 @@ public class Ship : MonoBehaviour, ITargetable
     private void HandleCruiseChange(CruiseEngine sender, CruiseState newState)
     {
         if (newState == CruiseState.Charging) 
-	{
-	    engine.Drifting = false;
-	}
+        {
+            engine.Drifting = false;
+        }
     }
 
     private void HandleThrottleChange(Engine sender, ThrottleChangeEventArgs e)
