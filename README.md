@@ -47,3 +47,6 @@ Splash screen background - Funerium.Deviantart.com
 
 #### Google Fonts
 Krona One - Logo Fonts
+
+#### Music
+fascinating earthbound objects - simultaneous eon (my version is a bit slowed/pitched down) 
