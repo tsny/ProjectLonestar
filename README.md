@@ -1,4 +1,4 @@
-![Logo](http://puu.sh/BzjHB/36bf929588.png)
+![Logo](http://puu.sh/BOnM6/25f132a181.png)
 
 ## Note
 
@@ -44,3 +44,6 @@ Desi Quintans - Flycam
 
 #### Assets
 Splash screen background - Funerium.Deviantart.com
+
+#### Google Fonts
+Krona One - Logo Fonts

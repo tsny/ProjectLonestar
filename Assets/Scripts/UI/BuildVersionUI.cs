@@ -23,6 +23,6 @@ public class BuildVersionUI : MonoBehaviour
         text.text = "Local version: " + Application.version;
         text.text += "\nLive version: " + liveVersion;
         text.text += "\nLonestar " + DateTime.Today.ToShortDateString();
-        text.text += "\nTaylor Snyder";
+        text.text += "\ntsny";
     }
 }

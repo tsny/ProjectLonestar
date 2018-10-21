@@ -146,6 +146,7 @@ public class Ship : MonoBehaviour, ITargetable
     public bool IsTargetable()
     {
 		// Do some kind of check if ship has cloak
+        // hasCloak ? false : true;
 
         return true;
     }
