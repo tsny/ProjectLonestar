@@ -270,6 +270,7 @@ __pycache__/
 
 # Unity
 *.collabignore
+*.prefab
 
 UnityPackageManager/
 Assets/Animations

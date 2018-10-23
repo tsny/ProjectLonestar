@@ -6,7 +6,7 @@ using UnityEngine;
 public class ShipCamera : ShipComponent
 {
     public Transform transformToFollow;
-    public bool isCalculatingOffsets;
+    public bool calculateRotationOffsets;
     private Rigidbody rb;
 
     [Header("Offsets")]
@@ -54,8 +54,7 @@ public class ShipCamera : ShipComponent
 
     private void FixedUpdate()
     {
-        if (isCalculatingOffsets) CalculateOffsets();
-
+        CalculateOffsets();
         FollowTarget();
     }
 
@@ -81,8 +80,17 @@ public class ShipCamera : ShipComponent
 
         distanceOffset = Mathf.Clamp(Speed / speedDivisor, 0, maxDistance);
 
-        pitchOffset = Mathf.Clamp(mouseCoords.y * pitchModifier, maxLowerPitch, maxUpperPitch);
-        yawOffset = Mathf.Clamp(mouseCoords.x * yawModifier, -maxYaw, maxYaw);
+        if (calculateRotationOffsets)
+        {
+            pitchOffset = Mathf.Clamp(mouseCoords.y * pitchModifier, maxLowerPitch, maxUpperPitch);
+            yawOffset = Mathf.Clamp(mouseCoords.x * yawModifier, -maxYaw, maxYaw);
+        }
+
+        else
+        {
+            pitchOffset = 0;
+            yawOffset = 0;
+        }
     }
 
     private void FollowTarget()

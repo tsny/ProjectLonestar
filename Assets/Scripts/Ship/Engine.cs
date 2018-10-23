@@ -45,8 +45,13 @@ public class Engine : ShipComponent
         set
         {
             if (value == strafe) return;
+
+            if (value != 0) Drifting = false;
+
             var oldStrafe = strafe;
+
             strafe = Mathf.Clamp(value, -1, 1);
+
             OnStrafeChange(value, oldStrafe);
         }
     }
@@ -64,7 +69,10 @@ public class Engine : ShipComponent
 
         set
         {
-            if (value == drifting) return;
+            if (drifting == value) return;
+
+            if (value) Strafe = 0;
+
             drifting = value;
             OnDriftingChange(value);
         }
@@ -97,7 +105,6 @@ public class Engine : ShipComponent
 
     private void OnThrottleChange(float newThrottle, float oldThrottle)
     {
-        Drifting = false;
         if (ThrottleChanged != null) ThrottleChanged(this, new ThrottleChangeEventArgs(newThrottle, oldThrottle));
     }
 
@@ -134,6 +141,7 @@ public class Engine : ShipComponent
     public void ThrottleUp()
     {
         Drifting = false;
+        if (Throttle == 1) return;
         Throttle = Mathf.MoveTowards(Throttle, 1, throttleChangeIncrement);
     }
 
@@ -141,6 +149,11 @@ public class Engine : ShipComponent
     {
         Drifting = false;
         Throttle = Mathf.MoveTowards(Throttle, 0, throttleChangeIncrement);
+    }
+
+    public void ToggleDrifting()
+    {
+        Drifting = !Drifting;
     }
 
     public void LerpYawToNeutral()

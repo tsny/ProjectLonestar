@@ -29,6 +29,7 @@ public class PlayerController : MonoBehaviour
         set
         {
             mouseState = value;
+            UpdateShipCameraState();
             if (MouseStateChanged != null) MouseStateChanged(MouseState);
         }
     }
@@ -281,17 +282,34 @@ public class PlayerController : MonoBehaviour
         {
             case MouseState.Off:
                 MouseState = MouseState.Toggled;
-                shipCamera.isCalculatingOffsets = true;
                 break;
 
             case MouseState.Toggled:
                 MouseState = MouseState.Off;
-                shipCamera.isCalculatingOffsets = false;
                 break;
 
             case MouseState.Held:
                 MouseState = MouseState.Toggled;
-                shipCamera.isCalculatingOffsets = true;
+                break;
+        }
+    }
+
+    private void UpdateShipCameraState()
+    {
+        if (shipCamera == null) return;
+
+        switch (MouseState)
+        {
+            case MouseState.Off:
+                shipCamera.calculateRotationOffsets = false;
+                break;
+
+            case MouseState.Toggled:
+            case MouseState.Held:
+                shipCamera.calculateRotationOffsets = true;
+                break;
+
+            default:
                 break;
         }
     }
