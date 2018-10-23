@@ -274,24 +274,29 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    // Maybe make those ship cam changes events
     public void ToggleMouseFlight()
     {
         switch(MouseState)
         {
             case MouseState.Off:
                 MouseState = MouseState.Toggled;
+                shipCamera.isCalculatingOffsets = true;
                 break;
 
             case MouseState.Toggled:
                 MouseState = MouseState.Off;
+                shipCamera.isCalculatingOffsets = false;
                 break;
 
             case MouseState.Held:
                 MouseState = MouseState.Toggled;
+                shipCamera.isCalculatingOffsets = true;
                 break;
         }
     }
 
+    // Move this to a utility class some time?
     public static Vector2 GetMousePositionOnScreen()
     {
         int width = Screen.width;

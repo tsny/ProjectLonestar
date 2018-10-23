@@ -6,8 +6,8 @@ using UnityEngine;
 public class ShipCamera : ShipComponent
 {
     public Transform transformToFollow;
+    public bool isCalculatingOffsets;
     private Rigidbody rb;
-    public bool isFollowingShip = true;
 
     [Header("Offsets")]
     [Space(5)]
@@ -35,7 +35,6 @@ public class ShipCamera : ShipComponent
     {
         get
         {
-
             return (rb != null) ? rb.velocity.magnitude : 0;
         }
     }
@@ -55,15 +54,9 @@ public class ShipCamera : ShipComponent
 
     private void FixedUpdate()
     {
-        CalculateOffsets();
+        if (isCalculatingOffsets) CalculateOffsets();
 
-        if (isFollowingShip) FollowShip();
-
-        else
-        {
-            Vector3 newPosition = transformToFollow.position - (transformToFollow.forward * distanceOffset);
-            transform.position = Vector3.Lerp(transform.position, newPosition, lerpSpeed);
-        } 
+        FollowTarget();
     }
 
     public static Vector3 GetMousePositionInWorld(Camera camera = null, bool drawRay = false, float aimRaycastDistance = 10000)
@@ -75,25 +68,14 @@ public class ShipCamera : ShipComponent
 
         RaycastHit hitInfo;
 
-        if (drawRay)
-        {
-            Debug.DrawRay(ray.origin, ray.direction * aimRaycastDistance);
-        }
+        if (drawRay) Debug.DrawRay(ray.origin, ray.direction * aimRaycastDistance);
 
         Physics.Raycast(ray, out hitInfo, aimRaycastDistance, ~LayerMask.GetMask("Player"));
 
-        if (hitInfo.collider != null)
-        {
-            return hitInfo.point;
-        }
-
-        else
-        {
-            return ray.GetPoint(aimRaycastDistance);
-        }
+        return (hitInfo.collider != null) ? hitInfo.point : ray.GetPoint(aimRaycastDistance);
     }
 
-    public void CalculateOffsets()
+    private void CalculateOffsets()
     {
         var mouseCoords = PlayerController.GetMousePositionOnScreen();
 
@@ -103,7 +85,7 @@ public class ShipCamera : ShipComponent
         yawOffset = Mathf.Clamp(mouseCoords.x * yawModifier, -maxYaw, maxYaw);
     }
 
-    public void FollowShip()
+    private void FollowTarget()
     {
         Vector3 newPosition;
 
