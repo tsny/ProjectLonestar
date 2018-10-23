@@ -39,9 +39,6 @@ public class Flycam : MonoBehaviour
     public float slowMoveFactor = 0.25f;
     public float fastMoveFactor = 3;
 
-    Vector3 currRot;
-    Vector3 targetRot;
-
     private void OnEnable()
     {
         Cursor.lockState = CursorLockMode.Locked;
