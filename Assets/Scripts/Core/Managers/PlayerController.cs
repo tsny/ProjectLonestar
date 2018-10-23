@@ -71,20 +71,6 @@ public class PlayerController : MonoBehaviour
         if (ReleasedShip != null) ReleasedShip(this, new PossessionEventArgs(null, releasedShip));
     }
 
-    public HUDManager SpawnHUD()
-    {
-        var hud = FindObjectOfType<HUDManager>();
-
-        if (hud == null)
-        {
-            hud = Instantiate(GameSettings.Instance.HUDPrefab).GetComponent<HUDManager>();
-        }
-
-        hud.SetPlayerController(this);
-
-        return hud;
-    }
-
     public void Possess(Ship newShip)
     {
         if (newShip == null)
@@ -107,8 +93,7 @@ public class PlayerController : MonoBehaviour
         OnPossessedNewShip(new PossessionEventArgs(ship, oldShip));
 
         flycam.enabled = false;
-        shipCamera.transformToFollow = ship.cameraPosition;
-        shipCamera.enabled = true;
+        shipCamera.SetTarget(ship.cameraPosition);
 
         enabled = true;
     }
@@ -116,15 +101,14 @@ public class PlayerController : MonoBehaviour
     public void Release()
     {
         ship.SetPossessed(this, false);
+        shipCamera.ClearTarget();
+
         MouseState = MouseState.Off;
+        flycam.enabled = true;
+        ship = null;
         enabled = false;
 
-        Instantiate(GameSettings.Instance.flycamPrefab);
         OnReleasedShip(ship);
-
-        flycam.enabled = true;
-
-        ship = null;
     }
 
     private void Update()
@@ -332,21 +316,6 @@ public class PlayerController : MonoBehaviour
         yield return new WaitForSeconds(mouseHoldDelay);
 
         MouseState = MouseState.Held;
-    }
-
-    public void SpawnFlyCam(Vector3 pos)
-    {
-        RemoveFlycamFromScene();
-        var flyCam = Instantiate(GameSettings.Instance.flycamPrefab);
-        flyCam.transform.position = pos + new Vector3(0, 10, 0);
-    }
-
-    // Can only be one fly cam in the scene
-
-    public void RemoveFlycamFromScene()
-    {
-        var flyCam = FindObjectOfType<Flycam>();
-        if (flyCam != null) Destroy(flyCam.gameObject);
     }
 }
 

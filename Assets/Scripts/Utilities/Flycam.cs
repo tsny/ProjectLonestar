@@ -42,9 +42,14 @@ public class Flycam : MonoBehaviour
     Vector3 currRot;
     Vector3 targetRot;
 
-    private void Start()
+    private void OnEnable()
     {
         Cursor.lockState = CursorLockMode.Locked;
+    }
+
+    private void OnDisable()
+    {
+        Cursor.lockState = CursorLockMode.None;
     }
 
     private void Update()
@@ -83,17 +88,7 @@ public class Flycam : MonoBehaviour
 
     void Rotate()
     {
-        targetRot = new Vector3(
-            Mathf.Clamp(targetRot.x + -Input.GetAxis("Mouse Y") * pitchSensitivity, minPitch, maxPitch),
-            targetRot.y + Input.GetAxis("Mouse X") * yawSensitivity
-            );
-
-        currRot = Vector3.Lerp(currRot, targetRot, rotSmoothFactor);
-        transform.rotation = Quaternion.Euler(currRot);
-    }
-
-    private void OnDestroy()
-    {
-        Cursor.lockState = CursorLockMode.None;
+        var mouseInput = new Vector3(Mathf.Clamp(-Input.GetAxis("Mouse Y") * pitchSensitivity, minPitch, maxPitch), Input.GetAxis("Mouse X") * yawSensitivity);
+        transform.rotation *= Quaternion.Euler(mouseInput);
     }
 }

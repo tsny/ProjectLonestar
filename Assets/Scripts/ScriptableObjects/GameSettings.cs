@@ -57,6 +57,6 @@ public class GameSettings : SingletonScriptableObject<GameSettings>
 
         playerController.Possess(playerShip);
 
-        playerController.SpawnHUD();
+        //playerController.SpawnHUD();
     }
 }

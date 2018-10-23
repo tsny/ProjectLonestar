@@ -6,6 +6,7 @@ using UnityEngine;
 public class ShipCamera : ShipComponent
 {
     public Transform transformToFollow;
+    private Rigidbody rb;
     public bool isFollowingShip = true;
 
     [Header("Offsets")]
@@ -30,7 +31,27 @@ public class ShipCamera : ShipComponent
     public float maxUpperPitch = 10;
     public float maxLowerPitch = -10;
     public float maxDistance = 10;
-    public float speed;
+    public float Speed
+    {
+        get
+        {
+
+            return (rb != null) ? rb.velocity.magnitude : 0;
+        }
+    }
+
+    public void SetTarget(Transform newTransform)
+    {
+        transformToFollow = newTransform;
+        rb = newTransform.GetComponentInChildren<Rigidbody>();
+        enabled = true;
+    }
+
+    public void ClearTarget()
+    {
+        enabled = false;
+        transformToFollow = null;
+    }
 
     private void FixedUpdate()
     {
@@ -76,7 +97,7 @@ public class ShipCamera : ShipComponent
     {
         var mouseCoords = PlayerController.GetMousePositionOnScreen();
 
-        distanceOffset = Mathf.Clamp(speed / speedDivisor, 0, maxDistance);
+        distanceOffset = Mathf.Clamp(Speed / speedDivisor, 0, maxDistance);
 
         pitchOffset = Mathf.Clamp(mouseCoords.y * pitchModifier, maxLowerPitch, maxUpperPitch);
         yawOffset = Mathf.Clamp(mouseCoords.x * yawModifier, -maxYaw, maxYaw);
