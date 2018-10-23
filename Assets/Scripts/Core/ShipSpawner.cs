@@ -3,9 +3,9 @@ using System.Collections;
 
 public class ShipSpawner : ScriptableObject
 {
-    public static Ship SpawnShip(GameObject ship, Vector3 spawnPosition, Loadout loadout = null)
+    public static Ship SpawnShip(GameObject shipGO, Vector3 spawnPosition, Loadout loadout = null)
     {
-        var shipRef = Instantiate(ship, spawnPosition, Quaternion.identity).GetComponent<Ship>();
+        var ship = Instantiate(shipGO, spawnPosition, Quaternion.identity).GetComponent<Ship>();
 
         //if (loadout == null)
         //{
@@ -13,7 +13,8 @@ public class ShipSpawner : ScriptableObject
         //}
 
         //shipRef.hardpointSystem.MountLoadout(loadout);
-        return shipRef;
+
+        return ship;
     }
 }
 

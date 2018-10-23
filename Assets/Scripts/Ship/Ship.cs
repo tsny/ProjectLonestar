@@ -21,6 +21,8 @@ public class Ship : MonoBehaviour, ITargetable
     public Rigidbody rb;
     public Hull hull;
 
+    public Transform cameraPosition;
+
     public delegate void PossessionEventHandler(PlayerController pc, Ship sender, bool possessed);
     public event PossessionEventHandler Possession;
     public event TargetEventHandler BecameTargetable;
@@ -99,30 +101,25 @@ public class Ship : MonoBehaviour, ITargetable
             transform.gameObject.layer = newLayer;
         }
 
-        // Enable Ship Camera
-        pc.MouseStateChanged += HandleMouseStateChanged;
-        HandleMouseStateChanged(pc.MouseState);
-        shipCam.enabled = true;
-
         OnPossession(pc, possessed);
     }
 
-    private void HandleMouseStateChanged(MouseState state)
-    {
-        if (shipCam == null) return;
+    // private void HandleMouseStateChanged(MouseState state)
+    // {
+    //     if (shipCam == null) return;
 
-        switch (state)
-        {
-            case MouseState.Off:
-                shipCam.isFollowingShip = false;
-                break;
+    //     switch (state)
+    //     {
+    //         case MouseState.Off:
+    //             shipCam.isFollowingShip = false;
+    //             break;
 
-            case MouseState.Toggled:
-            case MouseState.Held:
-                shipCam.isFollowingShip = true;
-                break;
-        }
-    }
+    //         case MouseState.Toggled:
+    //         case MouseState.Held:
+    //             shipCam.isFollowingShip = true;
+    //             break;
+    //     }
+    // }
 
     private void FixedUpdate()
     {
@@ -131,7 +128,7 @@ public class Ship : MonoBehaviour, ITargetable
 
     public void FireAllWeapons()
     {
-        hardpointSystem.FireActiveWeapons(ShipCamera.GetMousePositionInWorld(shipCam.camera));
+        //hardpointSystem.FireActiveWeapons(ShipCamera.GetMousePositionInWorld(shipCam.camera));
     }
 
     public void SetupTargetIndicator(TargetIndicator indicator)

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Animations;
+using System.Collections.Generic;
 
 public class PlayerController : MonoBehaviour
 {
@@ -37,6 +39,9 @@ public class PlayerController : MonoBehaviour
 
     public Ship ship;
     public GameObject hudPrefab;
+    public ShipCamera shipCamera;
+    public Flycam flycam;
+    public new Camera camera;
 
     public delegate void PossessionEventHandler(PlayerController sender, PossessionEventArgs args);
     public event PossessionEventHandler PossessedNewShip;
@@ -54,13 +59,6 @@ public class PlayerController : MonoBehaviour
             print("Trying to create PlayerController when one already exists in the scene...");
             Destroy(gameObject);
         }
-    }
-
-    // This should be eleswhere
-    public Ship SpawnPlayer(GameObject shipPrefab, Loadout loadout)
-    {
-        ship = ShipSpawner.SpawnShip(shipPrefab, Vector3.zero, loadout);
-        return ship;
     }
 
     protected virtual void OnPossessedNewShip(PossessionEventArgs args)
@@ -108,6 +106,10 @@ public class PlayerController : MonoBehaviour
 
         OnPossessedNewShip(new PossessionEventArgs(ship, oldShip));
 
+        flycam.enabled = false;
+        shipCamera.transformToFollow = ship.cameraPosition;
+        shipCamera.enabled = true;
+
         enabled = true;
     }
 
@@ -119,6 +121,8 @@ public class PlayerController : MonoBehaviour
 
         Instantiate(GameSettings.Instance.flycamPrefab);
         OnReleasedShip(ship);
+
+        flycam.enabled = true;
 
         ship = null;
     }
@@ -196,57 +200,57 @@ public class PlayerController : MonoBehaviour
             #region hardpoints
             if(Input.GetKey(InputManager.Hardpoint1Key))
             {
-                ship.hardpointSystem.FireWeaponHardpoint(1, ShipCamera.GetMousePositionInWorld(ship.shipCam.camera));
+                ship.hardpointSystem.FireWeaponHardpoint(1, ShipCamera.GetMousePositionInWorld(camera));
             }
 
             if(Input.GetKey(InputManager.Hardpoint2Key))
             {
-                ship.hardpointSystem.FireWeaponHardpoint(2, ShipCamera.GetMousePositionInWorld(ship.shipCam.camera));
+                ship.hardpointSystem.FireWeaponHardpoint(2, ShipCamera.GetMousePositionInWorld(camera));
             }
 
             if(Input.GetKey(InputManager.Hardpoint3Key))
             {
-                ship.hardpointSystem.FireWeaponHardpoint(3, ShipCamera.GetMousePositionInWorld(ship.shipCam.camera));
+                ship.hardpointSystem.FireWeaponHardpoint(3, ShipCamera.GetMousePositionInWorld(camera));
             }
 
             if(Input.GetKey(InputManager.Hardpoint4Key))
             {
-                ship.hardpointSystem.FireWeaponHardpoint(4, ShipCamera.GetMousePositionInWorld(ship.shipCam.camera));
+                ship.hardpointSystem.FireWeaponHardpoint(4, ShipCamera.GetMousePositionInWorld(camera));
             }
 
             if(Input.GetKey(InputManager.Hardpoint5Key))
             {
-                ship.hardpointSystem.FireWeaponHardpoint(5, ShipCamera.GetMousePositionInWorld(ship.shipCam.camera));
+                ship.hardpointSystem.FireWeaponHardpoint(5, ShipCamera.GetMousePositionInWorld(camera));
             }
 
             if(Input.GetKey(InputManager.Hardpoint6Key))
             {
-                ship.hardpointSystem.FireWeaponHardpoint(6, ShipCamera.GetMousePositionInWorld(ship.shipCam.camera));
+                ship.hardpointSystem.FireWeaponHardpoint(6, ShipCamera.GetMousePositionInWorld(camera));
             }
 
             if(Input.GetKey(InputManager.Hardpoint7Key))
             {
-                ship.hardpointSystem.FireWeaponHardpoint(7, ShipCamera.GetMousePositionInWorld(ship.shipCam.camera));
+                ship.hardpointSystem.FireWeaponHardpoint(7, ShipCamera.GetMousePositionInWorld(camera));
             }
 
             if(Input.GetKey(InputManager.Hardpoint8Key))
             {
-                ship.hardpointSystem.FireWeaponHardpoint(8, ShipCamera.GetMousePositionInWorld(ship.shipCam.camera));
+                ship.hardpointSystem.FireWeaponHardpoint(8, ShipCamera.GetMousePositionInWorld(camera));
             }
 
             if(Input.GetKey(InputManager.Hardpoint9Key))
             {
-                ship.hardpointSystem.FireWeaponHardpoint(9, ShipCamera.GetMousePositionInWorld(ship.shipCam.camera));
+                ship.hardpointSystem.FireWeaponHardpoint(9, ShipCamera.GetMousePositionInWorld(camera));
             }
 
             if(Input.GetKey(InputManager.Hardpoint10Key))
             {
-                ship.hardpointSystem.FireWeaponHardpoint(10, ShipCamera.GetMousePositionInWorld(ship.shipCam.camera));
+                ship.hardpointSystem.FireWeaponHardpoint(10, ShipCamera.GetMousePositionInWorld(camera));
             }
 
             if(Input.GetKey(InputManager.FireKey))
             {
-                ship.hardpointSystem.FireActiveWeapons(ShipCamera.GetMousePositionInWorld(ship.shipCam.camera));
+                ship.hardpointSystem.FireActiveWeapons(ShipCamera.GetMousePositionInWorld(camera));
             }
 
             if (Input.GetKeyDown(InputManager.LootAllKey))

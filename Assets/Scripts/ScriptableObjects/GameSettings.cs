@@ -12,35 +12,39 @@ public class GameSettings : SingletonScriptableObject<GameSettings>
     public Loadout defaultLoadout;
     public Inventory playerInventory;
 
-    public GameObject[] prefabsToSpawnAtLoad;
+    public GameObject[] globalPrefabs;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     static void OnRuntimeMethod()
     {
-        Instance.SpawnLoadPrefabs();
+        Instance.SpawnGlobalPrefabs();
+
+        //#if (!UNITY_EDITOR)
 
         SceneManager.activeSceneChanged += HandleNewScene;
 
         if (SceneManager.GetActiveScene().name != "SCN_MainMenu")
         {
-            Instance.SpawnNewScenePrefabs();
+            Instance.SpawnLocalPrefabs();
         }
+
+        //#endif
     }
 
     private static void HandleNewScene(Scene arg0, Scene arg1)
     {
-        Instance.SpawnNewScenePrefabs();
+        Instance.SpawnLocalPrefabs();
     }
 
-    public void SpawnLoadPrefabs()
+    public void SpawnGlobalPrefabs()
     {
-        foreach (var prefab in prefabsToSpawnAtLoad)
+        foreach (var prefab in globalPrefabs)
         {
             DontDestroyOnLoad(Instantiate(prefab));
         }
     }
 
-    public void SpawnNewScenePrefabs()
+    public void SpawnLocalPrefabs()
     {
         var playerController = FindObjectOfType<PlayerController>();
 
@@ -49,7 +53,7 @@ public class GameSettings : SingletonScriptableObject<GameSettings>
             playerController = new GameObject().AddComponent<PlayerController>();
         }
 
-        var playerShip = playerController.SpawnPlayer(shipPrefab, defaultLoadout);
+        var playerShip = ShipSpawner.SpawnShip(shipPrefab, Vector3.zero, defaultLoadout);
 
         playerController.Possess(playerShip);
 

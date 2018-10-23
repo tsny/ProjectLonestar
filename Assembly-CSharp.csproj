@@ -58,7 +58,6 @@
      <Compile Include="Assets\3rd Party\StarTools\Assets\Misc\MorphStar.cs" />
      <Compile Include="Assets\3rd Party\StarTools\Assets\Star.cs" />
      <Compile Include="Assets\3rd Party\StarTools\Assets\StarRotator.cs" />
-     <Compile Include="Assets\MainMenuHelper.cs" />
      <Compile Include="Assets\Scripts\AI\Actions\EngageCruiseAction.cs" />
      <Compile Include="Assets\Scripts\AI\Actions\FireActiveAction.cs" />
      <Compile Include="Assets\Scripts\AI\Actions\GetTargetPointAction.cs" />
@@ -86,6 +85,7 @@
      <Compile Include="Assets\Scripts\Core\ShipSpawner.cs" />
      <Compile Include="Assets\Scripts\Interfaces\IKillable.cs" />
      <Compile Include="Assets\Scripts\Interfaces\ITargetable.cs" />
+     <Compile Include="Assets\Scripts\MainMenuHelper.cs" />
      <Compile Include="Assets\Scripts\ScriptableObjects\CruiseEngineStats.cs" />
      <Compile Include="Assets\Scripts\ScriptableObjects\EngineStats.cs" />
      <Compile Include="Assets\Scripts\ScriptableObjects\GameSettings.cs" />

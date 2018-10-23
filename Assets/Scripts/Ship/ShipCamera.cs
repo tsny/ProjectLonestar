@@ -5,6 +5,9 @@ using UnityEngine;
 [RequireComponent(typeof(Camera))]
 public class ShipCamera : ShipComponent
 {
+    public Transform transformToFollow;
+    public bool isFollowingShip = true;
+
     [Header("Offsets")]
     [Space(5)]
     public float yawOffset;
@@ -29,30 +32,6 @@ public class ShipCamera : ShipComponent
     public float maxDistance = 10;
     public float speed;
 
-    public bool isFollowingShip = true;
-
-    public new Camera camera;
-    private AudioListener audioListener;
-
-    private void Awake()
-    {
-        camera = GetComponent<Camera>();
-        audioListener = GetComponent<AudioListener>();
-        enabled = false;
-    }
-
-    private void OnEnable()
-    {
-        camera.enabled = true;
-        audioListener.enabled = true;
-    }
-
-    private void OnDisable()
-    {
-        camera.enabled = false;
-        audioListener.enabled = false;
-    }
-
     private void FixedUpdate()
     {
         CalculateOffsets();
@@ -61,7 +40,7 @@ public class ShipCamera : ShipComponent
 
         else
         {
-            Vector3 newPosition = transform.parent.position - (transform.parent.forward * distanceOffset);
+            Vector3 newPosition = transformToFollow.position - (transformToFollow.forward * distanceOffset);
             transform.position = Vector3.Lerp(transform.position, newPosition, lerpSpeed);
         } 
     }
@@ -107,10 +86,11 @@ public class ShipCamera : ShipComponent
     {
         Vector3 newPosition;
 
-        newPosition = transform.parent.position - (transform.parent.forward * distanceOffset);
-        newPosition = newPosition + (transform.parent.up * pitchOffset);
-        newPosition = newPosition + (transform.parent.right * yawOffset);
+        newPosition = transformToFollow.position - (transformToFollow.forward * distanceOffset);
+        newPosition = newPosition + (transformToFollow.up * pitchOffset);
+        newPosition = newPosition + (transformToFollow.right * yawOffset);
 
         transform.position = Vector3.Lerp(transform.position, newPosition, lerpSpeed);
+        transform.rotation = transformToFollow.rotation;
     }
 }
