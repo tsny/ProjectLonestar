@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -17,17 +18,7 @@ public class IndicatorManager : ShipUIElement
 
         ClearIndicators();
 
-        newShip.hardpointSystem.scanner.ScannerUpdated += HandleScannerUpdated;
-
         FindObjectOfType<PlayerController>().ReleasedShip += HandleShipReleased;
-    }
-
-    private void HandleScannerUpdated(Scanner sender, List<ITargetable> targets)
-    {
-        foreach (var target in targets)
-        {
-            AddIndicator(target);
-        }
     }
 
     private void HandleShipReleased(PlayerController sender, PossessionEventArgs args)
@@ -56,12 +47,7 @@ public class IndicatorManager : ShipUIElement
     {
         DeselectCurrentIndicator();
 
-        foreach (var value in indicatorPairs.Values)
-        {
-            Destroy(value.gameObject);
-        }
-
-        indicatorPairs.Clear();
+        FindObjectsOfType<TargetIndicator>().ToList().ForEach(x => Destroy(x));
     }
 
     public void DeselectCurrentIndicator()
@@ -79,35 +65,8 @@ public class IndicatorManager : ShipUIElement
 
         newIndicator.Selected += HandleIndicatorSelected;
 
-        newTarget.BecameUntargetable += HandleTargetBecameUntargetable;
+        //newTarget.BecameUntargetable += HandleTargetBecameUntargetable;
 
         indicatorPairs.Add(newTarget, newIndicator);
-    }
-
-    private void HandleTargetBecameUntargetable(ITargetable sender)
-    {
-        RemoveIndicator(sender);
-    }
-
-    public void RemoveIndicator(TargetIndicator indicatorToRemove)
-    {
-        if (indicatorToRemove == null) return;
-
-        if (indicatorToRemove == selectedIndicator) DeselectCurrentIndicator();
-
-        indicatorToRemove.Selected -= HandleIndicatorSelected;
-
-        Destroy(indicatorToRemove.gameObject);
-    }
-
-    public void RemoveIndicator(ITargetable target)
-    {
-        TargetIndicator pairedIndicator;
-
-        if (indicatorPairs.TryGetValue(target, out pairedIndicator))
-        {
-            RemoveIndicator(pairedIndicator);
-            target.BecameUntargetable -= HandleTargetBecameUntargetable;
-        }
     }
 }

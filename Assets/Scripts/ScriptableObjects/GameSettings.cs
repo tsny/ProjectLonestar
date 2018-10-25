@@ -13,6 +13,7 @@ public class GameSettings : SingletonScriptableObject<GameSettings>
     public Inventory playerInventory;
 
     public GameObject[] globalPrefabs;
+    public GameObject[] localPrefabs;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     static void OnRuntimeMethod()
@@ -46,17 +47,25 @@ public class GameSettings : SingletonScriptableObject<GameSettings>
 
     public void SpawnLocalPrefabs()
     {
-        var playerController = FindObjectOfType<PlayerController>();
-
-        if (playerController == null)
-        {
-            playerController = new GameObject().AddComponent<PlayerController>();
-        }
-
-        var playerShip = ShipSpawner.SpawnShip(shipPrefab, Vector3.zero, defaultLoadout);
-
-        playerController.Possess(playerShip);
-
-        //playerController.SpawnHUD();
+            foreach (var prefab in localPrefabs)
+            {
+                Instantiate(prefab);
+            }
     }
+
+    // public void SpawnLocalPrefabs()
+    // {
+    //     var playerController = FindObjectOfType<PlayerController>();
+
+    //     if (playerController == null)
+    //     {
+    //         playerController = new GameObject().AddComponent<PlayerController>();
+    //     }
+
+    //     var playerShip = ShipSpawner.SpawnShip(shipPrefab, Vector3.zero, defaultLoadout);
+
+    //     playerController.Possess(playerShip);
+
+    //     //playerController.SpawnHUD();
+    // }
 }

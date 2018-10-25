@@ -22,6 +22,13 @@ public class HUDManager : MonoBehaviour
         mouseFlightText.text = "";
     }
 
+    private void OnEnable() 
+    {
+        var pc = FindObjectOfType<PlayerController>();
+
+        if (pc != null) SetPlayerController(pc);     
+    }
+
     public void SetPlayerController(PlayerController playerController)
     {
         this.playerController = playerController;
