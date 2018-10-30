@@ -1,9 +1,15 @@
-﻿using UnityEngine;
+﻿using System.Linq;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 using CommandTerminal;
 
 public class FLTerminal : Terminal
 {
+    // Methods to add:
+    // volume {float}
+    // mute
+    // toggle hud
+
     [RegisterCommand(Name = "version.check", Help = "Checks the live version on itch.io against the local version", MinArgCount = 0, MaxArgCount = 0)]
     static void VersionCheck(CommandArg[] args)
     {
@@ -36,20 +42,72 @@ public class FLTerminal : Terminal
         //print("Godmode : " + pc.ship.invulnerable);
     }
 
-    [RegisterCommand(Help = "Spawns a ship, args: player, empty", MinArgCount = 1, MaxArgCount = 1)]
+    [RegisterCommand(Help = "Spawns a ship. Usage: spawn {entity} {times} {possess?}", MinArgCount = 1, MaxArgCount = 3)]
     static void Spawn(CommandArg[] args)
     {
-        switch (args[0].String)
+        string entity = args[0].String;
+
+        if (Terminal.IssuedError) return;
+
+        Ship shipToSpawn = null;
+        var ships = FindObjectsOfType<Ship>();
+        var pc = FindObjectOfType<PlayerController>();
+
+        switch (entity)
         {
-            case "player":
-                ShipSpawner.SpawnShip(GameSettings.Instance.shipPrefab, Vector3.zero, GameSettings.Instance.defaultLoadout);
-                print("Spawning player ship...");
+            case "self":
+                shipToSpawn = pc.ship;
                 break;
 
-            case "empty":
-                ShipSpawner.SpawnShip(GameSettings.Instance.shipPrefab, Vector3.zero);
-                print("Spawned default ship...");
+            case "random":
+                shipToSpawn = ships[Random.Range(0, ships.Length)];
                 break;
+
+            case "nearest":
+                ships.ToList().Remove(pc.ship);
+
+                Ship closestShip = null;
+                float closestShipDistance = 0;
+
+                closestShip = ships[0];
+                closestShipDistance = Vector3.Distance(pc.ship.transform.position, closestShip.transform.position);
+
+                foreach (var ship in ships)
+                {
+                    Vector3.Distance(pc.ship.transform.position, ship.transform.position);
+                }
+
+                shipToSpawn = null;
+                break;
+
+            // Case for specific ship name 
+
+            default:
+                print("Could not spawn entity of name " + entity);
+                return;
+        }
+
+        Ship spawnedShip = null;
+
+        if (args.Length > 1)
+        {
+            for (int i = 0; i < args[1].Int; i++)
+            {
+                spawnedShip = ShipSpawner.SpawnShip(shipToSpawn.gameObject, Vector3.zero);
+            }
+        }
+
+        else
+        {
+            spawnedShip = ShipSpawner.SpawnShip(shipToSpawn.gameObject, Vector3.zero);
+        }
+
+        if (args.Length > 2)
+        {
+            if (args[2].Bool)
+            {
+                FindObjectOfType<PlayerController>().Possess(spawnedShip);
+            }
         }
     }
 

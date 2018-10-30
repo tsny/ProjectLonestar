@@ -3,7 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Ship : MonoBehaviour, ITargetable
+public class Ship : MonoBehaviour, ITargetable, IDamageable
 {
     [Header("Stats")]
     public PilotDetails pilotDetails;
@@ -20,6 +20,7 @@ public class Ship : MonoBehaviour, ITargetable
     public ShipCamera shipCam;
     public Rigidbody rb;
     public Hull hull;
+    public bool invulnerable;
 
     public Transform cameraPosition;
 
@@ -27,6 +28,8 @@ public class Ship : MonoBehaviour, ITargetable
     public event PossessionEventHandler Possession;
     public event TargetEventHandler BecameTargetable;
     public event TargetEventHandler BecameUntargetable;
+    public event EventHandler<DamageEventArgs> TookDamage;
+    public event EventHandler<DeathEventArgs> HealthDepleted;
 
     private void OnBecameTargetable()
     {
@@ -104,23 +107,6 @@ public class Ship : MonoBehaviour, ITargetable
         OnPossession(pc, possessed);
     }
 
-    // private void HandleMouseStateChanged(MouseState state)
-    // {
-    //     if (shipCam == null) return;
-
-    //     switch (state)
-    //     {
-    //         case MouseState.Off:
-    //             shipCam.isFollowingShip = false;
-    //             break;
-
-    //         case MouseState.Toggled:
-    //         case MouseState.Held:
-    //             shipCam.isFollowingShip = true;
-    //             break;
-    //     }
-    // }
-
     private void FixedUpdate()
     {
         ShipPhysicsStats.ClampShipVelocity(rb, physicsStats, cruiseEngine.State);
@@ -146,5 +132,10 @@ public class Ship : MonoBehaviour, ITargetable
         // hasCloak ? false : true;
 
         return true;
+    }
+
+    public void TakeDamage(WeaponStats weapon)
+    {
+        throw new NotImplementedException();
     }
 }

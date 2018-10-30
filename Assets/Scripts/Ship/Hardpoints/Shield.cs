@@ -23,10 +23,10 @@ public class Shield : Hardpoint
         }
     }
 
-     private void Awake()
-     {
+    private void Awake()
+    {
         hitSource = GetComponent<AudioSource>();
-     }
+    }
 
     private void Update()
     {

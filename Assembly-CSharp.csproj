@@ -83,9 +83,8 @@
      <Compile Include="Assets\Scripts\Core\Managers\SaveManager.cs" />
      <Compile Include="Assets\Scripts\Core\Projectile.cs" />
      <Compile Include="Assets\Scripts\Core\ShipSpawner.cs" />
-     <Compile Include="Assets\Scripts\Interfaces\IKillable.cs" />
+     <Compile Include="Assets\Scripts\Interfaces\IDamageable.cs" />
      <Compile Include="Assets\Scripts\Interfaces\ITargetable.cs" />
-     <Compile Include="Assets\Scripts\MainMenuHelper.cs" />
      <Compile Include="Assets\Scripts\ScriptableObjects\CruiseEngineStats.cs" />
      <Compile Include="Assets\Scripts\ScriptableObjects\EngineStats.cs" />
      <Compile Include="Assets\Scripts\ScriptableObjects\GameSettings.cs" />
@@ -127,6 +126,7 @@
      <Compile Include="Assets\Scripts\UI\HUDManager.cs" />
      <Compile Include="Assets\Scripts\UI\IndicatorManager.cs" />
      <Compile Include="Assets\Scripts\UI\InventoryUI.cs" />
+     <Compile Include="Assets\Scripts\UI\MainMenuHelper.cs" />
      <Compile Include="Assets\Scripts\UI\MainMenuUI.cs" />
      <Compile Include="Assets\Scripts\UI\ScannerPanelButton.cs" />
      <Compile Include="Assets\Scripts\UI\ScannerUI.cs" />

@@ -47,25 +47,17 @@ public class GameSettings : SingletonScriptableObject<GameSettings>
 
     public void SpawnLocalPrefabs()
     {
-            foreach (var prefab in localPrefabs)
-            {
-                Instantiate(prefab);
-            }
+        var playerController = FindObjectOfType<PlayerController>();
+
+        if (playerController == null)
+        {
+            playerController = new GameObject().AddComponent<PlayerController>();
+        }
+
+        var playerShip = ShipSpawner.SpawnShip(shipPrefab, Vector3.zero, defaultLoadout);
+
+        playerController.Possess(playerShip);
+
+        //playerController.SpawnHUD();
     }
-
-    // public void SpawnLocalPrefabs()
-    // {
-    //     var playerController = FindObjectOfType<PlayerController>();
-
-    //     if (playerController == null)
-    //     {
-    //         playerController = new GameObject().AddComponent<PlayerController>();
-    //     }
-
-    //     var playerShip = ShipSpawner.SpawnShip(shipPrefab, Vector3.zero, defaultLoadout);
-
-    //     playerController.Possess(playerShip);
-
-    //     //playerController.SpawnHUD();
-    // }
 }
