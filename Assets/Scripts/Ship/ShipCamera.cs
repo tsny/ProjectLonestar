@@ -76,7 +76,7 @@ public class ShipCamera : ShipComponent
 
     private void CalculateOffsets()
     {
-        var mouseCoords = PlayerController.GetMousePositionOnScreen();
+        var mouseCoords = GameStateUtils.GetMousePositionOnScreen();
 
         distanceOffset = Mathf.Clamp(Speed / speedDivisor, 0, maxDistance);
 

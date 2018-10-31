@@ -18,7 +18,7 @@ public class HUDManager : MonoBehaviour
         name = "SHIP HUD";
         GetComponentsInChildren(true, uiElements);
 
-        cruiseText.text = "";
+        cruiseText.text = "Engines Nominal";
         mouseFlightText.text = "";
     }
 
@@ -28,7 +28,7 @@ public class HUDManager : MonoBehaviour
 
         playerController.PossessedNewShip += HandlePossessedNewShip;
         playerController.MouseStateChanged += HandleMouseStateChange;
-        playerController.ship.cruiseEngine.CruiseStateChanged += HandleCruiseChanged;
+        //playerController.ship.cruiseEngine.CruiseStateChanged += HandleCruiseChanged;
 
         if (playerController.ship != null)
         {

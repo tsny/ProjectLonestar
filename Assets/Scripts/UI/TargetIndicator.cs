@@ -9,14 +9,14 @@ public class TargetIndicator : MonoBehaviour
     {
         get
         {
-            return Camera.main.WorldToScreenPoint(target.transform.position);
+            return camera.WorldToScreenPoint(target.transform.position);
         }
     }
     public bool IsOnscreen
     {
         get
         {
-            Vector3 targetViewportPoint = Camera.main.WorldToScreenPoint(target.transform.position);
+            Vector3 targetViewportPoint = camera.WorldToScreenPoint(target.transform.position);
             return targetViewportPoint.z > 0;
         }
     }
@@ -76,6 +76,7 @@ public class TargetIndicator : MonoBehaviour
     {
         enabled = false;
         content.SetActive(false);
+        camera = Camera.main;
     }
 
     public virtual void SetTarget(ITargetable newTarget)
@@ -86,12 +87,11 @@ public class TargetIndicator : MonoBehaviour
 
         if (target == null) return;
 
-        camera = Camera.main;
-
         this.target = target.gameObject;
 
         name = target.name;
 
+        content.SetActive(true);
         enabled = true;
     }
 
@@ -151,7 +151,7 @@ public class TargetIndicator : MonoBehaviour
 
         // If the target is now offscreen but was on screen in the
         // last frame, then deactivate children
-        if (!IsOnscreen && wasOnScreenLastFrame)
+        else if (!IsOnscreen && wasOnScreenLastFrame)
         {
             content.SetActive(false);
             wasOnScreenLastFrame = false;
@@ -159,7 +159,7 @@ public class TargetIndicator : MonoBehaviour
         }
 
 
-        if (!IsOnscreen && !wasOnScreenLastFrame)
+        else if (!IsOnscreen && !wasOnScreenLastFrame)
         {
             return;
         }
@@ -172,7 +172,7 @@ public class TargetIndicator : MonoBehaviour
 
     private void CalculateScale()
     {
-        distanceFromTarget = Vector3.Distance(target.transform.position, Camera.main.gameObject.transform.position);
+        distanceFromTarget = Vector3.Distance(target.transform.position, camera.gameObject.transform.position);
 
         float distanceQuotient = distanceFromTarget / maxRange;
         float newScale = Mathf.Clamp(distanceQuotient, minScale, maxScale);

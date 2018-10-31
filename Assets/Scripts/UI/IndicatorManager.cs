@@ -8,7 +8,6 @@ public class IndicatorManager : ShipUIElement
 {
     public GameObject indicatorPrefab;
     public Transform indicatorLayer;
-    public Dictionary<ITargetable, TargetIndicator> indicatorPairs = new Dictionary<ITargetable, TargetIndicator>();
 
     public TargetIndicator selectedIndicator;
 
@@ -16,9 +15,14 @@ public class IndicatorManager : ShipUIElement
     {
         base.SetShip(newShip);
 
-        ClearIndicators();
+        CreateIndicators();
+    }
 
-        FindObjectOfType<PlayerController>().ReleasedShip += HandleShipReleased;
+    private void CreateIndicators()
+    {
+        var targets = FindObjectsOfType<MonoBehaviour>().OfType<ITargetable>().ToList();
+
+        targets.ForEach(x => AddIndicator(x));
     }
 
     private void HandleShipReleased(PlayerController sender, PossessionEventArgs args)
@@ -47,7 +51,7 @@ public class IndicatorManager : ShipUIElement
     {
         DeselectCurrentIndicator();
 
-        FindObjectsOfType<TargetIndicator>().ToList().ForEach(x => Destroy(x));
+        FindObjectsOfType<TargetIndicator>().ToList().ForEach(x => Destroy(x.gameObject));
     }
 
     public void DeselectCurrentIndicator()
@@ -64,9 +68,5 @@ public class IndicatorManager : ShipUIElement
         newIndicator.SetTarget(newTarget);
 
         newIndicator.Selected += HandleIndicatorSelected;
-
-        //newTarget.BecameUntargetable += HandleTargetBecameUntargetable;
-
-        indicatorPairs.Add(newTarget, newIndicator);
     }
 }

@@ -60,6 +60,15 @@ public class PlayerController : MonoBehaviour
             print("Trying to create PlayerController when one already exists in the scene...");
             Destroy(gameObject);
         }
+
+        var hud = FindObjectOfType<HUDManager>();
+
+        if (hud == null)
+        {
+            hud = Instantiate(GameSettings.Instance.HUDPrefab).GetComponent<HUDManager>();
+        }
+
+        hud.SetPlayerController(this);
     }
 
     protected virtual void OnPossessedNewShip(PossessionEventArgs args)
@@ -266,8 +275,8 @@ public class PlayerController : MonoBehaviour
 
             case MouseState.Toggled:
             case MouseState.Held:
-                engine.Pitch(GetMousePositionOnScreen().y);
-                engine.Yaw(GetMousePositionOnScreen().x);
+                engine.Pitch(GameStateUtils.GetMousePositionOnScreen().y);
+                engine.Yaw(GameStateUtils.GetMousePositionOnScreen().x);
                 break;
 
             default:
@@ -312,26 +321,6 @@ public class PlayerController : MonoBehaviour
             default:
                 break;
         }
-    }
-
-    // Move this to a utility class some time?
-    public static Vector2 GetMousePositionOnScreen()
-    {
-        int width = Screen.width;
-        int height = Screen.height;
-
-        Vector2 center = new Vector2(width / 2, height / 2);
-        Vector3 mousePosition = Input.mousePosition;
-
-        // Shifts the origin of the screen to be in the middle instead of the bottom left corner
-
-        var mouseX = mousePosition.x - center.x;
-        var mouseY = mousePosition.y - center.y;
-
-        mouseX = Mathf.Clamp(mouseX / center.x, -1, 1);
-        mouseY = Mathf.Clamp(mouseY / center.y, -1, 1);
-
-        return new Vector2(mouseX, mouseY);
     }
 
     IEnumerator ManualMouseFlightCoroutine()
