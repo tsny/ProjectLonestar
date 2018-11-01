@@ -6,6 +6,7 @@ public class Gun : Hardpoint
     public AudioSource audioSource;
     public Vector3 aimPosition;
     public Transform projectileSpawnPoint;
+    public bool hideProjectileInHierarchy;
 
     public Projectile projectilePrefab;
 
@@ -57,17 +58,24 @@ public class Gun : Hardpoint
         IsActive = !IsActive;
     }
 
-    public bool Fire(Vector3 target, Collider[] collidersToIgnore = null)
+    public bool Fire(Vector3 target = new Vector3(), Collider[] collidersToIgnore = null)
     {
         if (projectilePrefab == null || IsOnCooldown) return false;
 
-        var spawnPoint = projectileSpawnPoint == null ? transform : projectileSpawnPoint;
+        // If no target, aim forward
+        if (target == Vector3.zero)
+        {
+            target = transform.forward + transform.position;
+        }
 
+        var spawnPoint = projectileSpawnPoint == null ? transform : projectileSpawnPoint;
         var newProjectile = Instantiate(projectilePrefab, spawnPoint.position, Quaternion.identity);
 
         newProjectile.Initialize(target, collidersToIgnore);
-
-        //audioSource.PlayOneShot(weapon.clip);
+        if (hideProjectileInHierarchy)
+        {
+            newProjectile.hideFlags = HideFlags.HideInHierarchy;
+        }
 
         StartCooldown(projectilePrefab.weaponStats.cooldownDuration);
 

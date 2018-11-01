@@ -17,7 +17,7 @@ public class GunEditor : Editor
 
         if (GUILayout.Button("Fire"))
         {
-            //weaponHardpoint.Fire();
+            gun.Fire();
         }
     }
 }
