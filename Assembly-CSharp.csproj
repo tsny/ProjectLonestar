@@ -77,6 +77,7 @@
      <Compile Include="Assets\Scripts\Core\Damage.cs" />
      <Compile Include="Assets\Scripts\Core\Loot.cs" />
      <Compile Include="Assets\Scripts\Core\Managers\BackgroundAudioManager.cs" />
+     <Compile Include="Assets\Scripts\Core\Managers\Controller.cs" />
      <Compile Include="Assets\Scripts\Core\Managers\GameStateUtils.cs" />
      <Compile Include="Assets\Scripts\Core\Managers\InputManager.cs" />
      <Compile Include="Assets\Scripts\Core\Managers\PlayerController.cs" />

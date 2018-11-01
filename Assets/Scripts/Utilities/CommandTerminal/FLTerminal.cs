@@ -10,6 +10,7 @@ public class FLTerminal : Terminal
     // mute
     // toggle hud
 
+
     [RegisterCommand(Name = "version.check", Help = "Checks the live version on itch.io against the local version", MinArgCount = 0, MaxArgCount = 0)]
     static void VersionCheck(CommandArg[] args)
     {
@@ -19,27 +20,16 @@ public class FLTerminal : Terminal
     [RegisterCommand(Help = "Mounts a default loadout onto the current ship", MinArgCount = 0, MaxArgCount = 0)]
     static void MountLoadout(CommandArg[] args)
     {
-        if (PlayerControllerExistsInScene() == false) return;
+        if (PlayerController.instance.ship == null) return;
 
-        var pc = FindObjectOfType<PlayerController>();
-
-        if (pc.ship == null) return;
-
-        //pc.ship.hardpointSystem.MountLoadout(GameSettings.Instance.defaultLoadout);
+        //PlayerController.instance.ship.hardpointSystem.MountLoadout(GameSettings.instance.defaultLoadout);
     }
 
     [RegisterCommand(Help = "Toggle GodMode on Current Ship", MinArgCount = 0, MaxArgCount = 0)]
     static void God(CommandArg[] args)
     {
-        if (PlayerControllerExistsInScene() == false) return;
-
-        var pc = FindObjectOfType<PlayerController>();
-
-        if (pc.ship == null) return;
-
-        //pc.ship.invulnerable = !pc.ship.invulnerable;
-
-        //print("Godmode : " + pc.ship.invulnerable);
+        PlayerController.instance.ship.invulnerable = !PlayerController.instance.ship.invulnerable;
+        print("Godmode : " + PlayerController.instance.ship.invulnerable);
     }
 
     [RegisterCommand(Help = "Spawns a ship. Usage: spawn {entity} {times} {possess?}", MinArgCount = 1, MaxArgCount = 3)]
@@ -51,12 +41,11 @@ public class FLTerminal : Terminal
 
         Ship shipToSpawn = null;
         var ships = FindObjectsOfType<Ship>();
-        var pc = FindObjectOfType<PlayerController>();
 
         switch (entity)
         {
             case "self":
-                shipToSpawn = pc.ship;
+                shipToSpawn = PlayerController.instance.ship;
                 break;
 
             case "random":
@@ -64,17 +53,17 @@ public class FLTerminal : Terminal
                 break;
 
             case "nearest":
-                ships.ToList().Remove(pc.ship);
+                ships.ToList().Remove(PlayerController.instance.ship);
 
                 Ship closestShip = null;
                 float closestShipDistance = 0;
 
                 closestShip = ships[0];
-                closestShipDistance = Vector3.Distance(pc.ship.transform.position, closestShip.transform.position);
+                closestShipDistance = Vector3.Distance(PlayerController.instance.ship.transform.position, closestShip.transform.position);
 
                 foreach (var ship in ships)
                 {
-                    Vector3.Distance(pc.ship.transform.position, ship.transform.position);
+                    Vector3.Distance(PlayerController.instance.ship.transform.position, ship.transform.position);
                 }
 
                 shipToSpawn = null;
@@ -106,7 +95,7 @@ public class FLTerminal : Terminal
         {
             if (args[2].Bool)
             {
-                FindObjectOfType<PlayerController>().Possess(spawnedShip);
+                PlayerController.instance.Possess(spawnedShip);
             }
         }
     }
@@ -120,18 +109,13 @@ public class FLTerminal : Terminal
     [RegisterCommand(Help = "Gives current ship unlimited energy", MinArgCount = 0, MaxArgCount = 0)]
     static void Impulse101(CommandArg[] args)
     {
-        if (PlayerControllerExistsInScene() == false) return;
-
-        var playerController = FindObjectOfType<PlayerController>();
-        playerController.ship.hardpointSystem.EnableInfiniteEnergy();
+        PlayerController.instance.ship.hardpointSystem.EnableInfiniteEnergy();
     }
 
     [RegisterCommand(Help = "Gives current ship unlimited afterburner energy", MinArgCount = 0, MaxArgCount = 0)]
     static void Impulse102(CommandArg[] args)
     {
-        if (PlayerControllerExistsInScene() == false) return;
-
-        var abHardpoint = FindObjectOfType<PlayerController>().ship.hardpointSystem.afterburner;
+        var abHardpoint = PlayerController.instance.ship.hardpointSystem.afterburner;
         abHardpoint.afterburner.drainRate = abHardpoint.afterburner.drainRate == 0 ? 100 : 0;
 
         print("Toggled infinite afterburner...");
@@ -140,10 +124,7 @@ public class FLTerminal : Terminal
     [RegisterCommand(Help = "Unpossesses the current ship", MinArgCount = 0, MaxArgCount = 0)]
     static void Release(CommandArg[] args)
     {
-        if (PlayerControllerExistsInScene() == false) return;
-
-        FindObjectOfType<PlayerController>().Release();
-
+        PlayerController.instance.Release();
         print("Ship unpossessed");
     }
 
@@ -158,28 +139,14 @@ public class FLTerminal : Terminal
     [RegisterCommand(Name = "throttle.power", Help = "Change the current ship's throttle power", MinArgCount = 1, MaxArgCount = 1)]
     static void SetThrottlePower(CommandArg[] args)
     {
-        if (PlayerControllerExistsInScene() == false) return;
-
-        FindObjectOfType<PlayerController>().ship.engine.engineStats.enginePower = args[0].Int;
+        var newPower = Mathf.Clamp(args[0].Int, 0, 99999);
+        PlayerController.instance.ship.engine.engineStats.enginePower = newPower;
     }
 
     [RegisterCommand(Name = "cruise.power", Help = "Change the current ship's cruise power", MinArgCount = 1, MaxArgCount = 1)]
     static void SetCruisePower(CommandArg[] args)
     {
-        if (PlayerControllerExistsInScene() == false) return;
-
-        FindObjectOfType<PlayerController>().ship.cruiseEngine.stats.thrust = args[0].Int;
-    }
-
-    private static bool PlayerControllerExistsInScene()
-    {
-        var pc = FindObjectOfType<PlayerController>();
-        if (pc == null)
-        {
-            print("ERROR: Couldn't find Player Controller in scene...");
-            return false;
-        }
-
-        return true;
+        var newPower = Mathf.Clamp(args[0].Int, 0, 99999);
+        PlayerController.instance.ship.cruiseEngine.stats.thrust = newPower;
     }
 }

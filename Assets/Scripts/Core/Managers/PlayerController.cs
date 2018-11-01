@@ -4,16 +4,8 @@ using UnityEngine;
 using UnityEngine.Animations;
 using System.Collections.Generic;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : Controller<PlayerController>
 {
-    public bool HasPawn
-    {
-        get
-        {
-            return ship != null;
-        }
-    }
-
     [Header("--- Input ---")]
     public bool canPause = true;
     public bool inputAllowed = true;
@@ -39,7 +31,6 @@ public class PlayerController : MonoBehaviour
     public float mouseHoldDelay = .1f;
 
     public Ship ship;
-    public GameObject hudPrefab;
     public ShipCamera shipCamera;
     public Flycam flycam;
     public new Camera camera;
@@ -51,15 +42,11 @@ public class PlayerController : MonoBehaviour
     public delegate void MouseStateEventHandler(MouseState state);
     public event MouseStateEventHandler MouseStateChanged;
 
-    private void Awake()
+    protected override void Awake()
     {
-        name = "PLAYER CONTROLLER";
+        base.Awake();
 
-        if (FindObjectsOfType<PlayerController>().Length > 1)
-        {
-            print("Trying to create PlayerController when one already exists in the scene...");
-            Destroy(gameObject);
-        }
+        name = "PLAYER CONTROLLER";
 
         var hud = FindObjectOfType<HUDManager>();
 

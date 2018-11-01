@@ -22,6 +22,18 @@ public class IndicatorManager : ShipUIElement
     {
         var targets = FindObjectsOfType<MonoBehaviour>().OfType<ITargetable>().ToList();
 
+        foreach(var target in targets)
+        {
+            var pc = FindObjectOfType<PlayerController>();
+            var ship = target as Ship;
+
+            if (ship != null && ship == pc.ship)
+            {
+                targets.Remove(target);
+                break;
+            }
+        }
+
         targets.ForEach(x => AddIndicator(x));
     }
 
