@@ -34,6 +34,13 @@ public class TargetIndicator : MonoBehaviour
             return distanceFromTarget < maxRange;
         }
     }
+    public Ship ship
+    {
+        get
+        {
+            return target.GetComponent<Ship>();
+        }
+    }
 
     public bool selected;
 
@@ -83,16 +90,16 @@ public class TargetIndicator : MonoBehaviour
     {
         newTarget.SetupTargetIndicator(this);
 
-        MonoBehaviour target = newTarget as MonoBehaviour;
+        Ship target = newTarget as Ship;
 
         if (target == null) return;
 
         this.target = target.gameObject;
 
         name = target.name;
-
-        content.SetActive(true);
         enabled = true;
+
+        target.Died += () => { Destroy(gameObject); };
     }
 
     private void Update()
@@ -102,6 +109,10 @@ public class TargetIndicator : MonoBehaviour
         CalculatePosition();
         CalculateScale();
         CalculateTransparency();
+
+        if (ship == null) return;
+        healthBarImage.fillAmount = ship.health.health / ship.health.maxHealth;
+        shieldBarImage.fillAmount = ship.health.shield / ship.health.maxShield;
     }
 
     private void Start()

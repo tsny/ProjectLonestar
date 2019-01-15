@@ -16,10 +16,10 @@ public class ScannerUI : ShipUIElement
     {
         base.SetShip(ship);
 
-        scanner = ship.hardpointSystem.scanner;
-        scanner.ScannerUpdated += HandleNewScan;
+        //scanner = ship.hardpointSystem.scanner;
+        //scanner.ScannerUpdated += HandleNewScan;
 
-        RefreshPanel();
+        //RefreshPanel();
     }
 
     private void HandleNewScan(Scanner sender, List<ITargetable> targets)

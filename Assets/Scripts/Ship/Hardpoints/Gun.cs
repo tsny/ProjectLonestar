@@ -3,12 +3,24 @@ using UnityEngine;
 
 public class Gun : Hardpoint
 {
-    public AudioSource audioSource;
-    public Vector3 aimPosition;
-    public Transform projectileSpawnPoint;
-    public bool hideProjectileInHierarchy;
+    public WeaponStats stats;
+    public Projectile projectile;
+    public Transform spawn;
+    public new AudioSource audio;
+    public AudioClip clip;
 
-    public Projectile projectilePrefab;
+    [Range(0,1)]
+    public float volume = .5f;
+
+    public bool CanFire
+    {
+        get
+        {
+            if (!ignoreCooldown && IsOnCooldown) return false;
+            else if (projectile == null) return false;
+            else return true;
+        }
+    }
 
     private bool _isActive = true;
     public bool IsActive
@@ -30,6 +42,10 @@ public class Gun : Hardpoint
             }
         }
     }
+    
+    public bool ignoreCooldown = false;
+    public bool useMaxTargetAngle = true;
+    public float maxTargetAngle = 180;
 
     public event EventHandler<EventArgs> Fired;
     public event EventHandler<EventArgs> Activated;
@@ -58,27 +74,28 @@ public class Gun : Hardpoint
         IsActive = !IsActive;
     }
 
-    public bool Fire(Vector3 target = new Vector3(), Collider[] collidersToIgnore = null)
+    private void Awake()
     {
-        if (projectilePrefab == null || IsOnCooldown) return false;
+        if (stats == null)
+            stats = ScriptableObject.CreateInstance<WeaponStats>();
 
-        // If no target, aim forward
-        if (target == Vector3.zero)
-        {
-            target = transform.forward + transform.position;
-        }
+        if (spawn == null)
+            spawn = transform; 
+    }
 
-        var spawnPoint = projectileSpawnPoint == null ? transform : projectileSpawnPoint;
-        var newProjectile = Instantiate(projectilePrefab, spawnPoint.position, Quaternion.identity);
+    public bool Fire(Vector3 target, Collider[] colliders)
+    {
+        if (!CanFire) return false;
 
-        newProjectile.Initialize(target, collidersToIgnore);
-        if (hideProjectileInHierarchy)
-        {
-            newProjectile.hideFlags = HideFlags.HideInHierarchy;
-        }
+        var proj = Instantiate(projectile, spawn.position, Quaternion.identity);
+        proj.Initialize(target, stats, colliders);
 
-        StartCooldown(projectilePrefab.weaponStats.cooldownDuration);
-
+        StartCooldown(stats.cooldownDuration);
         return true;
+    }
+
+    public void Fire(Collider[] colliders)
+    {
+        Fire(transform.forward + transform.position, colliders);
     }
 }

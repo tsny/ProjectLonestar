@@ -4,25 +4,13 @@ using System.Collections;
 [CreateAssetMenu(menuName = "Ship/PilotDetails")]
 public class PilotDetails : ScriptableObject
 {
-    private string firstName = "First";
-    private string lastName = "Last";
+    public string firstName = "First";
+    public string lastName = "Last";
 
-    public string FirstName
+    private void Awake()
     {
-        get
-        {
-            firstName = NameGenerator.GenerateFirstName();
-            return firstName;
-        }
-    }
-
-    public string LastName
-    {
-        get
-        {
-           lastName = NameGenerator.GenerateLastName();
-           return lastName;
-        }
+        firstName = NameGenerator.GenerateFirstName();
+        lastName = NameGenerator.GenerateLastName();
     }
 
     public string FullName

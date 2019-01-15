@@ -71,7 +71,7 @@ public static class InputManager
 
     public static void SetKeycodes()
     {
-        ThrottleUpKey = GetKeycode("ThrottleUpKey", "W");
+        ThrottleUpKey = GetKeycode("ThrottleUpKey", KeyCode.W.ToString());
         ThrottleDownKey = GetKeycode("ThrottleDown", "S");
         StrafeRightKey = GetKeycode("StrafeRightKey", "D");
         StrafeLeftKey = GetKeycode("StrafeLeftKey", "A");

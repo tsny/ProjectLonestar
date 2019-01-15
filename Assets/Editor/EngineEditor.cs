@@ -12,6 +12,8 @@ public class EngineEditor : Editor
 
         if (Application.isPlaying == false) return;
 
+        EGL.FloatField("Speed", engine.Speed);
+
         EGL.Space();
 
         if (GUILayout.Button("Throttle Up"))
@@ -22,6 +24,31 @@ public class EngineEditor : Editor
         if (GUILayout.Button("Throttle Down"))
         {
             engine.ThrottleDown();
+        }
+
+        if (GUILayout.Button("Powerthrust Left"))
+        {
+            engine.SidestepHorizontal(false);
+        }
+
+        if (GUILayout.Button("Powerthrust Right"))
+        {
+            engine.SidestepHorizontal(true);
+        }
+        
+        if (GUILayout.Button("Powerthrust Down"))
+        {
+            engine.SidestepLeft();
+        }
+        
+        if (GUILayout.Button("Powerthrust Up"))
+        {
+            engine.SidestepLeft();
+        }
+
+        if (GUILayout.Button("Blink Forward"))
+        {
+            engine.Blink();
         }
 
         EGL.Space();

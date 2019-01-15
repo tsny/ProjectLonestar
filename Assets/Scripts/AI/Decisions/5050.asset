@@ -3,11 +3,12 @@
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c5d3e1c12e3b6094a9d5961d1a769b98, type: 3}
-  m_Name: Get Target Point Action
+  m_Script: {fileID: 11500000, guid: aeeb85bd0096d451889baea7731d93ab, type: 3}
+  m_Name: 5050
   m_EditorClassIdentifier: 
+  chance: 96

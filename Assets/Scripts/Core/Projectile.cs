@@ -1,75 +1,83 @@
 ﻿using UnityEngine;
 using System.Linq;
+using System.Collections;
 
 public class Projectile : MonoBehaviour
 {
-    public float distanceTraveled = 0f;
-    //public float distanceTillColliderEnable = 2;
+    private float distanceTraveled = 0f;
+    private Vector3 startPosition;
 
-    public WeaponStats weaponStats;
+    public WeaponStats stats;
 
     public ParticleSystem mainEffect;
     public ParticleSystem impactEffect;
 
-    private new Collider collider;
-    private Rigidbody rb;
-    private Vector3 startPosition;
+    public Rigidbody rb;
+    public Collider coll;
 
-    private void Awake()
+    public Projectile Initialize(Vector3 target, WeaponStats stats, Collider[] collidersToIgnore = null)
     {
-        rb = GetComponent<Rigidbody>();
-        collider = GetComponent<Collider>();
+        if (stats != null)
+            this.stats = stats;
+        else
+            Debug.LogWarning("Firing projectile from gun without passing stats...");
 
-        if (weaponStats == null)
-            weaponStats = Instantiate(ScriptableObject.CreateInstance<WeaponStats>());
-
-        distanceTraveled = 0f;
-        startPosition = transform.position;
-    }
-
-    public void Initialize(Vector3 target, Collider[] collidersToIgnore = null)
-    {
         transform.LookAt(target);
-
-        rb.AddForce(transform.forward * weaponStats.thrust, ForceMode.Impulse);
 
         if (collidersToIgnore != null)
         {
             foreach (var collider in collidersToIgnore)
             {
-                Physics.IgnoreCollision(collider, this.collider);
+                Physics.IgnoreCollision(collider, this.coll);
             }
         }
 
-        mainEffect.Play();
+        Accelerate();
+        StartCoroutine(RangeChecker());
+
+        return this;
     }
 
-    private void Update()
+    public void Accelerate()
     {
-        distanceTraveled = Vector3.Distance(transform.position, startPosition);
-        if (distanceTraveled > weaponStats.range) Destroy(gameObject);
+        startPosition = transform.position;
+        rb.velocity = transform.forward * stats.thrust;
     }
 
-    // Maybe change this so that it spawns the particle systems and destroys immediately
-    // Right now we just disable the script
+    private IEnumerator RangeChecker()
+    {
+        while (true)
+        {
+            distanceTraveled = Vector3.Distance(transform.position, startPosition);
+
+            if (distanceTraveled > stats.range) 
+            {
+                Destroy(gameObject);
+                yield break;
+            }
+
+            yield return new WaitForSeconds(1);
+        }
+    }
+
+    private void OnDestroy()
+    {
+        StopAllCoroutines();
+    }
+
     private void OnCollisionEnter(Collision collision)
     {
-        enabled = false;
-
         Destroy(rb);
-        Destroy(collider);
+        Destroy(coll);
 
-        transform.position = collision.contacts[0].point;
-
-        IDamageable damageableObject = collision.collider.transform.root.GetComponentInChildren<IDamageable>();
-        if (damageableObject != null)
+        if (collision.rigidbody != null)
         {
-            damageableObject.TakeDamage(weaponStats);
+            collision.rigidbody.SendMessage("TakeDamage", stats, SendMessageOptions.DontRequireReceiver);
         }
 
         mainEffect.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
         impactEffect.Play();
 
-        Destroy(gameObject, 2);
+        Destroy(gameObject, 2f);
     }
 } 

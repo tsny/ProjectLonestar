@@ -1,75 +1,163 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
 
 public class ShipNavigation : ShipComponent
 {
+    public TargetRelation relationTowardsTarget;
     public Transform target;
+
+    public AnimationCurve evadeCurve;
+
     public float turnSpeed = 1;
-    public float turnAngleThreshold = 5;
+
+    public bool HasTarget
+    {
+        get
+        {
+            bool val = target != null;
+
+            if (val == false)
+                Debug.LogWarning("ShipNav has no target...");
+
+            return val;
+        }
+    }
 
     [Tooltip("The smallest angle the ship must be from the target in order to fire at it")]
     public float fireAngleThreshold = 10;
     public float delayBetweenShots = .1f;
+    public float turnAngleThreshold = 5;
 
     [Tooltip("The distance away a target must be in order to consider using cruise engines")]
     public float cruiseDistanceThreshold = 1000;
+    public float gotoDistanceThreshold = 500;
+    public float combatTooCloseDistance = 100;
 
-    private IEnumerator rotateCoroutine;
-    private IEnumerator fireCoroutine;
-
-    // For testing
-    public void FireAtPlayer()
+    public bool WeaponsFacingTarget
     {
-        fireCoroutine = FireAtTargetCoroutine(FindObjectOfType<PlayerController>().ship.transform);
-        StartCoroutine(fireCoroutine);
+        get
+        {
+            if (!HasTarget) return false;
+            return Quaternion.Angle(ship.transform.rotation, target.transform.rotation) < fireAngleThreshold;
+        }
     }
 
-    public void RotateAtTarget(Transform target, float angleThreshold)
+    public IEnumerator gotoRoutine;
+    public IEnumerator rotateRoutine;
+    public IEnumerator fireRoutine;
+    public IEnumerator attackRoutine;
+    public IEnumerator evadeRoutine;
+
+    public void TargetPlayer()
     {
-        rotateCoroutine = RotateTowardsTargetCoroutine(target, angleThreshold);
-        StartCoroutine(rotateCoroutine);
+        target = FindObjectOfType<PlayerController>().ship.transform;
+
+        if (target == null) 
+            Debug.LogWarning("PlayerController does not possess ship...");
     }
 
-    public void GotoTarget(Transform target)
+    public void ClearTarget()
     {
-        //RotateTowardsTarget(target);
-        // Throttle Up
-        // Check for faster routes, i.e trade rails
-        // Decide if go to cruise
+        target = null;
+        StopAllCoroutines();
     }
 
-    private IEnumerator RotateTowardsTargetCoroutine(Transform target, float angleThreshold)
+    public void StartCoroutine(IEnumerator cr, Func<IEnumerator> method)
     {
+        if (cr != null)
+            StopCoroutine(cr);
+
+        cr = method();
+        StartCoroutine(cr);
+    }
+
+    public void FullStop()
+    {
+        ship.engine.Throttle = 0;
+        StopAllCoroutines();
+    }
+
+    public IEnumerator GotoTarget()
+    {
+        if (HasTarget == false) yield break;
+
+        ship.engine.Throttle = 1;
+
+        while (Vector3.Distance(transform.position, target.position) > gotoDistanceThreshold)
+        {
+            if (rotateRoutine == null)
+                StartCoroutine(rotateRoutine, RotateTowardsTarget);
+
+            yield return new WaitForSeconds(.5f);
+        }
+
+        ship.engine.Throttle = 0;
+        gotoRoutine = null;
+    }
+
+    public IEnumerator RotateTowardsTarget()
+    {
+        if (HasTarget == false) yield break;
+
         for (; ;)
         {
-            Quaternion newRot = Quaternion.LookRotation(target.position - owningShip.transform.position);
-            transform.rotation = Quaternion.Slerp(owningShip.transform.rotation, newRot, turnSpeed * Time.deltaTime);
-            //transform.rotation = Quaternion.Slerp(owningShip.transform.rotation, newRot, turnSpeed * Time.deltaTime);
+            Quaternion newRot = Quaternion.LookRotation(target.position - ship.transform.position);
+            transform.rotation = Quaternion.Slerp(ship.transform.rotation, newRot, turnSpeed * Time.deltaTime);
 
-            if (Quaternion.Angle(owningShip.transform.rotation, newRot) < angleThreshold) break;
+            if (Quaternion.Angle(ship.transform.rotation, newRot) < turnAngleThreshold) break;
             yield return null;
         }
 
-        rotateCoroutine = null;
+        rotateRoutine = null;
     }
 
-    private IEnumerator FireAtTargetCoroutine(Transform target, int amountOfShots = 50, float delayBetweenShots = .05f)
+    public IEnumerator FireAtTarget()
     {
-        this.target = target;
+        if (HasTarget == false) yield break;
 
-        int remainingShots = amountOfShots;
+        float duration = 10;
+        float time = duration;
 
-        while (true)
+        while (time <= duration)
         {
-            yield return StartCoroutine(RotateTowardsTargetCoroutine(target, fireAngleThreshold));
-            owningShip.aimPosition = target.position;
-            //ship.hardpointSystem.FireActiveWeapons();
-            remainingShots--;
-            print(remainingShots);
-            if (remainingShots <= 0) break;
+            if (WeaponsFacingTarget)
+            {
+                ship.aimPosition = target.position;
+                //owningShip.FireActiveWeapons();
+            }
+
+            time -= delayBetweenShots;
+
             yield return new WaitForSeconds(delayBetweenShots);
         }
 
-        fireCoroutine = null;
+        fireRoutine = null;
+    }
+
+    public IEnumerator AttackRun()
+    {
+        if (HasTarget == false) yield break;
+
+        StartCoroutine(GotoTarget());
+        StartCoroutine(FireAtTarget());
+
+        if (Vector3.Distance(transform.position, target.transform.position) < combatTooCloseDistance)
+        {
+            ship.engine.Yaw(90);
+        }
+    }
+
+    public IEnumerator PitchEvade()
+    {
+        float duration = 10;
+        float time = duration;
+
+        while (time <= duration)
+        {
+            ship.engine.Pitch(evadeCurve.Evaluate(time / duration));
+
+            yield return new WaitForSeconds(delayBetweenShots);
+        }
     }
 }

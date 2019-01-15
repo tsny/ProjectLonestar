@@ -32,6 +32,13 @@ public class AsteroidFieldEditor : Editor
         ShowButtons();
     }
 
+    [DrawGizmo(GizmoType.Active)]
+    static void ShowFieldRadi(AsteroidField field, GizmoType type)
+    {
+        Gizmos.DrawWireSphere(field.transform.position, field.outerRadius);
+        Gizmos.DrawWireSphere(field.transform.position, field.innerRadius);
+    }
+
     private void ShowScaleInformation()
     {
         field.scaleUsesRange = EGL.Toggle(new GUIContent("Scale uses range?", "Whether the asteroids spawned should pick a scale from a specified range."), field.scaleUsesRange);

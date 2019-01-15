@@ -1,19 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-[CreateAssetMenu(menuName = "PluggableAI/Actions/ThrottleDown")]
+[CreateAssetMenu(menuName = "AI/Actions/ThrottleDown")]
 public class ThrottleDownAction : FLAction
 {
+    public float threshold = 0;
+
     public override void Act(StateController controller)
     {
-        //if (controller.ship.shipEngine.throttle > 0)
-        //{
-        //    ThrottleDown(controller);
-        //}
-    }
-
-    private void ThrottleDown(StateController controller)
-    {
-        //controller.ship.shipEngine.ThrottleDown();
+        if (controller.ship.engine.Throttle > threshold)
+            controller.ship.engine.ThrottleDown();
     }
 }

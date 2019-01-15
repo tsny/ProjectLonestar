@@ -4,9 +4,16 @@ using UnityEngine.SceneManagement;
 
 public class MainMenuUI : MonoBehaviour
 {
+    public string sceneToLoad = "SCN_Debug";
+
     public void LoadDebugLevel()
     {
-        SceneManager.LoadScene("SCN_Debug");
+        SceneManager.LoadScene(sceneToLoad);
+    }
+
+    public void LoadNebulaLevel()
+    {
+        SceneManager.LoadScene("SCN_Nebula");
     }
 
     public void Quit()

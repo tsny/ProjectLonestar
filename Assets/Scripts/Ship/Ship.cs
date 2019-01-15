@@ -3,7 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Ship : MonoBehaviour, ITargetable, IDamageable
+public class Ship : MonoBehaviour, ITargetable, IDamageable 
 {
     [Header("Stats")]
     public PilotDetails pilotDetails;
@@ -13,23 +13,27 @@ public class Ship : MonoBehaviour, ITargetable, IDamageable
     //public ShipStats stats;
 
     [Header("Ship Components")]
+    public Health health;
     public HardpointSystem hardpointSystem;
     public Vector3 aimPosition;
     public Engine engine;
     public CruiseEngine cruiseEngine;
-    public ShipCamera shipCam;
     public Rigidbody rb;
-    public Hull hull;
-    public bool invulnerable;
+    public Collider[] colliders;
 
+    public ParticleSystem deathFX;
+
+    [Header("Other")]
     public Transform cameraPosition;
+    public Transform firstPersonCameraPosition;
 
     public delegate void PossessionEventHandler(PlayerController pc, Ship sender, bool possessed);
+    public delegate void EventHandler();
+
     public event PossessionEventHandler Possession;
     public event TargetEventHandler BecameTargetable;
     public event TargetEventHandler BecameUntargetable;
-    public event EventHandler<DamageEventArgs> TookDamage;
-    public event EventHandler<DeathEventArgs> HealthDepleted;
+    public event EventHandler Died;
 
     private void OnBecameTargetable()
     {
@@ -45,18 +49,26 @@ public class Ship : MonoBehaviour, ITargetable, IDamageable
     {
         hardpointSystem = GetComponentInChildren<HardpointSystem>();
         cruiseEngine = GetComponentInChildren<CruiseEngine>();
-        shipCam = GetComponentInChildren<ShipCamera>();
         engine = GetComponentInChildren<Engine>();
         rb = GetComponentInChildren<Rigidbody>();
-        hull = GetComponentInChildren<Hull>();
+        colliders = GetComponentsInChildren<Collider>();
+
+        health = Health.CreateInstance<Health>();
+        health.Init();
 
         var components = GetComponentsInChildren<ShipComponent>();
         components.ToList().ForEach(x => x.Initialize(this));
 
-        hull.HealthDepleted += HandleHullHealthDepleted;
         engine.DriftingChange += HandleDriftingChange;
         engine.ThrottleChanged += HandleThrottleChange;
         cruiseEngine.CruiseStateChanged += HandleCruiseChange;
+        health.HealthDepleted += HandleHealthDepleted;
+    }
+
+    public void Init()
+    {
+        health = Health.CreateInstance<Health>();
+        health.Init();
     }
 
     private void HandleCruiseChange(CruiseEngine sender, CruiseState newState)
@@ -85,22 +97,20 @@ public class Ship : MonoBehaviour, ITargetable, IDamageable
         ShipPhysicsStats.HandleDrifting(rb, physicsStats, drifting);
     }
 
-    private void HandleHullHealthDepleted(object sender, DeathEventArgs e)
+    private void HandleHealthDepleted()
     {
         if (BecameUntargetable != null) BecameUntargetable(this);
-        Destroy(gameObject);
+        Die();
     }
 
     public void SetPossessed(PlayerController pc, bool possessed)
     {
-        name = possessed ? "PLAYER SHIP" : pilotDetails.FullName;
-
+        name = possessed ? "PLAYER SHIP" : "NPC SHIP " + pilotDetails.firstName;
         tag = possessed ? "Player" : "Untagged";
 
         foreach(Transform transform in transform)
         {
             var newLayer = possessed ? LayerMask.NameToLayer("Player") : 0;
-
             transform.gameObject.layer = newLayer;
         }
 
@@ -112,9 +122,14 @@ public class Ship : MonoBehaviour, ITargetable, IDamageable
         ShipPhysicsStats.ClampShipVelocity(rb, physicsStats, cruiseEngine.State);
     }
 
-    public void FireAllWeapons()
+    public void FireActiveWeapons(Vector3 target)
     {
-        //hardpointSystem.FireActiveWeapons(ShipCamera.GetMousePositionInWorld(shipCam.camera));
+        hardpointSystem.FireActiveWeapons(target);
+    }
+
+    public void FireActiveWeapons()
+    {
+        hardpointSystem.FireActiveWeapons(aimPosition);
     }
 
     public void SetupTargetIndicator(TargetIndicator indicator)
@@ -122,7 +137,6 @@ public class Ship : MonoBehaviour, ITargetable, IDamageable
         indicator.header.text = shipDetails.shipName;
 		
 		// Check if this ship has a shield and toggle shield bar based on that
-		
         //hull.TookDamage += indicator.HandleTargetTookDamage;
     }
 
@@ -134,8 +148,26 @@ public class Ship : MonoBehaviour, ITargetable, IDamageable
         return true;
     }
 
+    public void Die()
+    {
+        // EVENT CALL HERE (ON DYING)
+
+        if (deathFX != null)
+        {
+            Instantiate(deathFX, transform.position, Quaternion.identity);
+        }
+        else
+        {
+            Debug.LogWarning("Dying ship has no deathFX...");
+        }
+
+        if (Died != null) Died();
+        Destroy(gameObject);
+        // EVENT CALL ALSO? (ON DEATH)
+    }
+
     public void TakeDamage(WeaponStats weapon)
     {
-        throw new NotImplementedException();
+        health.TakeDamage(weapon);
     }
 }

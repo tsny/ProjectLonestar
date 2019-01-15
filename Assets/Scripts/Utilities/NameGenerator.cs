@@ -2,53 +2,27 @@
 using System.IO;
 using System.Collections;
 
-public class NameGenerator : MonoBehaviour
+public class NameGenerator 
 {
-    public static NameGenerator generator;
-    static string path;
-    static string jsonFile;
-
     public static Name Generate(Gender gender = Gender.Male)
     {
-        switch(gender)
-        {
-            case Gender.Female:
-                path = Application.streamingAssetsPath + "/female_names.json";
+        var path = Application.streamingAssetsPath;
 
-                if (File.Exists(path))
-                {
-                    jsonFile = File.ReadAllText(path);
-                    JSONWrapper wrapper = JsonUtility.FromJson<JSONWrapper>(jsonFile);
+        if (gender == Gender.Male)
+            path += "/female_names.json";
+        else
+            path += "/male_names.json";
 
-                    int randomFirstIndex = Random.Range(0, wrapper.Names.Length - 1);
-                    int randomLastIndex = Random.Range(0, wrapper.Names.Length - 1);
-                    string firstName = wrapper.Names[randomFirstIndex].First;
-                    string lastName = wrapper.Names[randomLastIndex].Last;
-                    return new Name(firstName, lastName);
-                }
+        if (!File.Exists(path)) return null;
 
-                break;
+        var jsonFile = File.ReadAllText(path);
+        JSONWrapper wrapper = JsonUtility.FromJson<JSONWrapper>(jsonFile);
 
-            case Gender.Male:
-
-                path = Application.streamingAssetsPath + "/male_names.json";
-
-                if (File.Exists(path))
-                {
-                    jsonFile = File.ReadAllText(path);
-                    JSONWrapper wrapper = JsonUtility.FromJson<JSONWrapper>(jsonFile);
-
-                    int randomFirstIndex = Random.Range(0, wrapper.Names.Length - 1);
-                    int randomLastIndex = Random.Range(0, wrapper.Names.Length - 1);
-                    string firstName = wrapper.Names[randomFirstIndex].First;
-                    string lastName = wrapper.Names[randomLastIndex].Last;
-                    return new Name(firstName, lastName);
-                }
-
-                break;
-        }
-
-        return null;
+        int randomFirstIndex = Random.Range(0, wrapper.Names.Length - 1);
+        int randomLastIndex = Random.Range(0, wrapper.Names.Length - 1);
+        string firstName = wrapper.Names[randomFirstIndex].First;
+        string lastName = wrapper.Names[randomLastIndex].Last;
+        return new Name(firstName, lastName);
     }    
 
     public static string GenerateFirstName(Gender gender = Gender.Male)

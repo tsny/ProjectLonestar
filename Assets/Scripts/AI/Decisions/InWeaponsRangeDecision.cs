@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-[CreateAssetMenu(menuName = "PluggableAI/Decisions/InWeaponsRange")]
+[CreateAssetMenu(menuName = "AI/Decisions/InWeaponsRange")]
 public class InWeaponsRangeDecision : FLDecision
 {
     public override bool Decide(StateController controller)
@@ -11,6 +11,6 @@ public class InWeaponsRangeDecision : FLDecision
 
     private bool IsInWeaponsRange(StateController controller)
     {
-        return Vector3.Distance(controller.targetShip.transform.position, controller.transform.position) < 5f;
+        return Vector3.Distance(controller.TargetShip.transform.position, controller.transform.position) < 5f;
     }
 }

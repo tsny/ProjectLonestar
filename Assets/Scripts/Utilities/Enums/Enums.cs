@@ -2,6 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum FlightAxis
+{
+    Yaw,
+    Roll,
+    Pitch
+}
+
 public enum StrafeState
 {
     Neutral = 0,
@@ -93,6 +100,13 @@ public enum HardpointType
     CountermeasureDropper,
     Scanner,
     Tractor
+}
+
+public enum TargetRelation
+{
+    NEUTRAL,
+    FRIENDLY,
+    HOSTILE
 }
 
 

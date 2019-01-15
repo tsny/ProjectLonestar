@@ -2,8 +2,10 @@
 using UnityEngine;
 using System.Collections;
 using UnityEngine.SceneManagement;
+using System.Collections.Generic;
+using System.Linq;
 
-public static class GameStateUtils  
+public class GameStateUtils : UnityEngine.Object
 {
     public static bool Paused
     {
@@ -54,6 +56,16 @@ public static class GameStateUtils
         mouseY = Mathf.Clamp(mouseY / center.y, -1, 1);
 
         return new Vector2(mouseX, mouseY);
+    }
+
+    // NOT DONE
+    public static GameObject NearestShip(GameObject sender)
+    {
+        GameObject nearest = null;
+
+        List<Ship> ships = FindObjectsOfType<Ship>().ToList();
+
+        return nearest;
     }
 }
 

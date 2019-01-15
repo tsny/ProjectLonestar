@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-[CreateAssetMenu(menuName = "PluggableAI/Decisions/LookAt")]
+[CreateAssetMenu(menuName = "AI/Decisions/LookAt")]
 public class LookAtDecision : FLDecision
 {
     public override bool Decide(StateController controller)

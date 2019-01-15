@@ -1,17 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-[CreateAssetMenu(menuName = "PluggableAI/Decisions/ReachedDestination")]
+[CreateAssetMenu(menuName = "AI/Decisions/ReachedDestination")]
 public class ReachedDestinationDecision : FLDecision
 {
     public override bool Decide(StateController controller)
     {
-        return ReachedDestination(controller);
-    }
+        if (controller.targetTrans == null) return false;
 
-    private bool ReachedDestination(StateController controller)
-    {
-        float targetDistance = Vector3.Distance(controller.transform.position, controller.targetLoc.position);
-        return (targetDistance < controller.acceptableDistance);
+        float targetDistance = Vector3.Distance(controller.transform.position, controller.targetTrans.position);
+        return (targetDistance < controller.gotoDistanceThreshold);
     }
 }

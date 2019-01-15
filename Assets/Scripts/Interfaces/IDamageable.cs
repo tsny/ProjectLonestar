@@ -6,20 +6,18 @@ using UnityEngine;
 public interface IDamageable 
 {
     void TakeDamage(WeaponStats weapon);
-
-    event EventHandler<DamageEventArgs> TookDamage;
-    event EventHandler<DeathEventArgs> HealthDepleted;
 }
 
 public class DamageEventArgs : EventArgs
 {
     public WeaponStats weapon;
-    public bool shieldDamage;
+
+    public bool damageWasAppliedToShield;
     public float damage;
 
-    public DamageEventArgs(bool shieldDamage, float damage)
+    public DamageEventArgs(bool damageWasAppliedToShield, float damage)
     {
-        this.shieldDamage = shieldDamage;
+        this.damageWasAppliedToShield = damageWasAppliedToShield;
         this.damage = damage;
     }
 

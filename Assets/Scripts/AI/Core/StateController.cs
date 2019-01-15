@@ -4,44 +4,55 @@ using System.Collections.Generic;
 
 public class StateController : MonoBehaviour
 {
-    public Ship ship;
-    public Ship targetShip;
-
-    public Transform targetLoc;
-    public float acceptableDistance;
-
-    public bool aiActive;
-
-    public State currentState;
-    public State remainState;
-
-    public float timeInCurrentState;
-
-    [HideInInspector] public int nextWaypoint;
-    [HideInInspector] public List<Transform> wayPointList;
-
-    public bool HasTarget
+    public Ship TargetShip
     {
         get
         {
-            return targetLoc != null || targetShip != null;
+            return targetTrans == null ? null : targetTrans.GetComponent<Ship>();
         }
     }
 
+    public Ship ship;
+    public Transform targetTrans;
+
+    public Ship[] allies;
+    public Ship[] enemies;
+
+    [Header("Gizmo")]
+
+    public Vector3 gizmoOffset = new Vector3(0, 5, 0);
+    public float gizmoRadius = 1;
+
+    [Header("State")]
+
+    public State stopState;
+    public State currentState;
+    public State remainState;
+
+    private Queue<State> pastStates = new Queue<State>();
+
+    public float gotoDistanceThreshold = 100;
+    public float combatDistanceThreshold = 20;
+
+    public bool aiIsActive;
+
+    public float timeInCurrentState;
 
     private void Awake()
     {
         ship = GetComponent<Ship>();
+        aiIsActive = true;
     }
-
-    public void Setup()
-    {
-
-    } 
 
     private void Update()
     {
-        if (!aiActive) return;
+        if (!aiIsActive) return;
+
+        if (currentState == null)
+        {
+            aiIsActive = false;
+            return;
+        }
 
         currentState.UpdateState(this);
         timeInCurrentState += Time.deltaTime;
@@ -49,18 +60,39 @@ public class StateController : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        if(currentState != null)
+        if (currentState != null)
         {
             Gizmos.color = currentState.sceneGizmoColor;
-            Gizmos.DrawWireSphere(transform.position + Vector3.up * .1f, .05f);
+            Gizmos.DrawSphere(transform.position + gizmoOffset, gizmoRadius);
         }
     }
 
     public void TransitionToState(State nextState)
     {
-        if(nextState != remainState)
+        if (nextState != remainState && nextState != null)
         {
+            pastStates.Enqueue(currentState);
             currentState = nextState;
+            timeInCurrentState = 0;
+        }
+
+        else if (nextState == null)
+        {
+            if (pastStates.Count >= 1)
+            {
+                currentState = pastStates.Dequeue();
+            }
+
+            else if (currentState == stopState)
+            {
+                currentState = null;
+            }
+
+            else
+            {
+                currentState = stopState;
+            }
+
             timeInCurrentState = 0;
         }
     }

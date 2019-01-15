@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-[CreateAssetMenu(menuName = "PluggableAI/Actions/GotoNextWaypoint")]
+[CreateAssetMenu(menuName = "AI/Actions/GotoNextWaypoint")]
 public class GotoNextWaypointAction : FLAction
 {
     public override void Act(StateController controller)

@@ -3,12 +3,15 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.Animations;
 using System.Collections.Generic;
+using UnityEngine.Rendering.PostProcessing;
 
-public class PlayerController : Controller<PlayerController>
+[RequireComponent(typeof(Camera), typeof(AudioListener), typeof(ShipCamera))]
+public class PlayerController : MonoBehaviour
 {
     [Header("--- Input ---")]
     public bool canPause = true;
     public bool inputAllowed = true;
+    public float doubleTapDuration = 1;
 
     private MouseState mouseState;
     public MouseState MouseState
@@ -26,14 +29,19 @@ public class PlayerController : Controller<PlayerController>
         }
     }
 
+
+
     // The amount of time that the controller waits until it 
     // determines the player is trying to switch to manual mouse flight
     public float mouseHoldDelay = .1f;
 
     public Ship ship;
+    public Ship lastShip;
     public ShipCamera shipCamera;
     public Flycam flycam;
-    public new Camera camera;
+    public Camera cam;
+    public PostProcessLayer ppl;
+    public AudioListener listener;
 
     public delegate void PossessionEventHandler(PlayerController sender, PossessionEventArgs args);
     public event PossessionEventHandler PossessedNewShip;
@@ -42,20 +50,31 @@ public class PlayerController : Controller<PlayerController>
     public delegate void MouseStateEventHandler(MouseState state);
     public event MouseStateEventHandler MouseStateChanged;
 
-    protected override void Awake()
+    protected void Awake()
     {
-        base.Awake();
-
-        name = "PLAYER CONTROLLER";
-
-        var hud = FindObjectOfType<HUDManager>();
-
-        if (hud == null)
+        if (FindObjectsOfType<PlayerController>().Length > 1)
         {
-            hud = Instantiate(GameSettings.Instance.HUDPrefab).GetComponent<HUDManager>();
+            Destroy(gameObject);
+            return;
         }
 
-        hud.SetPlayerController(this);
+        cam = GetComponent<Camera>();
+        shipCamera = GetComponent<ShipCamera>();
+        flycam = CheckComponent<Flycam>();
+        //ppl = CheckComponent<PostProcessLayer>();
+        listener = CheckComponent<AudioListener>();
+    }
+
+    private T CheckComponent<T>() where T : Component
+    {
+        var obj = GetComponent<T>();
+
+        if (obj == null)
+        {
+            obj = gameObject.AddComponent<T>();
+        }
+        
+        return obj;
     }
 
     protected virtual void OnPossessedNewShip(PossessionEventArgs args)
@@ -83,16 +102,23 @@ public class PlayerController : Controller<PlayerController>
             oldShip.SetPossessed(this, false);
         }
 
-        ship = newShip;
-
         newShip.SetPossessed(this, true);
 
-        OnPossessedNewShip(new PossessionEventArgs(ship, oldShip));
+        foreach (var coll in newShip.GetComponentsInChildren<Collider>())
+        {
+            coll.tag = "Player";                    
+        }
 
         flycam.enabled = false;
-        shipCamera.SetTarget(ship.cameraPosition);
+        shipCamera.SetTarget(newShip.cameraPosition);
 
+        newShip.GetComponent<StateController>().currentState = null;
+        newShip.Died += Release;
+
+        ship = newShip;
+        lastShip = null;
         enabled = true;
+        OnPossessedNewShip(new PossessionEventArgs(ship, null));
     }
 
     public void Release()
@@ -100,159 +126,191 @@ public class PlayerController : Controller<PlayerController>
         ship.SetPossessed(this, false);
         shipCamera.ClearTarget();
 
+        foreach (var coll in ship.GetComponentsInChildren<Collider>())
+        {
+            coll.tag = "Untagged";
+        }
+
+        ship.Died -= Release;
+
         MouseState = MouseState.Off;
         flycam.enabled = true;
-        ship = null;
         enabled = false;
 
+        lastShip = ship;
+        ship = null;
         OnReleasedShip(ship);
+    }
+
+    public void Repossess()
+    {
+        if (lastShip != null)
+        {
+            Possess(lastShip);
+        }
     }
 
     private void Update()
     {
-        if(inputAllowed && ship != null)
-        {
-            #region movement
-            if(Input.GetKey(InputManager.ThrottleUpKey) || Input.GetAxis("Mouse ScrollWheel") > 0f)
-            {
-                ship.engine.ThrottleUp();
-            }
-
-            if(Input.GetKey(InputManager.ThrottleDownKey) || Input.GetAxis("Mouse ScrollWheel") < 0f)
-            {
-                ship.engine.ThrottleDown();
-            }
-
-            if(Input.GetKey(InputManager.StrafeLeftKey))
-            {
-                ship.engine.Strafe = -1; 
-            }
-
-            if(Input.GetKey(InputManager.StrafeRightKey))
-            {
-                ship.engine.Strafe = 1; 
-            }
-
-            // If neither strafe key is pressed, reset the ship's strafing
-            if(!Input.GetKey(InputManager.StrafeRightKey) && !Input.GetKey(InputManager.StrafeLeftKey))
-            {
-                ship.engine.Strafe = 0; 
-            }         
-
-            if(Input.GetKeyDown(InputManager.ToggleMouseFlightKey))
-            {
-                ToggleMouseFlight();
-            }
-
-            if(Input.GetKeyDown(InputManager.AfterburnerKey))
-            {
-                ship.hardpointSystem.ToggleAfterburner(true);
-            }
-            
-            else if(Input.GetKeyUp(InputManager.AfterburnerKey))
-            {
-                ship.hardpointSystem.ToggleAfterburner(false);
-            }
-
-            if(Input.GetKeyDown(InputManager.ManualMouseFlightKey))
-            {
-                if(MouseState == MouseState.Off) StartCoroutine("ManualMouseFlightCoroutine");
-            }
-
-            if(Input.GetKeyUp(InputManager.ManualMouseFlightKey))
-            {
-                StopAllCoroutines();
-
-                if (MouseState == MouseState.Held) MouseState = MouseState.Off;
-            }
-
-            if(Input.GetKey(KeyCode.LeftShift) && Input.GetKeyDown(InputManager.ThrottleUpKey))
-            {
-                ship.cruiseEngine.ToggleCruiseEngines();
-            }
-
-            if(Input.GetKeyDown(InputManager.KillEnginesKey))
-            {
-                ship.engine.Drifting = !ship.engine.Drifting;
-            }
-
-            #endregion
-
-            #region hardpoints
-            if(Input.GetKey(InputManager.Hardpoint1Key))
-            {
-                ship.hardpointSystem.FireWeaponHardpoint(1, ShipCamera.GetMousePositionInWorld(camera));
-            }
-
-            if(Input.GetKey(InputManager.Hardpoint2Key))
-            {
-                ship.hardpointSystem.FireWeaponHardpoint(2, ShipCamera.GetMousePositionInWorld(camera));
-            }
-
-            if(Input.GetKey(InputManager.Hardpoint3Key))
-            {
-                ship.hardpointSystem.FireWeaponHardpoint(3, ShipCamera.GetMousePositionInWorld(camera));
-            }
-
-            if(Input.GetKey(InputManager.Hardpoint4Key))
-            {
-                ship.hardpointSystem.FireWeaponHardpoint(4, ShipCamera.GetMousePositionInWorld(camera));
-            }
-
-            if(Input.GetKey(InputManager.Hardpoint5Key))
-            {
-                ship.hardpointSystem.FireWeaponHardpoint(5, ShipCamera.GetMousePositionInWorld(camera));
-            }
-
-            if(Input.GetKey(InputManager.Hardpoint6Key))
-            {
-                ship.hardpointSystem.FireWeaponHardpoint(6, ShipCamera.GetMousePositionInWorld(camera));
-            }
-
-            if(Input.GetKey(InputManager.Hardpoint7Key))
-            {
-                ship.hardpointSystem.FireWeaponHardpoint(7, ShipCamera.GetMousePositionInWorld(camera));
-            }
-
-            if(Input.GetKey(InputManager.Hardpoint8Key))
-            {
-                ship.hardpointSystem.FireWeaponHardpoint(8, ShipCamera.GetMousePositionInWorld(camera));
-            }
-
-            if(Input.GetKey(InputManager.Hardpoint9Key))
-            {
-                ship.hardpointSystem.FireWeaponHardpoint(9, ShipCamera.GetMousePositionInWorld(camera));
-            }
-
-            if(Input.GetKey(InputManager.Hardpoint10Key))
-            {
-                ship.hardpointSystem.FireWeaponHardpoint(10, ShipCamera.GetMousePositionInWorld(camera));
-            }
-
-            if(Input.GetKey(InputManager.FireKey))
-            {
-                ship.hardpointSystem.FireActiveWeapons(ShipCamera.GetMousePositionInWorld(camera));
-            }
-
-            if (Input.GetKeyDown(InputManager.LootAllKey))
-            {
-                ship.hardpointSystem.tractorBeam.TractorAllLoot();
-            }
-
-            #endregion
-        }
+        Vector3 target = ShipCamera.GetMousePositionInWorld(cam);
 
         if(Input.GetKeyDown(InputManager.PauseGameKey) && canPause)
         {
             GameStateUtils.TogglePause();
         }
+
+        if(!inputAllowed || ship == null) return;
+
+        #region movement
+        if(Input.GetKey(InputManager.ThrottleUpKey) || Input.GetAxis("Mouse ScrollWheel") > 0f)
+        {
+            ship.engine.ThrottleUp();
+        }
+
+        else if(Input.GetKeyUp(InputManager.ThrottleUpKey))
+        {
+            Action action = ship.engine.Blink;
+            StartCoroutine(DoubleTap(InputManager.ThrottleUpKey, action));
+        }
+
+        if(Input.GetKey(InputManager.ThrottleDownKey) || Input.GetAxis("Mouse ScrollWheel") < 0f)
+        {
+            ship.engine.ThrottleDown();
+        }
+
+        if(Input.GetKey(InputManager.StrafeLeftKey))
+        {
+            ship.engine.Strafe = -1; 
+        }
+        else if (Input.GetKeyUp(InputManager.StrafeLeftKey))
+        {
+            Action action = ship.engine.SidestepLeft;
+            StartCoroutine(DoubleTap(InputManager.StrafeLeftKey, action));
+        }
+
+        if(Input.GetKey(InputManager.StrafeRightKey))
+        {
+            ship.engine.Strafe = 1; 
+        }
+        else if (Input.GetKeyUp(InputManager.StrafeRightKey))
+        {
+            Action action = ship.engine.SidestepRight;
+            StartCoroutine(DoubleTap(InputManager.StrafeRightKey, action));
+        }
+
+        // If neither strafe key is pressed, reset the ship's strafing
+        if(!Input.GetKey(InputManager.StrafeRightKey) && !Input.GetKey(InputManager.StrafeLeftKey))
+        {
+            ship.engine.Strafe = 0; 
+        }         
+
+        if(Input.GetKeyDown(InputManager.ToggleMouseFlightKey))
+        {
+            ToggleMouseFlight();
+        }
+
+        if(Input.GetKeyDown(InputManager.AfterburnerKey))
+        {
+            ship.hardpointSystem.ToggleAfterburner(true);
+        }
+        
+        else if(Input.GetKeyUp(InputManager.AfterburnerKey))
+        {
+            ship.hardpointSystem.ToggleAfterburner(false);
+        }
+
+        if(Input.GetKeyDown(InputManager.ManualMouseFlightKey))
+        {
+            if(MouseState == MouseState.Off) StartCoroutine("ManualMouseFlightCoroutine");
+        }
+
+        if(Input.GetKeyUp(InputManager.ManualMouseFlightKey))
+        {
+            StopAllCoroutines();
+
+            if (MouseState == MouseState.Held) MouseState = MouseState.Off;
+        }
+
+        if(Input.GetKey(KeyCode.LeftShift) && Input.GetKeyDown(InputManager.ThrottleUpKey))
+        {
+            ship.cruiseEngine.ToggleCruiseEngines();
+        }
+
+        if(Input.GetKeyDown(InputManager.KillEnginesKey))
+        {
+            ship.engine.Drifting = !ship.engine.Drifting;
+        }
+
+        #endregion
+
+        #region hardpoints
+        if(Input.GetKey(InputManager.Hardpoint1Key))
+        {
+            ship.hardpointSystem.FireWeaponHardpoint(1, target);
+        }
+
+        if(Input.GetKey(InputManager.Hardpoint2Key))
+        {
+            ship.hardpointSystem.FireWeaponHardpoint(2, target);
+        }
+
+        if(Input.GetKey(InputManager.Hardpoint3Key))
+        {
+            ship.hardpointSystem.FireWeaponHardpoint(3, target);
+        }
+
+        if(Input.GetKey(InputManager.Hardpoint4Key))
+        {
+            ship.hardpointSystem.FireWeaponHardpoint(4, target);
+        }
+
+        if(Input.GetKey(InputManager.Hardpoint5Key))
+        {
+            ship.hardpointSystem.FireWeaponHardpoint(5, target);
+        }
+
+        if(Input.GetKey(InputManager.Hardpoint6Key))
+        {
+            ship.hardpointSystem.FireWeaponHardpoint(6, target);
+        }
+
+        if(Input.GetKey(InputManager.Hardpoint7Key))
+        {
+            ship.hardpointSystem.FireWeaponHardpoint(7, target);
+        }
+
+        if(Input.GetKey(InputManager.Hardpoint8Key))
+        {
+            ship.hardpointSystem.FireWeaponHardpoint(8, target);
+        }
+
+        if(Input.GetKey(InputManager.Hardpoint9Key))
+        {
+            ship.hardpointSystem.FireWeaponHardpoint(9, target);
+        }
+
+        if(Input.GetKey(InputManager.Hardpoint10Key))
+        {
+            ship.hardpointSystem.FireWeaponHardpoint(10, target);
+        }
+
+        if(Input.GetKey(InputManager.FireKey))
+        {
+            ship.hardpointSystem.FireActiveWeapons(target);
+        }
+
+        if (Input.GetKeyDown(InputManager.LootAllKey))
+        {
+            ship.hardpointSystem.tractorBeam.TractorAllLoot();
+        }
+        #endregion
     }
 
     private void FixedUpdate()
     {
-        var engine = ship.engine;
+        if (ship == null || ship.engine == null) return;
 
-        if (engine == null) return;
+        var engine = ship.engine;
 
         switch (mouseState)
         {
@@ -267,6 +325,7 @@ public class PlayerController : Controller<PlayerController>
                 break;
 
             default:
+                Debug.LogWarning("MouseState has incorrect value...");
                 break;
         }
     }
@@ -304,9 +363,6 @@ public class PlayerController : Controller<PlayerController>
             case MouseState.Held:
                 shipCamera.calculateRotationOffsets = true;
                 break;
-
-            default:
-                break;
         }
     }
 
@@ -315,6 +371,23 @@ public class PlayerController : Controller<PlayerController>
         yield return new WaitForSeconds(mouseHoldDelay);
 
         MouseState = MouseState.Held;
+    }
+
+    IEnumerator DoubleTap(KeyCode pressedKey, Action action)
+    {
+        float elapsed = 0;
+
+        while (elapsed < doubleTapDuration)
+        {
+            if (Input.GetKey(pressedKey))
+            {
+                action();
+                yield break;
+            }
+        
+            elapsed += Time.deltaTime;
+            yield return new WaitForEndOfFrame();
+        }
     }
 }
 

@@ -15,6 +15,14 @@ public class HardpointSystem : ShipComponent
     public TractorBeam tractorBeam;
     public CruiseEngine cruiseEngine;
 
+    public Hardpoint[] hardpoints
+    {
+        get
+        {
+            return GetComponentsInChildren<Hardpoint>();
+        }
+    }
+
     [Header("Energy")]
 
     public float energy = 100;
@@ -56,20 +64,13 @@ public class HardpointSystem : ShipComponent
         else afterburner.Deactivate();
     }
 
-    public void EnableInfiniteEnergy()
-    {
-        energyCapacity = 1000000;
-        energy = 1000000;
-        chargeRate = 1000;
-    }
-
     public void FireActiveWeapons(Vector3 target)
     {
-        foreach (Gun guns in guns)
+        foreach (Gun gun in guns)
         {
-            if (guns.IsActive)
+            if (gun.IsActive)
             {
-                FireWeaponHardpoint(guns, target);
+                FireWeaponHardpoint(gun, target);
             }
         }
     }
@@ -86,18 +87,15 @@ public class HardpointSystem : ShipComponent
         }
     }
 
-    public void FireWeaponHardpoint(Gun gunToFire, Vector3 target)
+    public void FireWeaponHardpoint(Gun gun, Vector3 target)
     {
-        if (CanFireWeapons == false) return;
+        if (CanFireWeapons == false || gun.stats == null) return;
 
-        if (gunToFire.projectilePrefab.weaponStats.energyDraw < energy)
+        if (gun.stats.energyDraw < energy && gun.Fire(target, ship.colliders))
         {
-            if (gunToFire.Fire(target, owningShip.GetComponentsInChildren<Collider>()))
-            {
-                energy -= gunToFire.projectilePrefab.weaponStats.energyDraw;
-                if (WeaponFired != null) WeaponFired(gunToFire);
-                BeginCooldown();
-            }
+            energy -= gun.stats.energyDraw;
+            if (WeaponFired != null) WeaponFired(gun);
+            BeginCooldown();
         }
     }
 

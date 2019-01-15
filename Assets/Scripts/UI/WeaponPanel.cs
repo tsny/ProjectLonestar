@@ -1,21 +1,21 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
 public class WeaponPanel : ShipUIElement
 {
     public HardpointSystem hardpointSystem;
     public VerticalLayoutGroup vlg;
-
     public GameObject weaponPanelButton;
 
     public override void SetShip(Ship ship)
     {
         base.SetShip(ship);
 
-        hardpointSystem = ship.hardpointSystem;
-        ClearPanel();
-        PopulatePanel();
+        //hardpointSystem = ship.hardpointSystem;
+        //ClearPanel();
+        //PopulatePanel();
     }
 
     protected override void ClearShip()
@@ -28,7 +28,7 @@ public class WeaponPanel : ShipUIElement
     {
         foreach (Gun gun in hardpointSystem.guns)
         {
-            if (gun.projectilePrefab == null) continue;
+            if (gun.projectile == null) continue;
 
             Instantiate(weaponPanelButton, vlg.transform).GetComponent<GunPanelButton>().Initialize(gun);
         }
@@ -38,7 +38,10 @@ public class WeaponPanel : ShipUIElement
     {
         foreach (Transform child in vlg.transform)
         {
-            Destroy(child.gameObject);
+            if (child.GetComponent<Button>() != null)
+            {
+                Destroy(child.gameObject);
+            }
         }
     }
 }

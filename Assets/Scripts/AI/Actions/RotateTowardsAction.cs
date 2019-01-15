@@ -1,27 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-[CreateAssetMenu(menuName = "PluggableAI/Actions/RotateTowards")]
+[CreateAssetMenu(menuName = "AI/Actions/RotateTowards")]
 public class RotateTowardsAction : FLAction
 {
     public override void Act(StateController controller)
     {
-        if (controller.HasTarget)
-        {
-            RotateTowards(controller);
-        }
-    }
+        if (controller.targetTrans == null) return;
 
-    private void RotateTowards(StateController controller)
-    {
-        if (controller.targetShip != null)
-        {
-            //controller.ship.shipEngine.RotateTowardsTarget(controller.targetShip.transform);
-        }
-
-        else if (controller.targetLoc != null)
-        {
-            //controller.ship.shipEngine.RotateTowardsTarget(controller.targetLoc);
-        }
+        Quaternion newRot = Quaternion.LookRotation(controller.targetTrans.position - controller.ship.transform.position);
+        controller.ship.transform.rotation = Quaternion.Slerp(controller.ship.transform.rotation, newRot, controller.ship.engineStats.turnSpeed * Time.deltaTime);
     }
 }

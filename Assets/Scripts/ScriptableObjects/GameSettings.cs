@@ -5,9 +5,10 @@ using UnityEngine.SceneManagement;
 [CreateAssetMenu(menuName = "Settings/GameSettings")]
 public class GameSettings : SingletonScriptableObject<GameSettings>
 {
-    public GameObject shipPrefab;
-    public GameObject flycamPrefab;
-    public GameObject HUDPrefab;
+    public Ship shipPrefab;
+    public HUDManager HUDPrefab;
+    public FLTerminal terminalPrefab;
+    public PlayerController pcPrefab;
 
     public Loadout defaultLoadout;
     public Inventory playerInventory;
@@ -15,49 +16,64 @@ public class GameSettings : SingletonScriptableObject<GameSettings>
     public GameObject[] globalPrefabs;
     public GameObject[] localPrefabs;
 
+    public static PlayerController pc;
+
+    public string menuSceneName = "SCN_MainMenu";
+
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-    static void OnRuntimeMethod()
+    static void GameStartup()
     {
-        Instance.SpawnGlobalPrefabs();
-
-        //#if (!UNITY_EDITOR)
-
-        SceneManager.activeSceneChanged += HandleNewScene;
-
-        if (SceneManager.GetActiveScene().name != "SCN_MainMenu")
+        pc = FindObjectOfType<PlayerController>();
+        if (pc == null)
         {
-            Instance.SpawnLocalPrefabs();
+            pc = Instantiate(Instance.pcPrefab);
         }
+        DontDestroyOnLoad(pc);
 
-        //#endif
+        Instance.SpawnGlobalPrefabs();
+        SceneManager.sceneLoaded += HandleNewScene;
+        HandleNewScene(SceneManager.GetActiveScene(), LoadSceneMode.Single);
     }
 
-    private static void HandleNewScene(Scene arg0, Scene arg1)
+    private static void HandleNewScene(Scene scene, LoadSceneMode mode)
     {
-        Instance.SpawnLocalPrefabs();
+        Debug.Log("Loading new scene: " + scene.name);
+
+        if (scene.name != Instance.menuSceneName)
+        {
+            Instance.HandleGameplayScene();
+        }
+        else
+        {
+            pc.cam.enabled = false;
+            pc.flycam.enabled = false;
+            pc.listener.enabled = false;
+        }
     }
 
     public void SpawnGlobalPrefabs()
     {
-        foreach (var prefab in globalPrefabs)
-        {
-            DontDestroyOnLoad(Instantiate(prefab));
-        }
+        var term = new GameObject().AddComponent<FLTerminal>();
     }
 
-    public void SpawnLocalPrefabs()
+    public void HandleGameplayScene()
     {
-        var playerController = FindObjectOfType<PlayerController>();
-
-        if (playerController == null)
-        {
-            playerController = new GameObject().AddComponent<PlayerController>();
-        }
+        // Move this into PlayerController?
+        pc.cam.enabled = true;
+        pc.flycam.enabled = false;
+        pc.listener.enabled = true;
+        //
 
         var playerShip = ShipSpawner.SpawnShip(shipPrefab, Vector3.zero, defaultLoadout);
+        pc.Possess(playerShip);
 
-        playerController.Possess(playerShip);
+        var hud = FindObjectOfType<HUDManager>();
 
-        //playerController.SpawnHUD();
+        if (hud == null) 
+            hud = Instantiate(HUDPrefab);
+
+        //DontDestroyOnLoad(hud.gameObject);
+
+        hud.SetPlayerController(pc);
     }
 }

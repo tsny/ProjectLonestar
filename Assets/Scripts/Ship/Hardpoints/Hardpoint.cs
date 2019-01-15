@@ -2,7 +2,6 @@
 using System.Collections;
 using UnityEngine;
 
-[RequireComponent(typeof(MeshRenderer), typeof(MeshFilter))]
 public class Hardpoint : ShipComponent
 {
     public bool IsOnCooldown

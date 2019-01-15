@@ -32,9 +32,10 @@ public class GunPanelButton : MonoBehaviour
 
     private void SetName()
     {
-        var activeString = (gun.IsActive) ? " - Active" : " - Inactive";
+        if (gun.projectile == null) return;
 
-        text.text = gun.projectilePrefab.weaponStats.name + activeString;
+        var activeString = (gun.IsActive) ? " - Active" : " - Inactive";
+        text.text = gun.stats.name + activeString;
     }
 
     private void SetColor()

@@ -6,29 +6,29 @@ using UnityEngine;
 public class ShipCamera : ShipComponent
 {
     public Transform transformToFollow;
+
     public bool calculateRotationOffsets;
     private Rigidbody rb;
 
-    [Header("Offsets")]
-    [Space(5)]
+    [Header("Offsets")] [Space(5)]
     public float yawOffset;
     public float pitchOffset;
     public float distanceOffset;
 
-    // Use these to increase the possible range of yaw/pitch offsets.
-    public float pitchModifier = 1;
-    public float yawModifier = 1;
+    public LayerMask targetableLayers;
 
-    [Header("Lerp")]
-    [Space(5)]
+    // Use these to increase the possible range of yaw/pitch offsets.
+    public float pitchModifier = 5;
+    public float yawModifier = 5;
+
+    [Header("Lerp")] [Space(5)]
 
     public float speedDivisor = 20;
     public float lerpSpeed = .2f;
 
-    [Header("Maxes")]
-    [Space(5)]
+    [Header("Maxes")] [Space(5)]
     public float maxYaw = 10;
-    public float maxUpperPitch = 10;
+    public float maxUpperPitch = 1;
     public float maxLowerPitch = -10;
     public float maxDistance = 10;
     public float Speed
@@ -54,6 +54,13 @@ public class ShipCamera : ShipComponent
 
     private void FixedUpdate()
     {
+        if (transformToFollow == null)
+        {
+            //Debug.LogWarning("ShipCam has no transform to follow... Disabling...");
+            //enabled = false;
+            return;
+        }
+
         CalculateOffsets();
         FollowTarget();
     }
@@ -69,7 +76,8 @@ public class ShipCamera : ShipComponent
 
         if (drawRay) Debug.DrawRay(ray.origin, ray.direction * aimRaycastDistance);
 
-        Physics.Raycast(ray, out hitInfo, aimRaycastDistance, ~LayerMask.GetMask("Player"));
+        //Physics.Raycast(ray, out hitInfo, aimRaycastDistance, ~LayerMask.GetMask("Player"));
+        Physics.Raycast(ray, out hitInfo, aimRaycastDistance, 1 << LayerMask.NameToLayer("Default"));
 
         return (hitInfo.collider != null) ? hitInfo.point : ray.GetPoint(aimRaycastDistance);
     }

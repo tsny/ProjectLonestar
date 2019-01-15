@@ -1,21 +1,19 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
 
 [CreateAssetMenu(menuName = "Item/Weapon")]
-public class WeaponStats : Equipment
+public class WeaponStats : Equipment, ICloneable
 {
-    public string fullName;
-
-    public float energyDraw;
-    public float hullDamage;
-    public float shieldDamage;
-    public float thrust;
-    public float range;
-
-    public int rank;
-
+    public float range = 200;
+    public float energyDraw = 10;
+    public float hullDamage = 10;
+    public float shieldDamage = 10;
+    public float thrust = 800;
     public DamageType damageType;
 
-    public GameObject projectile;
-    public AudioClip clip;
+    public object Clone()
+    {
+        return this.MemberwiseClone();
+    }
 }

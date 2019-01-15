@@ -5,11 +5,36 @@ using CommandTerminal;
 
 public class FLTerminal : Terminal
 {
-    // Methods to add:
-    // volume {float}
-    // mute
-    // toggle hud
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.F12))
+            Flycam.TakeScreenshot();
+    }
 
+    [RegisterCommand(Name = "map", MinArgCount = 0, MaxArgCount = 1)]
+    static void ChangeScene(CommandArg[] args)
+    {
+        if (args.Length == 0)
+        {
+            Log("Current scene: " + SceneManager.GetActiveScene().name);
+            return;
+        }
+
+        var scn = args[0].String;
+
+        switch (scn)
+        {
+            case "main":
+                scn = GameSettings.Instance.menuSceneName;
+                break;
+            case "test":
+                scn = "SCN_Debug";
+                break;
+        }
+
+        SceneManager.LoadScene(scn);
+        Debug.Log("Loading scene: " + scn);
+    }
 
     [RegisterCommand(Name = "version.check", Help = "Checks the live version on itch.io against the local version", MinArgCount = 0, MaxArgCount = 0)]
     static void VersionCheck(CommandArg[] args)
@@ -17,22 +42,29 @@ public class FLTerminal : Terminal
         FindObjectOfType<MonoBehaviour>().StartCoroutine(VersionChecker.GetVersions("https://itch.io/api/1/x/wharf/latest?target=tsny/project-lonestar&channel_name=win", null, true));
     }
 
-    [RegisterCommand(Help = "Mounts a default loadout onto the current ship", MinArgCount = 0, MaxArgCount = 0)]
+    [RegisterCommand(Name = "hud", MinArgCount = 0, MaxArgCount = 0)]
+    static void ToggleHUD(CommandArg[] args)
+    {
+        var canvas = FindObjectOfType<HUDManager>().GetComponent<Canvas>();
+        canvas.enabled = !canvas.enabled;
+    }
+
+    [RegisterCommand(Name = "mount", Help = "Mounts a default loadout onto the current ship", MinArgCount = 0, MaxArgCount = 0)]
     static void MountLoadout(CommandArg[] args)
     {
-        if (PlayerController.instance.ship == null) return;
+        if (GameSettings.pc.ship == null) return;
 
-        //PlayerController.instance.ship.hardpointSystem.MountLoadout(GameSettings.instance.defaultLoadout);
+        //GameSettings.pc.ship.hardpointSystem.MountLoadout(GameSettings.instance.defaultLoadout);
     }
 
     [RegisterCommand(Help = "Toggle GodMode on Current Ship", MinArgCount = 0, MaxArgCount = 0)]
     static void God(CommandArg[] args)
     {
-        PlayerController.instance.ship.invulnerable = !PlayerController.instance.ship.invulnerable;
-        print("Godmode : " + PlayerController.instance.ship.invulnerable);
+        GameSettings.pc.ship.health.invulnerable = !GameSettings.pc.ship.health.invulnerable;
+        Log("Godmode : " + GameSettings.pc.ship.health.invulnerable);
     }
 
-    [RegisterCommand(Help = "Spawns a ship. Usage: spawn {entity} {times} {possess?}", MinArgCount = 1, MaxArgCount = 3)]
+    [RegisterCommand(Help = "Spawns a ship. Usage: spawn 'entity' 'times' 'possess?'", MinArgCount = 1, MaxArgCount = 3)]
     static void Spawn(CommandArg[] args)
     {
         string entity = args[0].String;
@@ -40,12 +72,18 @@ public class FLTerminal : Terminal
         if (Terminal.IssuedError) return;
 
         Ship shipToSpawn = null;
+        Ship spawnedShip = null;
+        int timesToSpawn = 1;
+
         var ships = FindObjectsOfType<Ship>();
 
         switch (entity)
         {
+            // case crazy
+            // case nomad
+            // case bship
             case "self":
-                shipToSpawn = PlayerController.instance.ship;
+                shipToSpawn = GameSettings.pc.ship;
                 break;
 
             case "random":
@@ -53,49 +91,30 @@ public class FLTerminal : Terminal
                 break;
 
             case "nearest":
-                ships.ToList().Remove(PlayerController.instance.ship);
-
-                Ship closestShip = null;
-                float closestShipDistance = 0;
-
-                closestShip = ships[0];
-                closestShipDistance = Vector3.Distance(PlayerController.instance.ship.transform.position, closestShip.transform.position);
-
-                foreach (var ship in ships)
-                {
-                    Vector3.Distance(PlayerController.instance.ship.transform.position, ship.transform.position);
-                }
-
+                // FindNearestShip(ships)
                 shipToSpawn = null;
                 break;
 
-            // Case for specific ship name 
-
             default:
-                print("Could not spawn entity of name " + entity);
+                Log("Could not spawn entity of name " + entity);
                 return;
         }
 
-        Ship spawnedShip = null;
-
         if (args.Length > 1)
         {
-            for (int i = 0; i < args[1].Int; i++)
-            {
-                spawnedShip = ShipSpawner.SpawnShip(shipToSpawn.gameObject, Vector3.zero);
-            }
+            timesToSpawn = args[1].Int;
         }
 
-        else
+        for (int i = 0; i < timesToSpawn; i++)
         {
-            spawnedShip = ShipSpawner.SpawnShip(shipToSpawn.gameObject, Vector3.zero);
+            spawnedShip = ShipSpawner.SpawnShip(shipToSpawn, GameSettings.pc.transform.position + GameSettings.pc.transform.forward * 10);
         }
 
         if (args.Length > 2)
         {
             if (args[2].Bool)
             {
-                PlayerController.instance.Possess(spawnedShip);
+                GameSettings.pc.Possess(spawnedShip);
             }
         }
     }
@@ -109,30 +128,43 @@ public class FLTerminal : Terminal
     [RegisterCommand(Help = "Gives current ship unlimited energy", MinArgCount = 0, MaxArgCount = 0)]
     static void Impulse101(CommandArg[] args)
     {
-        PlayerController.instance.ship.hardpointSystem.EnableInfiniteEnergy();
+        var hp = GameSettings.pc.ship.hardpointSystem;
+
+        hp.energyCapacity = 1000000;
+        hp.energy = 1000000;
+        hp.chargeRate = 1000;
+
+        Log("With great power...");
     }
 
     [RegisterCommand(Help = "Gives current ship unlimited afterburner energy", MinArgCount = 0, MaxArgCount = 0)]
     static void Impulse102(CommandArg[] args)
     {
-        var abHardpoint = PlayerController.instance.ship.hardpointSystem.afterburner;
+        var abHardpoint = GameSettings.pc.ship.hardpointSystem.afterburner;
         abHardpoint.afterburner.drainRate = abHardpoint.afterburner.drainRate == 0 ? 100 : 0;
 
-        print("Toggled infinite afterburner...");
+        Log("Toggled infinite afterburner...");
     }
 
     [RegisterCommand(Help = "Unpossesses the current ship", MinArgCount = 0, MaxArgCount = 0)]
     static void Release(CommandArg[] args)
     {
-        PlayerController.instance.Release();
-        print("Ship unpossessed");
+        GameSettings.pc.Release();
+        Log("Ship unpossessed");
+    }
+
+    [RegisterCommand(Name = "last", Help = "Repossesses the last ship", MinArgCount = 0, MaxArgCount = 0)]
+    static void Repossesses(CommandArg[] args)
+    {
+        GameSettings.pc.Repossess();
+        Log("Repossessed last ship");
     }
 
     [RegisterCommand(Help = "Reloads the current scene", MinArgCount = 0, MaxArgCount = 0)]
     static void Restart(CommandArg[] args)
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-        print("Reloading current scene...");
+        Log("Reloading current scene...");
     }
 
     // Change this to apply to all speeds
@@ -140,13 +172,36 @@ public class FLTerminal : Terminal
     static void SetThrottlePower(CommandArg[] args)
     {
         var newPower = Mathf.Clamp(args[0].Int, 0, 99999);
-        PlayerController.instance.ship.engine.engineStats.enginePower = newPower;
+        GameSettings.pc.ship.engine.engineStats.enginePower = newPower;
     }
 
     [RegisterCommand(Name = "cruise.power", Help = "Change the current ship's cruise power", MinArgCount = 1, MaxArgCount = 1)]
     static void SetCruisePower(CommandArg[] args)
     {
         var newPower = Mathf.Clamp(args[0].Int, 0, 99999);
-        PlayerController.instance.ship.cruiseEngine.stats.thrust = newPower;
+        GameSettings.pc.ship.cruiseEngine.stats.thrust = newPower;
+    }
+
+    private Ship FindClosestShip(Ship[] ships)
+    {
+        ships.ToList().Remove(GameSettings.pc.ship);
+
+        Ship closestShip = null;
+        float closestShipDistance = 0;
+
+        closestShip = ships[0];
+        closestShipDistance = Vector3.Distance(GameSettings.pc.ship.transform.position, closestShip.transform.position);
+
+        foreach (var ship in ships)
+        {
+            var dist = Vector3.Distance(GameSettings.pc.ship.transform.position, ship.transform.position);
+            if (dist < closestShipDistance)
+            {
+                closestShip = ship;
+                closestShipDistance = dist;
+            }
+        }
+
+        return null;
     }
 }

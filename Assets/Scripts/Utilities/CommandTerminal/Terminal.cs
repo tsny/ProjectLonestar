@@ -12,7 +12,7 @@ namespace CommandTerminal
         OpenFull
     }
 
-    public class Terminal : MonoBehaviour
+    public class Terminal : Controller<Terminal>
     {
         [Header("Window")]
         [Range(0, 1)]
@@ -151,6 +151,8 @@ namespace CommandTerminal
 
         protected virtual void Initialize()
         {
+            name = "TERMINAL";
+
             if (ConsoleFont == null) {
                 ConsoleFont = Font.CreateDynamicFontFromOSFont("Courier New", 14);
                 //Debug.LogWarning("Command Console Warning: Please assign a font.");
@@ -174,7 +176,9 @@ namespace CommandTerminal
                 Autocomplete.Register(command.Key);
             }
 
-            print("Type 'help' for a list of commands");
+            Log("Press 'shift + ~' for bigger console");
+            Log("Type 'help commandName' for command description");
+            Log("Type 'help' for a list of commands");
         }
 
         void OnGUI() {

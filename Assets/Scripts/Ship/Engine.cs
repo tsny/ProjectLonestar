@@ -4,18 +4,35 @@ using System;
 
 public class Engine : ShipComponent 
 {
+    [Header("Main")]
     public Rigidbody rb;
     public new Transform transform;
+
+    [Header("Model")]
+    public float shipModelZModifier = 1;
+    public Transform shipModel;
+    public float lerpModifier = .1f;
+    private Quaternion shipModelOrigRot;
 
     public float Speed
     {
         get
         {
-            return Vector3.Dot(rb.velocity, transform.forward);
+            //return Vector3.Dot(rb.velocity, transform.forward);
+            return Mathf.Abs(rb.velocity.z);
         }
     }
 
+    [Header("Stats")]
     public EngineStats engineStats;
+
+    private Cooldown sidestepCD;
+    private Cooldown blinkCD;
+
+    public float sidestepForce = 50000;
+    public float sidestepDur = .2f;
+    public float maxZVelocity = 10;
+    public float blinkDistance = 20;
 
     private float throttle;
     public float Throttle
@@ -71,12 +88,19 @@ public class Engine : ShipComponent
         {
             if (drifting == value) return;
 
-            if (value) Strafe = 0;
+            if (value) 
+            {
+                Strafe = 0;
+                Throttle = 0;
+            }
 
             drifting = value;
             OnDriftingChange(value);
         }
     }
+
+    public bool clampVelocity = true;
+    private IEnumerator sidestepCR;
 
     public delegate void ThrottleChangedEventHandler(Engine sender, ThrottleChangeEventArgs e);
     public event ThrottleChangedEventHandler ThrottleChanged;
@@ -87,10 +111,62 @@ public class Engine : ShipComponent
     public event EventHandler DriftingChange;
     public delegate void EventHandler(bool drifting);
 
+    public void SidestepRight()
+    {
+        if (sidestepCR != null || sidestepCD != null) return;
+
+        sidestepCR = SidestepRoutine(new Vector3(sidestepForce, 0, 0), ForceMode.Force);
+        StartCoroutine(sidestepCR);
+    }
+
+    public void SidestepLeft()
+    {
+        if (sidestepCR != null || sidestepCD != null) return;
+
+        sidestepCR = SidestepRoutine(new Vector3(-sidestepForce, 0, 0), ForceMode.Force);
+        StartCoroutine(sidestepCR);
+    }
+
+    public void Blink()
+    {
+        if (blinkCD) return;
+
+        //var forwardsInt = forwards ? 1 : -1;
+        var forwardsInt = 1;
+        transform.position = transform.position + transform.forward * (blinkDistance * forwardsInt);
+        blinkCD = Cooldown.Instantiate(this, 3);
+    }
+
+    private IEnumerator SidestepRoutine(Vector3 baseForce, ForceMode mode)
+    {
+        float elapsed = 0;
+
+        while (elapsed < sidestepDur)
+        {
+            rb.AddRelativeForce(baseForce * (elapsed / sidestepDur), mode);
+            elapsed += Time.deltaTime;
+            yield return new WaitForFixedUpdate();
+        }
+
+        sidestepCD = Cooldown.Instantiate(this, 3);
+        sidestepCR = null;
+    }
+
+    public void SidestepHorizontal(bool usePositiveThrust)
+    {
+        if (sidestepCR != null || sidestepCD != null) return;
+        var thrustBool = usePositiveThrust ? 1 : -1;
+
+        sidestepCR = SidestepRoutine(new Vector3(sidestepForce * thrustBool, 0, 0), ForceMode.Force);
+        StartCoroutine(sidestepCR);
+    }
+
     private void Awake()
     {
         if (engineStats == null)
             engineStats = Instantiate(ScriptableObject.CreateInstance<EngineStats>());
+        
+        shipModelOrigRot = shipModel.localRotation;
     }
 
     private void OnDriftingChange(bool isDrifting)
@@ -111,31 +187,32 @@ public class Engine : ShipComponent
     private void HandleCruiseChange(CruiseEngine sender)
     {
         if (sender.State != CruiseState.Off)
-        {
             Drifting = false;
-        }
     }
 
     private void FixedUpdate()
     {
-        ApplyStrafeForces();
-        ApplyThrottleForces();
+        if (!Drifting)
+        {
+            var forces = CalcStrafeForces() + CalcThrottleForces();
+            rb.AddForce(forces);
+        } 
     }
 
-    private void ApplyStrafeForces()
+    private Vector3 GetClampedVelocity()
     {
-        if (Strafe != 0)
-        {
-            rb.AddForce(rb.transform.right * Strafe * engineStats.strafePower);
-        }
+        var newZ = Mathf.Clamp(rb.velocity.z, -maxZVelocity, maxZVelocity); 
+        return new Vector3(rb.velocity.x, rb.velocity.y, newZ);
     }
 
-    private void ApplyThrottleForces()
+    private Vector3 CalcStrafeForces()
     {
-        if (Throttle > 0 && Drifting == false)
-        {
-            rb.AddForce(rb.transform.forward * Throttle * engineStats.enginePower);
-        }
+        return rb.transform.right * Strafe * engineStats.strafePower;
+    }
+
+    private Vector3 CalcThrottleForces()
+    {
+        return rb.transform.forward * Throttle * engineStats.enginePower;
     }
 
     public void ThrottleUp()
@@ -161,24 +238,37 @@ public class Engine : ShipComponent
         Quaternion neutralRotation = Quaternion.LookRotation(transform.forward, Vector3.up);
         neutralRotation = Quaternion.Lerp(transform.rotation, neutralRotation, Time.deltaTime);
         transform.rotation = neutralRotation;
+
+        neutralRotation = Quaternion.Lerp(shipModel.localRotation, shipModelOrigRot, lerpModifier);
+        shipModel.localRotation = neutralRotation;
     }
 
     public void Pitch(float amount)
     {
         amount = Mathf.Clamp(amount, -1, 1);
-        transform.Rotate(new Vector3(engineStats.turnSpeed * -amount, 0, 0));
+        transform.Rotate(Vector3.left * amount);
     }
 
     public void Yaw(float amount)
     {
         amount = Mathf.Clamp(amount, -1, 1);
-        transform.Rotate(new Vector3(0, engineStats.turnSpeed * amount, 0));
+        transform.Rotate(Vector3.up * amount);
+        VisualYawRotation(amount);
     }
 
     public void Roll(float amount)
     {
         amount = Mathf.Clamp(amount, -1, 1);
-        transform.Rotate(new Vector3(0, 0, engineStats.turnSpeed * amount));
+        transform.Rotate(Vector3.forward * amount);
+    }
+
+    private void VisualYawRotation(float amount)
+    {
+        if (shipModel == null) return;
+
+        // Rotate the model slightly based on yawOffset
+        Vector3 turnRotation = shipModelOrigRot.eulerAngles + new Vector3(0, 0, -amount * shipModelZModifier);
+        shipModel.localRotation = Quaternion.Euler(turnRotation);
     }
 }
 

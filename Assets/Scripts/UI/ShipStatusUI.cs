@@ -13,52 +13,18 @@ public class ShipStatusUI : ShipUIElement
 
     public Afterburner afterburnerHardpoint;
 
-    public override void SetShip(Ship ship)
-    {
-        base.SetShip(ship);
-
-        enabled = true;
-
-        ship.hardpointSystem.WeaponFired += HandleWeaponFired;
-        //ship.hull.TookDamage += HandleTookDamage;
-    }
-
-    private void HandleTookDamage(MonoBehaviour sender, DamageEventArgs e)
-    {
-        SetFillAmounts();
-    }
-
-    private void HandleWeaponFired(Gun gunFired)
-    {
-        SetFillAmounts();
-    }
-
     private void Update()
     {
+        if (ship == null) return;
+        SetFillAmounts();
         SetText();
     }
 
     private void SetFillAmounts()
     {
-        //healthBarImage.fillAmount = ship.hull.health / ship.hull.maxHealth;
-        //shieldBarImage.fillAmount = ship.hardpointSystem.shieldHardpoint.health / ship.hardpointSystem.shieldHardpoint.capacity;
+        healthBarImage.fillAmount = ship.health.health / ship.health.maxHealth;
+        shieldBarImage.fillAmount = ship.health.shield / ship.health.shield;
         energyBarImage.fillAmount = ship.hardpointSystem.energy / ship.hardpointSystem.energyCapacity;
-    }
-
-    private void SetHealthFill()
-    {
-
-    }
-
-    private void SetShieldFill()
-    {
-
-    }
-
-    // TODO?
-    private void SetAbilityFill()
-    {
-
     }
 
     private void SetText()

@@ -3,6 +3,8 @@ using UnityEngine;
 public class Controller<T> : MonoBehaviour where T : Component
 {
     private static bool _applicationIsQuitting = false;
+
+    public T prefab;
     
     private static T _instance = null;
     public static T instance
@@ -14,7 +16,8 @@ public class Controller<T> : MonoBehaviour where T : Component
                 _instance = FindObjectOfType<T>();
 
                 if (_instance == null)
-                    _instance = new GameObject("_" + typeof(T).Name).AddComponent<T>();
+                    //_instance = new GameObject("_" + typeof(T).Name).AddComponent<T>();
+                    //_instance = Instantiate(prefab);
 
                 DontDestroyOnLoad(_instance);
             }
@@ -25,6 +28,8 @@ public class Controller<T> : MonoBehaviour where T : Component
 
     protected virtual void Awake()
     {
+        name = this.GetType().Name.ToUpper();
+
         if (_instance == null)
         {
             _instance = this as T;

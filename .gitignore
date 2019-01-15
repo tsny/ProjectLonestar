@@ -25,6 +25,7 @@ bld/
 [Oo]bj/
 [Ll]og/
 [Bb]uild/
+MacBuild/
 
 # Visual Studio 2015 cache/options directory
 .vs/
@@ -62,6 +63,7 @@ artifacts/
 *.rsp
 *.sbr
 *.tlb
+*.zip
 *.tli
 *.tlh
 *.tmp
@@ -288,3 +290,7 @@ Assets/Textures
 
 *.dll
 *.lnk
+*.png
+*.jpeg
+*.unity
+*.psd

@@ -1,29 +1,13 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-public class CollisionAvoidance : ShipComponent 
+public class CollisionAvoidance   
 {
-    public float rayCastOffset = 5;
-    public float detectionDistance = 20;
-
-    public float obstacleDetectedTime;
-    //public float turnSpeed = 5;
-
-    public Engine engine;
-
-    private void Update () 
+    public static bool CheckForObstacle (Ship ship, float rayCastOffset, float detectionDistance) 
     {
-        if (engine == null) return;
+        var transform = ship.transform;
+        var engine = ship.engine;
 
-        var detectedAnObstacle = CheckForObstacle ();
-
-        if (detectedAnObstacle) obstacleDetectedTime += Time.deltaTime;
-
-        else obstacleDetectedTime = 0;
-    }
-
-    public bool CheckForObstacle () 
-    {
         RaycastHit hit;
 
         Vector3 left  = transform.position - transform.right * rayCastOffset;
@@ -35,6 +19,8 @@ public class CollisionAvoidance : ShipComponent
         Debug.DrawRay (right, detectionDistance * transform.forward, Color.cyan);
         Debug.DrawRay (up, detectionDistance * transform.forward, Color.cyan);
         Debug.DrawRay (down, detectionDistance * transform.forward, Color.cyan);
+
+        if (engine == null) return false;
 
         if (Physics.Raycast (left, transform.forward, out hit, detectionDistance)) 
         {

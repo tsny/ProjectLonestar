@@ -9,10 +9,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 41ef943491bbd6c4887ced50ed573969, type: 3}
-  m_Name: GoTo State
+  m_Name: GoTo
   m_EditorClassIdentifier: 
-  sceneGizmoColor: {r: 0, g: 1, b: 0.37931037, a: 1}
+  sceneGizmoColor: {r: 0, g: 1, b: 1, a: 1}
   actions:
   - {fileID: 11400000, guid: a78a7b39879bc2040b9f03479124d558, type: 2}
   - {fileID: 11400000, guid: eaca34b6d9027bc46b82a463ded598d2, type: 2}
-  transitions: []
+  transitions:
+  - decision: {fileID: 11400000, guid: 982c4929103d31347838dd7ba9d57b04, type: 2}
+    trueState: {fileID: 0}
+    falseState: {fileID: 11400000, guid: f69688016923e034d884258a3c24adfd, type: 2}

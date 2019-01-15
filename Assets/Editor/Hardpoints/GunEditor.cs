@@ -11,13 +11,11 @@ public class GunEditor : Editor
 
         Gun gun = (Gun)target;
 
-        if (Application.isPlaying == false) return;
-
         gun.IsActive = EGL.Toggle("Active", gun.IsActive);
 
         if (GUILayout.Button("Fire"))
         {
-            gun.Fire();
+            gun.Fire(null);
         }
     }
 }

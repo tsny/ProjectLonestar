@@ -16,7 +16,7 @@ public class Scanner : Hardpoint
 
     private void Start()
     {
-        StartCoroutine(ScanCoroutine());
+        //StartCoroutine(ScanCoroutine());
     }
 
     public void ScanForTargets()
@@ -41,7 +41,7 @@ public class Scanner : Hardpoint
 
     private void ValidateNewTargets(List<ITargetable> newTargets)
     {
-        var targetsToIgnore = owningShip.GetComponentsInChildren<MonoBehaviour>().OfType<ITargetable>();
+        var targetsToIgnore = ship.GetComponentsInChildren<MonoBehaviour>().OfType<ITargetable>();
 
         newTargets.RemoveAll(x => targetsToIgnore.Contains(x));
     }

@@ -4,22 +4,44 @@ using UnityEngine.EventSystems;
 
 public class HighlightComponent : MonoBehaviour
 {
-    public new Renderer renderer;
-    public Shader highlightShader;
-    public Shader standardShader;
+    public Renderer rnd;
+    public Shader highlight;
 
-    //private void Awake()
-    //{
-    //    renderer = GetComponent<Renderer>();
-    //}
+    private Shader orig;
 
-    private void OnMouseEnter()
+    private void Awake()
     {
-        renderer.material.shader = highlightShader;
+        if (rnd == null)
+        {
+            rnd = GetComponent<Renderer>();
+        }
+
+        orig = rnd.material.shader;
+    }
+
+    private void OnMouseOver()
+    {
+        ToggleShader(1);
     }
 
     private void OnMouseExit()
     {
-        renderer.material.shader = standardShader;
+        ToggleShader(2);
+    }
+
+    public void ToggleShader(int toggle)
+    {
+        switch (toggle)
+        {
+            case 0:
+                rnd.material.shader = rnd.material.shader == orig ? highlight : orig;
+                break;
+            case 1:
+                rnd.material.shader = highlight;
+                break;
+            case 2:
+                rnd.material.shader = orig;
+                break;
+        }
     }
 }

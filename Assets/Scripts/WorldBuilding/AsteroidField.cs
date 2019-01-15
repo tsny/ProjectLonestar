@@ -83,6 +83,8 @@ public class AsteroidField : MonoBehaviour
         {
             newPosition = transform.position + Random.onUnitSphere * Random.Range(innerRadius, outerRadius);
             if (!Physics.CheckSphere(newPosition, boundsSize)) break;
+
+            if (i == 49) Debug.LogWarning("Tried to spawn asteroid 50 times and could not find suitable space...");
         }
 
         return newPosition;

@@ -14,7 +14,6 @@ public class IndicatorManager : ShipUIElement
     public override void SetShip(Ship newShip)
     {
         base.SetShip(newShip);
-
         CreateIndicators();
     }
 
@@ -24,10 +23,9 @@ public class IndicatorManager : ShipUIElement
 
         foreach(var target in targets)
         {
-            var pc = FindObjectOfType<PlayerController>();
             var ship = target as Ship;
 
-            if (ship != null && ship == pc.ship)
+            if (ship != null && ship == GameSettings.pc.ship)
             {
                 targets.Remove(target);
                 break;
@@ -45,8 +43,9 @@ public class IndicatorManager : ShipUIElement
 
     protected override void ClearShip()
     {
-        ClearIndicators();
         base.ClearShip();
+        ClearIndicators();
+        CreateIndicators();
     }
 
     private void HandleIndicatorSelected(TargetIndicator newIndicator)

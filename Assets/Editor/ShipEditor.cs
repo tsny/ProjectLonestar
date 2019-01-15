@@ -5,56 +5,44 @@ using UnityEngine;
 [CustomEditor(typeof(Ship))]
 public class ShipEditor : Editor
 {
-    PlayerController playerController;
     Ship ship;
-
-    private void Awake()
-    {
-        playerController = FindObjectOfType<PlayerController>();
-    }
 
     public override void OnInspectorGUI()
     {
         base.OnInspectorGUI();
         ship = target as Ship;
-        DecidePossessionButtonVisibility();
+
+        if (Application.isPlaying && GUILayout.Button("Die")) 
+            ship.Die();
+
+        ShowPossessButton();
+        ShowPossessionHandle();
     }
 
-    void OnSceneGUI()
+    void ShowPossessionHandle()
     {
-        ship = target as Ship;
+        if (!Application.isPlaying || GameSettings.pc.ship == ship) return;
 
-        if (!Application.isPlaying || playerController == null) return;
-
-        if (playerController.ship != ship) ShowPossessionHandle();
-    }
-
-    private void ShowPossessionHandle()
-    {
         if (Handles.Button(ship.transform.position + Vector3.up * 10, Quaternion.identity, 3, 3, Handles.SphereHandleCap))
-        {
-            playerController.Possess(ship);
-        }
+            GameSettings.pc.Possess(ship);
     }
 
-    private void DecidePossessionButtonVisibility()
+    private void ShowPossessButton()
     {
-        if (!Application.isPlaying || playerController == null) return;
+        var pc = GameSettings.pc;
 
-        if (playerController.ship != ship)
+        if (!Application.isPlaying) return;
+
+        if (pc.ship != ship)
         {
             if (GUILayout.Button("Possess"))
-            {
-                playerController.Possess(ship);
-            }
+                pc.Possess(ship);
         }
 
         else
         {
             if (GUILayout.Button("Unpossess"))
-            {
-                playerController.Possess(null);
-            }
+                pc.Release();
         }
     }
 }

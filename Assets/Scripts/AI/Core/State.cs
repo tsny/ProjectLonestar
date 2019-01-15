@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-[CreateAssetMenu(menuName = "PluggableAI/State")]
+[CreateAssetMenu(menuName = "AI/State")]
 public class State : ScriptableObject
 {
     public Color sceneGizmoColor = Color.gray;
@@ -25,21 +25,12 @@ public class State : ScriptableObject
 
     private void CheckTransitions(StateController controller)
     {
-        for(int i = 0; i < transitions.Length; i++)
+        foreach (Transition transition in transitions)
         {
-            bool decisionSucceeded = transitions[i].decision.Decide(controller);
-
-            if (decisionSucceeded)
-            {
-                controller.TransitionToState(transitions[i].trueState);
-            }
-
+            if (transition.decision.Decide(controller))
+                controller.TransitionToState(transition.trueState);
             else
-            {
-                controller.TransitionToState(transitions[i].falseState);
-            }
+                controller.TransitionToState(transition.falseState);
         }
     }
-
-
 }

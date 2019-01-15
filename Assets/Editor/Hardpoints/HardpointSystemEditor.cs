@@ -14,7 +14,7 @@ public class HardpointSystemEditor : Editor
 
         if (GUILayout.Button("Fire Active Weapons"))
         {
-            hardpointSystem.FireActiveWeapons(new Vector3());
+            hardpointSystem.FireActiveWeapons(hardpointSystem.transform.forward + hardpointSystem.transform.position);
         }
     }
 }
