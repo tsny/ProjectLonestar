@@ -34,7 +34,7 @@ public class TargetIndicator : MonoBehaviour
             return distanceFromTarget < maxRange;
         }
     }
-    public Ship ship
+    public Ship Ship
     {
         get
         {
@@ -42,6 +42,7 @@ public class TargetIndicator : MonoBehaviour
         }
     }
 
+    private Health targetHealth;
     public bool selected;
 
     public Text header;
@@ -56,8 +57,6 @@ public class TargetIndicator : MonoBehaviour
     public Image healthBarImage;
     public Image shieldBarImage;
 
-    public float targetHealth;
-    public float targetShield;
     public float distanceFromTarget;
 
     [Header("Scaling")]
@@ -83,23 +82,23 @@ public class TargetIndicator : MonoBehaviour
     {
         enabled = false;
         content.SetActive(false);
-        camera = Camera.main;
+        camera = GameSettings.pc.cam != null ? GameSettings.pc.cam : Camera.main;
     }
 
-    public virtual void SetTarget(ITargetable newTarget)
+    public virtual void SetTarget(GameObject newTarget)
     {
-        newTarget.SetupTargetIndicator(this);
+        //newTarget.SetupTargetIndicator(this);
 
-        Ship target = newTarget as Ship;
+        Ship ship = newTarget.GetComponent<Ship>();
+        targetHealth = newTarget.GetComponent<Health>();
 
-        if (target == null) return;
-
-        this.target = target.gameObject;
-
-        name = target.name;
+        name = "T-IND: " + newTarget.name;
         enabled = true;
 
-        target.Died += () => { Destroy(gameObject); };
+        target = newTarget;
+
+        if (Ship != null)
+        ship.Died += () => { Destroy(gameObject); };
     }
 
     private void Update()
@@ -110,9 +109,11 @@ public class TargetIndicator : MonoBehaviour
         CalculateScale();
         CalculateTransparency();
 
-        if (ship == null) return;
-        healthBarImage.fillAmount = ship.health.health / ship.health.maxHealth;
-        shieldBarImage.fillAmount = ship.health.shield / ship.health.maxShield;
+        //if (Ship == null) return;
+        if (targetHealth == null) return;
+
+        healthBarImage.fillAmount = targetHealth.health / targetHealth.stats.maxHealth;
+        shieldBarImage.fillAmount = targetHealth.shield / targetHealth.stats.maxShield;
     }
 
     private void Start()

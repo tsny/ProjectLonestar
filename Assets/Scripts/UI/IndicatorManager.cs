@@ -11,41 +11,45 @@ public class IndicatorManager : ShipUIElement
 
     public TargetIndicator selectedIndicator;
 
-    public override void SetShip(Ship newShip)
+    private void Awake()
     {
-        base.SetShip(newShip);
-        CreateIndicators();
+        Ship.Spawned += HandleShipSpawned;
     }
 
+    private void HandleShipSpawned(Ship ship)
+    {
+        if (GameSettings.pc.ship != null && GameSettings.pc.ship != ship)
+        {
+            AddIndicator(ship.gameObject);
+        }
+    }
+
+    private void Start() 
+    {
+        CreateIndicators();     
+    }
+
+    // Not really perfomant at all, consider not using ever lol
     private void CreateIndicators()
     {
-        var targets = FindObjectsOfType<MonoBehaviour>().OfType<ITargetable>().ToList();
+        var targets = FindObjectsOfType<Ship>().ToList();
 
-        foreach(var target in targets)
+        foreach (var ship in targets)
         {
-            var ship = target as Ship;
-
-            if (ship != null && ship == GameSettings.pc.ship)
+            if (ship == GameSettings.pc.ship)
             {
-                targets.Remove(target);
+                targets.Remove(ship);
                 break;
             }
         }
 
-        targets.ForEach(x => AddIndicator(x));
+        targets.ForEach(x => AddIndicator(x.gameObject));
     }
 
     private void HandleShipReleased(PlayerController sender, PossessionEventArgs args)
     {
         ClearIndicators();
         ClearShip();
-    }
-
-    protected override void ClearShip()
-    {
-        base.ClearShip();
-        ClearIndicators();
-        CreateIndicators();
     }
 
     private void HandleIndicatorSelected(TargetIndicator newIndicator)
@@ -61,23 +65,19 @@ public class IndicatorManager : ShipUIElement
     public void ClearIndicators()
     {
         DeselectCurrentIndicator();
-
         FindObjectsOfType<TargetIndicator>().ToList().ForEach(x => Destroy(x.gameObject));
     }
 
     public void DeselectCurrentIndicator()
     {
-        selectedIndicator = null;
-
         if (selectedIndicator != null) selectedIndicator.Deselect();
+        selectedIndicator = null;
     }
 
-    public void AddIndicator(ITargetable newTarget)
+    public void AddIndicator(GameObject target)
     {
         TargetIndicator newIndicator = Instantiate(indicatorPrefab, indicatorLayer).GetComponent<TargetIndicator>();
-
-        newIndicator.SetTarget(newTarget);
-
+        newIndicator.SetTarget(target);
         newIndicator.Selected += HandleIndicatorSelected;
     }
 }

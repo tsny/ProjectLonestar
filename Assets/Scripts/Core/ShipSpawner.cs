@@ -90,7 +90,7 @@ public class ShipSpawner : MonoBehaviour
             for (int i = 0; i < spawn.numToSpawn; i++)
             {
                 var ship = SpawnShip(spawn.ship, spawnPos + RandomPointInBounds(bounds), spawn.loadout);
-                ship.Init();
+                //ship.Init();
                 spawnedShips.Add(ship);
 
                 var ai = ship.GetComponent<StateController>();

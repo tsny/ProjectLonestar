@@ -3,7 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Ship : MonoBehaviour, ITargetable, IDamageable 
+public class Ship : MonoBehaviour 
 {
     [Header("Stats")]
     public PilotDetails pilotDetails;
@@ -29,6 +29,9 @@ public class Ship : MonoBehaviour, ITargetable, IDamageable
 
     public delegate void PossessionEventHandler(PlayerController pc, Ship sender, bool possessed);
     public delegate void EventHandler();
+    public delegate void SpawnEventHandler(Ship sender);
+
+    public static event SpawnEventHandler Spawned;
 
     public event PossessionEventHandler Possession;
     public event TargetEventHandler BecameTargetable;
@@ -37,7 +40,7 @@ public class Ship : MonoBehaviour, ITargetable, IDamageable
 
     private void OnBecameTargetable()
     {
-        if (BecameTargetable != null) BecameTargetable(this);
+        //if (BecameTargetable != null) BecameTargetable(this);
     }
 
     protected void OnPossession(PlayerController pc, bool possessed)
@@ -53,8 +56,8 @@ public class Ship : MonoBehaviour, ITargetable, IDamageable
         rb = GetComponentInChildren<Rigidbody>();
         colliders = GetComponentsInChildren<Collider>();
 
-        health = Health.CreateInstance<Health>();
-        health.Init();
+        // Maybe make this required? CheckComponent<Health>
+        health = GetComponentInChildren<Health>();
 
         var components = GetComponentsInChildren<ShipComponent>();
         components.ToList().ForEach(x => x.Initialize(this));
@@ -63,12 +66,8 @@ public class Ship : MonoBehaviour, ITargetable, IDamageable
         engine.ThrottleChanged += HandleThrottleChange;
         cruiseEngine.CruiseStateChanged += HandleCruiseChange;
         health.HealthDepleted += HandleHealthDepleted;
-    }
 
-    public void Init()
-    {
-        health = Health.CreateInstance<Health>();
-        health.Init();
+        if (Spawned != null) Spawned(this);
     }
 
     private void HandleCruiseChange(CruiseEngine sender, CruiseState newState)
@@ -99,7 +98,7 @@ public class Ship : MonoBehaviour, ITargetable, IDamageable
 
     private void HandleHealthDepleted()
     {
-        if (BecameUntargetable != null) BecameUntargetable(this);
+        //if (BecameUntargetable != null) BecameUntargetable(this);
         Die();
     }
 

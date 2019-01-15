@@ -22,8 +22,8 @@ public class ShipStatusUI : ShipUIElement
 
     private void SetFillAmounts()
     {
-        healthBarImage.fillAmount = ship.health.health / ship.health.maxHealth;
-        shieldBarImage.fillAmount = ship.health.shield / ship.health.shield;
+        healthBarImage.fillAmount = ship.health.health / ship.health.stats.maxHealth;
+        shieldBarImage.fillAmount = ship.health.shield / ship.health.stats.maxShield;
         energyBarImage.fillAmount = ship.hardpointSystem.energy / ship.hardpointSystem.energyCapacity;
     }
 

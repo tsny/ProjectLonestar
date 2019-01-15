@@ -58,24 +58,29 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
-        cam = GetComponent<Camera>();
-        shipCamera = GetComponent<ShipCamera>();
-        flycam = CheckComponent<Flycam>();
+        cam = Utilities.CheckComponent<Camera>(gameObject);
+        shipCamera = Utilities.CheckComponent<ShipCamera>(gameObject);
+        flycam = Utilities.CheckComponent<Flycam>(gameObject);
+        listener = Utilities.CheckComponent<AudioListener>(gameObject);
+
+        // cam = GetComponent<Camera>();
+        // shipCamera = GetComponent<ShipCamera>();
+        // flycam = CheckComponent<Flycam>();
+        // listener = CheckComponent<AudioListener>();
         //ppl = CheckComponent<PostProcessLayer>();
-        listener = CheckComponent<AudioListener>();
     }
 
-    private T CheckComponent<T>() where T : Component
-    {
-        var obj = GetComponent<T>();
+    // private T CheckComponent<T>() where T : Component
+    // {
+    //     var obj = GetComponent<T>();
 
-        if (obj == null)
-        {
-            obj = gameObject.AddComponent<T>();
-        }
+    //     if (obj == null)
+    //     {
+    //         obj = gameObject.AddComponent<T>();
+    //     }
         
-        return obj;
-    }
+    //     return obj;
+    // }
 
     protected virtual void OnPossessedNewShip(PossessionEventArgs args)
     {
@@ -126,7 +131,7 @@ public class PlayerController : MonoBehaviour
         ship.SetPossessed(this, false);
         shipCamera.ClearTarget();
 
-        foreach (var coll in ship.GetComponentsInChildren<Collider>())
+        foreach (var coll in ship.colliders)
         {
             coll.tag = "Untagged";
         }
