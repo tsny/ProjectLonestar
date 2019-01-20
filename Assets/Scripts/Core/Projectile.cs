@@ -15,12 +15,20 @@ public class Projectile : MonoBehaviour
     public Rigidbody rb;
     public Collider coll;
 
+    public float DistanceTraveled
+    {
+        get
+        {
+            return distanceTraveled;
+        }
+    }
+
     public Projectile Initialize(Vector3 target, WeaponStats stats, Collider[] collidersToIgnore = null)
     {
         if (stats != null)
             this.stats = stats;
         else
-            Debug.LogWarning("Firing projectile from gun without passing stats...");
+            stats = Utilities.CheckScriptableObject<WeaponStats>(stats);
 
         transform.LookAt(target);
 
@@ -33,15 +41,16 @@ public class Projectile : MonoBehaviour
         }
 
         Accelerate();
-        StartCoroutine(RangeChecker());
-
         return this;
     }
 
     public void Accelerate()
     {
+        stats = Utilities.CheckScriptableObject<WeaponStats>(stats);
+
         startPosition = transform.position;
         rb.velocity = transform.forward * stats.thrust;
+        StartCoroutine(RangeChecker());
     }
 
     private IEnumerator RangeChecker()
@@ -56,7 +65,7 @@ public class Projectile : MonoBehaviour
                 yield break;
             }
 
-            yield return new WaitForSeconds(1);
+            yield return new WaitForSeconds(.1f);
         }
     }
 

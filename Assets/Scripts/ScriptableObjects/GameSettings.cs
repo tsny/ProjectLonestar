@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using UnityEditor;
 using UnityEngine.SceneManagement;
+using System.Collections.Generic;
+using UnityEngine.UI;
 
 [CreateAssetMenu(menuName = "Settings/GameSettings")]
 public class GameSettings : SingletonScriptableObject<GameSettings>
@@ -9,6 +11,7 @@ public class GameSettings : SingletonScriptableObject<GameSettings>
     public HUDManager HUDPrefab;
     public FLTerminal terminalPrefab;
     public PlayerController pcPrefab;
+    public Canvas nebulaCanvasPrefab;
 
     public Loadout defaultLoadout;
     public Inventory playerInventory;
@@ -20,16 +23,27 @@ public class GameSettings : SingletonScriptableObject<GameSettings>
 
     public string menuSceneName = "SCN_MainMenu";
 
+    public Resolution[] resolutions;
+    public List<string> resolutionOptions;
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+    static void GameLoading()
+    {
+        Instance.InitResolutions();
+
+        pc = FindObjectOfType<PlayerController>();
+
+        if (pc == null)
+            pc = Instantiate(Instance.pcPrefab);
+
+        DontDestroyOnLoad(pc);
+
+        DontDestroyOnLoad(pc.GetComponent<NebulaCameraFog>().fadeQuad = Instantiate(Instance.nebulaCanvasPrefab).GetComponent<Image>());
+    }
+
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     static void GameStartup()
     {
-        pc = FindObjectOfType<PlayerController>();
-        if (pc == null)
-        {
-            pc = Instantiate(Instance.pcPrefab);
-        }
-        DontDestroyOnLoad(pc);
-
         Instance.SpawnGlobalPrefabs();
         SceneManager.sceneLoaded += HandleNewScene;
         HandleNewScene(SceneManager.GetActiveScene(), LoadSceneMode.Single);
@@ -38,6 +52,8 @@ public class GameSettings : SingletonScriptableObject<GameSettings>
     private static void HandleNewScene(Scene scene, LoadSceneMode mode)
     {
         Debug.Log("Loading new scene: " + scene.name);
+
+        pc.GetComponent<NebulaCameraFog>().Init();
 
         if (scene.name != Instance.menuSceneName)
         {
@@ -75,5 +91,24 @@ public class GameSettings : SingletonScriptableObject<GameSettings>
         //DontDestroyOnLoad(hud.gameObject);
 
         hud.SetPlayerController(pc);
+    }
+
+    private void InitResolutions()
+    {
+        resolutions = Screen.resolutions;
+        resolutionOptions = new List<string>();
+
+        int currentResolutionIndex = 0;
+
+        for (int i = 0; i < resolutions.Length; i++)
+        {
+            string option = resolutions[i].width + "x" + resolutions[i].height + " : " + resolutions[i].refreshRate + "hz";
+            resolutionOptions.Add(option);
+
+            if (resolutions[i].Equals(Screen.currentResolution))
+            {
+                currentResolutionIndex = i;
+            }
+        }
     }
 }

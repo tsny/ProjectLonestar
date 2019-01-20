@@ -22,6 +22,11 @@ public class Gun : Hardpoint
         }
     }
 
+    public Vector3 SpawnPoint
+    {
+        get { return spawn ? spawn.position : transform.position; }
+    }
+
     private bool _isActive = true;
     public bool IsActive
     {
@@ -78,16 +83,13 @@ public class Gun : Hardpoint
     {
         if (stats == null)
             stats = ScriptableObject.CreateInstance<WeaponStats>();
-
-        if (spawn == null)
-            spawn = transform; 
     }
 
     public bool Fire(Vector3 target, Collider[] colliders)
     {
         if (!CanFire) return false;
 
-        var proj = Instantiate(projectile, spawn.position, Quaternion.identity);
+        var proj = Instantiate(projectile, SpawnPoint, Quaternion.identity);
         proj.Initialize(target, stats, colliders);
 
         StartCooldown(stats.cooldownDuration);

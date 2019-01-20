@@ -13,9 +13,21 @@ public class GunEditor : Editor
 
         gun.IsActive = EGL.Toggle("Active", gun.IsActive);
 
-        if (GUILayout.Button("Fire"))
+        if (Application.isPlaying && GUILayout.Button("Fire"))
         {
             gun.Fire(null);
         }
+    }
+
+    [DrawGizmo(GizmoType.Selected)]
+    static void ShowProjectilePath(Gun gun, GizmoType type)
+    {
+        if (gun.projectile == null) return;
+
+        //Ray ray = new Ray()
+        Vector3 projectileEndPoint = gun.transform.forward * gun.projectile.stats.range;
+        Debug.DrawRay(gun.SpawnPoint, projectileEndPoint, Color.green);
+        //Gizmos.DrawWireSphere(field.transform.position, field.outerRadius);
+        //Gizmos.DrawWireSphere(field.transform.position, field.innerRadius);
     }
 }

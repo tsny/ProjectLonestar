@@ -27,7 +27,12 @@ public class State : ScriptableObject
     {
         foreach (Transition transition in transitions)
         {
-            if (transition.decision.Decide(controller))
+            // Use a copy of the scriptable object in order to not update the original scriptable object
+            var descCopy = FLDecision.Instantiate(transition.decision);
+            // Initialize kind of like a constructor
+            descCopy.Init();
+
+            if (descCopy.Decide(controller))
                 controller.TransitionToState(transition.trueState);
             else
                 controller.TransitionToState(transition.falseState);

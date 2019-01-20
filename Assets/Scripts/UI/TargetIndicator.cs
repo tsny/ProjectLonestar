@@ -12,7 +12,7 @@ public class TargetIndicator : MonoBehaviour
             return camera.WorldToScreenPoint(target.transform.position);
         }
     }
-    public bool IsOnscreen
+    public bool TargetIsOnScreen
     {
         get
         {
@@ -31,7 +31,7 @@ public class TargetIndicator : MonoBehaviour
     {
         get
         {
-            return distanceFromTarget < maxRange;
+            return DistanceFromTarget < endFadeRange;
         }
     }
     public Ship Ship
@@ -39,6 +39,13 @@ public class TargetIndicator : MonoBehaviour
         get
         {
             return target.GetComponent<Ship>();
+        }
+    }
+    public float DistanceFromTarget
+    {
+        get
+        {
+            return target != null ? Vector3.Distance(camera.transform.position, target.transform.position) : 0;
         }
     }
 
@@ -57,16 +64,17 @@ public class TargetIndicator : MonoBehaviour
     public Image healthBarImage;
     public Image shieldBarImage;
 
-    public float distanceFromTarget;
-
     [Header("Scaling")]
 
+    public bool useScaling = true;
     public float minScale = .1f;
     public float maxScale = .5f;
 
-    public float maxRange = 500;
+    public float endFadeRange = 500;
+    public float beginFadeRange = 250;
 
     private bool wasOnScreenLastFrame;
+    private Vector3 originalScale;
 
     public Animator animator;
     public Image buttonImage;
@@ -80,9 +88,16 @@ public class TargetIndicator : MonoBehaviour
 
     private void Awake()
     {
+        originalScale = transform.localScale;
         enabled = false;
         content.SetActive(false);
+    }
+
+    private void Start()
+    {
         camera = GameSettings.pc.cam != null ? GameSettings.pc.cam : Camera.main;
+        ShowHealthBars(false);
+        ShowName(false);
     }
 
     public virtual void SetTarget(GameObject newTarget)
@@ -90,7 +105,24 @@ public class TargetIndicator : MonoBehaviour
         //newTarget.SetupTargetIndicator(this);
 
         Ship ship = newTarget.GetComponent<Ship>();
+        if (ship == GameSettings.pc.ship)
+        {
+            Destroy(gameObject);
+        }
+
+        var targetIndicator = newTarget.GetComponent<ITargetable>();
+        if (targetIndicator != null)
+        {
+            targetIndicator.SetupTargetIndicator(this);
+        }
+
         targetHealth = newTarget.GetComponent<Health>();
+
+        if (targetHealth.Invulnerable)
+        {
+            shieldBarImage.gameObject.SetActive(false);
+            healthBarImage.gameObject.SetActive(false);
+        }
 
         name = "T-IND: " + newTarget.name;
         enabled = true;
@@ -103,6 +135,12 @@ public class TargetIndicator : MonoBehaviour
 
     private void Update()
     {
+        if (target == null)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
         RangeCheck();
 
         CalculatePosition();
@@ -116,12 +154,6 @@ public class TargetIndicator : MonoBehaviour
         shieldBarImage.fillAmount = targetHealth.shield / targetHealth.stats.maxShield;
     }
 
-    private void Start()
-    {
-        ShowHealthBars(false);
-        ShowName(false);
-    }
-
     public virtual void Select()
     {
         if (selected) return;
@@ -131,9 +163,7 @@ public class TargetIndicator : MonoBehaviour
         ShowHealthBars(true);
         ShowName(true);
         buttonImage.raycastTarget = false;
-
-        animator.Play("TargetGrow");
-
+        animator.SetTrigger("Select");
         if (Selected != null) Selected(this);
     }
 
@@ -146,8 +176,7 @@ public class TargetIndicator : MonoBehaviour
         ShowHealthBars(false);
         ShowName(false);
         buttonImage.raycastTarget = true;
-
-        animator.Play("TargetShrink");
+        animator.SetTrigger("Select");
 
         if (Deselected != null) Deselected(this);
     }
@@ -156,14 +185,14 @@ public class TargetIndicator : MonoBehaviour
     {
         // Only reactivate children if the target was not onscreen
         // in the last frame and is now.
-        if (IsOnscreen && !wasOnScreenLastFrame)
+        if (TargetIsOnScreen && !wasOnScreenLastFrame)
         {
             content.SetActive(true);
         }
 
         // If the target is now offscreen but was on screen in the
         // last frame, then deactivate children
-        else if (!IsOnscreen && wasOnScreenLastFrame)
+        else if (!TargetIsOnScreen && wasOnScreenLastFrame)
         {
             content.SetActive(false);
             wasOnScreenLastFrame = false;
@@ -171,7 +200,7 @@ public class TargetIndicator : MonoBehaviour
         }
 
 
-        else if (!IsOnscreen && !wasOnScreenLastFrame)
+        else if (!TargetIsOnScreen && !wasOnScreenLastFrame)
         {
             return;
         }
@@ -184,16 +213,21 @@ public class TargetIndicator : MonoBehaviour
 
     private void CalculateScale()
     {
-        distanceFromTarget = Vector3.Distance(target.transform.position, camera.gameObject.transform.position);
-
-        float distanceQuotient = distanceFromTarget / maxRange;
-        float newScale = Mathf.Clamp(distanceQuotient, minScale, maxScale);
-        transform.localScale = newScale * Vector3.one;
+        if (useScaling)
+        {
+            float distanceQuotient = DistanceFromTarget / endFadeRange;
+            float newScale = Mathf.Clamp(distanceQuotient, minScale, maxScale);
+            transform.localScale = newScale * Vector3.one;
+        }
+        else
+        {
+            transform.localScale = originalScale;
+        }
     }
 
     private void RangeCheck()
     {
-        if ( (distanceFromTarget > maxRange) && selected)
+        if ( (DistanceFromTarget > endFadeRange) && selected)
         {
             Deselect();
         }
@@ -202,22 +236,22 @@ public class TargetIndicator : MonoBehaviour
     private void CalculateTransparency()
     {
         Color newColor;
-
-        if ( distanceFromTarget < ( maxRange / 2 ) )
-        {
-            newColor = buttonImage.color;
-            newColor.a = 1;
-
-            buttonImage.color = newColor;
-            return;
-        }
-
-        float distanceRatio = distanceFromTarget / maxRange;
-
-        distanceRatio = Mathf.Clamp(distanceRatio, 0, 1);
-
         newColor = buttonImage.color;
-        newColor.a = 1 - distanceRatio;
+
+        if (DistanceFromTarget < beginFadeRange)
+        {
+            newColor.a = 1;
+        }
+        else
+        {
+            //float distanceRatio = Mathf.Clamp(distanceFromTarget, beginFadeRange, endFadeRange);
+            //distanceRatio = distanceRatio / endFadeRange;
+
+            float distanceRatio = DistanceFromTarget / endFadeRange;
+            distanceRatio = Mathf.Clamp(distanceRatio, 0, 1);
+
+            newColor.a = 1 - distanceRatio;
+        }
 
         buttonImage.color = newColor;
     }

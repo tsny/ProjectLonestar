@@ -89,7 +89,7 @@ public class ShipSpawner : MonoBehaviour
         {
             for (int i = 0; i < spawn.numToSpawn; i++)
             {
-                var ship = SpawnShip(spawn.ship, spawnPos + RandomPointInBounds(bounds), spawn.loadout);
+                var ship = SpawnShip(spawn.ship, spawnPos + Utilities.RandomPointInBounds(bounds), spawn.loadout);
                 //ship.Init();
                 spawnedShips.Add(ship);
 
@@ -110,17 +110,7 @@ public class ShipSpawner : MonoBehaviour
 
         return spawnedShips;
     }
-
-    public static Vector3 RandomPointInBounds(Bounds bounds)
-    {
-        var x = Random.Range(bounds.min.x, bounds.max.x);
-        var y = Random.Range(bounds.min.y, bounds.max.y);
-        var z = Random.Range(bounds.min.z, bounds.max.z);
-
-        return new Vector3(x, y, z);
-    } 
 }
-
 [System.Serializable]
 public class ShipSpawn
 {

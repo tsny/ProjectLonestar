@@ -14,6 +14,6 @@ public class ThrottleUpAction : FLAction
         if (controller.ship.engine.Throttle < threshold)
             controller.ship.engine.ThrottleUp();
 
-        CollisionAvoidance.CheckForObstacle(controller.ship, raycastOffset, raycastDistance);
+        //CollisionAvoidance.CheckForObstacle(controller.ship, raycastOffset, raycastDistance);
     }
 }

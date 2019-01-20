@@ -60,8 +60,8 @@ public class FLTerminal : Terminal
     [RegisterCommand(Help = "Toggle GodMode on Current Ship", MinArgCount = 0, MaxArgCount = 0)]
     static void God(CommandArg[] args)
     {
-        GameSettings.pc.ship.health.invulnerable = !GameSettings.pc.ship.health.invulnerable;
-        Log("Godmode : " + GameSettings.pc.ship.health.invulnerable);
+        GameSettings.pc.ship.health.Invulnerable = !GameSettings.pc.ship.health.Invulnerable;
+        Log("Godmode : " + GameSettings.pc.ship.health.Invulnerable);
     }
 
     [RegisterCommand(Help = "Spawns a ship. Usage: spawn 'entity' 'times' 'possess?'", MinArgCount = 1, MaxArgCount = 3)]
@@ -141,7 +141,7 @@ public class FLTerminal : Terminal
     static void Impulse102(CommandArg[] args)
     {
         var abHardpoint = GameSettings.pc.ship.hardpointSystem.afterburner;
-        abHardpoint.afterburner.drainRate = abHardpoint.afterburner.drainRate == 0 ? 100 : 0;
+        abHardpoint.stats.drainRate = abHardpoint.stats.drainRate == 0 ? 100 : 0;
 
         Log("Toggled infinite afterburner...");
     }
@@ -180,6 +180,17 @@ public class FLTerminal : Terminal
     {
         var newPower = Mathf.Clamp(args[0].Int, 0, 99999);
         GameSettings.pc.ship.cruiseEngine.stats.thrust = newPower;
+    }
+
+    [RegisterCommand(Name = "noti", Help = "Tests the notifaction system, spawns a test notification", MinArgCount = 0, MaxArgCount = 1)]
+    static void NotificationTest(CommandArg[] args)
+    {
+        string text = "hello";
+
+        if (args.Length > 0)
+            text = args[0].String;
+
+        FindObjectOfType<HUDManager>().SpawnNotification(text);
     }
 
     private Ship FindClosestShip(Ship[] ships)

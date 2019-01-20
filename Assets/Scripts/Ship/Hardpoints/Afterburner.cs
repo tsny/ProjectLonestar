@@ -5,7 +5,7 @@ using UnityEngine;
 public class Afterburner : Hardpoint
 {
     public Rigidbody rb;
-    public AfterburnerStats afterburner;
+    public AfterburnerStats stats;
 
     public float charge;
 
@@ -26,15 +26,15 @@ public class Afterburner : Hardpoint
 
     private void Awake()
     {
-        if (afterburner == null)
-            afterburner = ScriptableObject.CreateInstance<AfterburnerStats>();
+        if (stats == null)
+            stats = ScriptableObject.CreateInstance<AfterburnerStats>();
 
-        afterburner = Instantiate(afterburner);
+        stats = Instantiate(stats);
 
         if (rb == null)
             rb = GetComponentInChildren<Rigidbody>();
 
-        charge = afterburner.capacity;
+        charge = stats.capacity;
     }
 
     private void OnActivated()
@@ -99,7 +99,7 @@ public class Afterburner : Hardpoint
     {
         for(; ;)
         {
-            charge = Mathf.MoveTowards(charge, 100, afterburner.regenRate * Time.deltaTime);
+            charge = Mathf.MoveTowards(charge, 100, stats.regenRate * Time.deltaTime);
 
             if (charge >= 100) break;
 
@@ -115,10 +115,10 @@ public class Afterburner : Hardpoint
 
         for(; ;)
         {
-            charge = Mathf.MoveTowards(charge, 0, afterburner.drainRate * Time.deltaTime);
+            charge = Mathf.MoveTowards(charge, 0, stats.drainRate * Time.deltaTime);
             if (charge <= 0) break;
 
-            rb.AddForce(rb.transform.forward * afterburner.thrust);
+            //rb.AddForce(rb.transform.forward * afterburner.thrust);
             yield return new WaitForFixedUpdate();
         }
 
@@ -129,7 +129,7 @@ public class Afterburner : Hardpoint
 
     private IEnumerator Cooldown()
     {
-        yield return new WaitForSeconds(afterburner.cooldownDuration);
+        yield return new WaitForSeconds(stats.cooldownDuration);
 
         cooldownCoroutine = null;
 

@@ -58,29 +58,13 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
+        name = "PLAYER CONTROLLER";
+
         cam = Utilities.CheckComponent<Camera>(gameObject);
         shipCamera = Utilities.CheckComponent<ShipCamera>(gameObject);
         flycam = Utilities.CheckComponent<Flycam>(gameObject);
         listener = Utilities.CheckComponent<AudioListener>(gameObject);
-
-        // cam = GetComponent<Camera>();
-        // shipCamera = GetComponent<ShipCamera>();
-        // flycam = CheckComponent<Flycam>();
-        // listener = CheckComponent<AudioListener>();
-        //ppl = CheckComponent<PostProcessLayer>();
     }
-
-    // private T CheckComponent<T>() where T : Component
-    // {
-    //     var obj = GetComponent<T>();
-
-    //     if (obj == null)
-    //     {
-    //         obj = gameObject.AddComponent<T>();
-    //     }
-        
-    //     return obj;
-    // }
 
     protected virtual void OnPossessedNewShip(PossessionEventArgs args)
     {

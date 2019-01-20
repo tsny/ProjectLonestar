@@ -31,8 +31,7 @@ public class CruiseEngine : ShipComponent
 
     private void Awake()
     {
-        if (stats == null)
-            stats = Instantiate(ScriptableObject.CreateInstance<CruiseEngineStats>());
+        stats = Utilities.CheckScriptableObject<CruiseEngineStats>(stats);
     }
 
     private void OnCruiseChange(CruiseState newState)

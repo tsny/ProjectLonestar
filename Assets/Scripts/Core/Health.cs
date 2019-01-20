@@ -3,7 +3,20 @@ using System;
 
 public class Health : MonoBehaviour
 {
-    public bool invulnerable;
+    private bool _inv;
+    public bool Invulnerable
+    {
+        get
+        {
+            return _inv;
+        }
+
+        set
+        {
+            if (InvulnerableToggled != null) InvulnerableToggled(this, value);
+            _inv = value;
+        }
+    }
     public HealthStats stats;
 
     public float health = 100;
@@ -12,8 +25,10 @@ public class Health : MonoBehaviour
 
     public event EventHandler TookDamage;
     public event EventHandler HealthDepleted;
+    public event HealthEventHandler InvulnerableToggled;
 
     public delegate void EventHandler();
+    public delegate void HealthEventHandler(Health sender, bool invulnerable);
 
     private void Awake() 
     {
@@ -22,10 +37,7 @@ public class Health : MonoBehaviour
 
     public void Init()
     {
-        if (stats == null)
-        {
-            stats = HealthStats.CreateInstance<HealthStats>();
-        }
+        stats = Utilities.CheckScriptableObject<HealthStats>(stats);
 
         health = stats.startingHealth;
         shield = stats.startingShield;
@@ -44,7 +56,7 @@ public class Health : MonoBehaviour
 
     public virtual void TakeDamage(WeaponStats weapon)
     {
-        if (invulnerable) return;
+        if (_inv) return;
 
         if (shield >= stats.minShield)
         {

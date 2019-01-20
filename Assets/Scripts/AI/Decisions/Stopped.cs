@@ -5,10 +5,14 @@ using System.Collections;
 public class Stopped : FLDecision
 {
     public bool includeCruise = true;
+
+    public override void Init()
+    {
+
+    }
+
     public override bool Decide(StateController controller)
     {
-        bool stopped;
-
         if (includeCruise)
         {
             switch (controller.ship.cruiseEngine.State)
@@ -19,8 +23,6 @@ public class Stopped : FLDecision
             }
         }
 
-        stopped = controller.ship.engine.Throttle == 0;
-
-        return stopped;
+        return controller.ship.engine.Throttle == 0;
     }
 }

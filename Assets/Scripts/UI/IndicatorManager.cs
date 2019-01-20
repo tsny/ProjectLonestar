@@ -32,18 +32,25 @@ public class IndicatorManager : ShipUIElement
     // Not really perfomant at all, consider not using ever lol
     private void CreateIndicators()
     {
-        var targets = FindObjectsOfType<Ship>().ToList();
+        //var targets = FindObjectsOfType<Ship>().ToList();
+        var targets = FindObjectsOfType<MonoBehaviour>().OfType<ITargetable>();
 
-        foreach (var ship in targets)
+        foreach (var target in targets)
         {
-            if (ship == GameSettings.pc.ship)
-            {
-                targets.Remove(ship);
-                break;
-            }
+            var curr = target as MonoBehaviour;
+            AddIndicator(curr.gameObject);
         }
 
-        targets.ForEach(x => AddIndicator(x.gameObject));
+        // foreach (var ship in targets)
+        // {
+        //     if (ship == GameSettings.pc.ship)
+        //     {
+        //         targets.Remove(ship);
+        //         break;
+        //     }
+        // }
+
+        //targets.ForEach(x => AddIndicator(x.));
     }
 
     private void HandleShipReleased(PlayerController sender, PossessionEventArgs args)

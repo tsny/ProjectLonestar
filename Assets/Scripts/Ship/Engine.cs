@@ -12,6 +12,7 @@ public class Engine : ShipComponent
     public float shipModelZModifier = 1;
     public Transform shipModel;
     public float lerpModifier = .1f;
+    public ConstantForce cf;
     private Quaternion shipModelOrigRot;
 
     public float Speed
@@ -26,8 +27,8 @@ public class Engine : ShipComponent
     [Header("Stats")]
     public EngineStats engineStats;
 
-    private Cooldown sidestepCD;
-    private Cooldown blinkCD;
+    public Cooldown sidestepCD;
+    public Cooldown blinkCD;
 
     public float sidestepForce = 50000;
     public float sidestepDur = .2f;
@@ -102,6 +103,8 @@ public class Engine : ShipComponent
     public bool clampVelocity = true;
     private IEnumerator sidestepCR;
 
+    public Afterburner aft;
+
     public delegate void ThrottleChangedEventHandler(Engine sender, ThrottleChangeEventArgs e);
     public event ThrottleChangedEventHandler ThrottleChanged;
 
@@ -113,7 +116,7 @@ public class Engine : ShipComponent
 
     public void SidestepRight()
     {
-        if (sidestepCR != null || sidestepCD != null) return;
+        if (sidestepCR != null || sidestepCD.isDecrementing) return;
 
         sidestepCR = SidestepRoutine(new Vector3(sidestepForce, 0, 0), ForceMode.Force);
         StartCoroutine(sidestepCR);
@@ -121,7 +124,7 @@ public class Engine : ShipComponent
 
     public void SidestepLeft()
     {
-        if (sidestepCR != null || sidestepCD != null) return;
+        if (sidestepCR != null || sidestepCD.isDecrementing) return;
 
         sidestepCR = SidestepRoutine(new Vector3(-sidestepForce, 0, 0), ForceMode.Force);
         StartCoroutine(sidestepCR);
@@ -129,12 +132,18 @@ public class Engine : ShipComponent
 
     public void Blink()
     {
-        if (blinkCD) return;
+        if (blinkCD.isDecrementing) return;
 
-        //var forwardsInt = forwards ? 1 : -1;
-        var forwardsInt = 1;
-        transform.position = transform.position + transform.forward * (blinkDistance * forwardsInt);
-        blinkCD = Cooldown.Instantiate(this, 3);
+        transform.position = transform.position + transform.forward * (blinkDistance);
+        blinkCD.Begin(this);
+    }
+
+    public void BlinkBackwards()
+    {
+        if (blinkCD.isDecrementing) return;
+
+        transform.position = transform.position + transform.forward * (-blinkDistance);
+        blinkCD.Begin(this);
     }
 
     private IEnumerator SidestepRoutine(Vector3 baseForce, ForceMode mode)
@@ -148,7 +157,7 @@ public class Engine : ShipComponent
             yield return new WaitForFixedUpdate();
         }
 
-        sidestepCD = Cooldown.Instantiate(this, 3);
+        sidestepCD.Begin(this);
         sidestepCR = null;
     }
 
@@ -163,8 +172,9 @@ public class Engine : ShipComponent
 
     private void Awake()
     {
-        if (engineStats == null)
-            engineStats = Instantiate(ScriptableObject.CreateInstance<EngineStats>());
+        engineStats = Utilities.CheckScriptableObject<EngineStats>(engineStats);
+        blinkCD = Utilities.CheckScriptableObject<Cooldown>(blinkCD);
+        sidestepCD = Utilities.CheckScriptableObject<Cooldown>(sidestepCD);
         
         shipModelOrigRot = shipModel.localRotation;
     }
@@ -195,13 +205,21 @@ public class Engine : ShipComponent
         if (!Drifting)
         {
             var forces = CalcStrafeForces() + CalcThrottleForces();
+
+            if (aft != null && aft.IsActive)
+                forces += rb.transform.forward * aft.stats.thrust;
+
+            //cf.relativeForce = forces;
             rb.AddForce(forces);
+            //forces = GetClampedVelocity(forces);
+            //print(forces);
+            //rb.velocity = forces;
         } 
     }
 
-    private Vector3 GetClampedVelocity()
+    private Vector3 GetClampedVelocity(Vector3 velocity)
     {
-        var newZ = Mathf.Clamp(rb.velocity.z, -maxZVelocity, maxZVelocity); 
+        var newZ = Mathf.Clamp(velocity.z, -maxZVelocity, maxZVelocity); 
         return new Vector3(rb.velocity.x, rb.velocity.y, newZ);
     }
 
@@ -246,25 +264,29 @@ public class Engine : ShipComponent
     public void Pitch(float amount)
     {
         amount = Mathf.Clamp(amount, -1, 1);
-        transform.Rotate(Vector3.left * amount);
+        transform.Rotate(Vector3.left * amount * engineStats.turnSpeed);
     }
 
     public void Yaw(float amount)
     {
         amount = Mathf.Clamp(amount, -1, 1);
-        transform.Rotate(Vector3.up * amount);
+        transform.Rotate(Vector3.up * amount * engineStats.turnSpeed);
         VisualYawRotation(amount);
     }
 
     public void Roll(float amount)
     {
         amount = Mathf.Clamp(amount, -1, 1);
-        transform.Rotate(Vector3.forward * amount);
+        transform.Rotate(Vector3.forward * amount * engineStats.turnSpeed);
     }
 
     private void VisualYawRotation(float amount)
     {
-        if (shipModel == null) return;
+        if (shipModel == null) 
+        {
+            Debug.LogWarning(gameObject + " has no ship model in the inspector");
+            return;
+        }
 
         // Rotate the model slightly based on yawOffset
         Vector3 turnRotation = shipModelOrigRot.eulerAngles + new Vector3(0, 0, -amount * shipModelZModifier);

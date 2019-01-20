@@ -21,7 +21,7 @@ public class AfterburnerEditor : Editor
 
     private void ShowButtons()
     {
-        if (Application.isPlaying == false || afterburner.afterburner == null) return;
+        if (Application.isPlaying == false || afterburner.stats == null) return;
 
         var buttonString = afterburner.IsActive ? "Deactivate" : "Activate";
 

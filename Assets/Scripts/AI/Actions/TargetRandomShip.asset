@@ -9,6 +9,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4dcf327b8fe99469eb2cb630b2304c46, type: 3}
-  m_Name: RandomTarget
+  m_Name: TargetRandomShip
   m_EditorClassIdentifier: 
+  findOnlyShips: 1
   includeAllies: 0

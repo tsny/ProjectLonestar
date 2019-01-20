@@ -9,9 +9,9 @@ public class NameGenerator
         var path = Application.streamingAssetsPath;
 
         if (gender == Gender.Male)
-            path += "/female_names.json";
+            path += "/male.json";
         else
-            path += "/male_names.json";
+            path += "/female.json";
 
         if (!File.Exists(path)) return null;
 

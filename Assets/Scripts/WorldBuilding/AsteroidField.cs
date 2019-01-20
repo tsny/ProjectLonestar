@@ -4,6 +4,9 @@ using UnityEngine;
 [ExecuteInEditMode]
 public class AsteroidField : MonoBehaviour
 {
+    public BoxCollider spawnZone;
+    public BoxCollider innerZone;
+
     public bool scaleUsesRange = false;
     public bool useArrayOfAsteroids = false;
     public bool useRandomRotation = true;
@@ -19,16 +22,48 @@ public class AsteroidField : MonoBehaviour
     public float asteroidLowerScale = 1;
     public float asteroidUpperScale = 3;
 
-    public GameObject asteroid;
-    public GameObject[] asteroids;
+    private bool rotateToggle;
+
+    private RandomRotator[] rotators;
+
+    public GameObject asteroidPrefab;
+    public GameObject[] asteroidPrefabs;
+
+    private void Awake() 
+    {
+        rotators = new RandomRotator[transform.childCount];
+
+        foreach (Transform child in transform)
+        {
+            rotators[child.GetSiblingIndex()] = Utilities.CheckComponent<RandomRotator>(child.gameObject);
+        }
+    }
 
     public void GenerateField()
     {
         ClearField();
 
+        if (spawnZone == null)
+        {
+            Debug.LogWarning("No box collider on: " + name);
+            return;
+        }
+
         for (int i = 0; i < desiredAsteroids; i++)
         {
-            CreateAsteroid();
+            var asteroid = CreateAsteroid();
+        }
+    }
+
+    public void ToggleAsteroidRotation()
+    {
+        if (rotators.Length < 1) return;
+
+        rotateToggle = !rotateToggle;
+
+        foreach (var rot in rotators)
+        {
+            rot.enabled = rotateToggle;
         }
     }
 
@@ -51,25 +86,26 @@ public class AsteroidField : MonoBehaviour
 
         CheckForCollider(newAsteroid);
 
-        var newPosition = FindRandomPosition(newScale.x);
+        //var newPosition = FindRandomPosition(newScale.x);
+        var newPosition = Utilities.RandomPointInBounds(spawnZone.bounds) + transform.position;
         var newRotation = GetRotation(); 
 
         newAsteroid.transform.SetPositionAndRotation(newPosition, newRotation);
 
-        return asteroid;
+        return newAsteroid;
     }
 
     private GameObject GetAsteroidGameObject()
     {
         if (useArrayOfAsteroids)
         {
-            int randomIndex = Random.Range(0, asteroids.Length);
-            return asteroids[randomIndex];
+            int randomIndex = Random.Range(0, asteroidPrefabs.Length);
+            return asteroidPrefabs[randomIndex];
         }
 
         else
         {
-            return asteroid;
+            return asteroidPrefab;
         }
     }
 

@@ -3,7 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Ship : MonoBehaviour 
+public class Ship : MonoBehaviour, ITargetable
 {
     [Header("Stats")]
     public PilotDetails pilotDetails;
@@ -104,8 +104,14 @@ public class Ship : MonoBehaviour
 
     public void SetPossessed(PlayerController pc, bool possessed)
     {
-        name = possessed ? "PLAYER SHIP" : "NPC SHIP " + pilotDetails.firstName;
+        // Add the random pilot's name
+        name = possessed ? "PLAYER SHIP" : "NPC SHIP"; 
         tag = possessed ? "Player" : "Untagged";
+
+        if (possessed)
+        {
+            transform.SetSiblingIndex(0);
+        }
 
         foreach(Transform transform in transform)
         {
@@ -165,8 +171,8 @@ public class Ship : MonoBehaviour
         // EVENT CALL ALSO? (ON DEATH)
     }
 
-    public void TakeDamage(WeaponStats weapon)
-    {
-        health.TakeDamage(weapon);
-    }
+    // public void TakeDamage(WeaponStats weapon)
+    // {
+    //     health.TakeDamage(weapon);
+    // }
 }

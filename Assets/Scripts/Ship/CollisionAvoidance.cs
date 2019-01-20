@@ -15,10 +15,10 @@ public class CollisionAvoidance
         Vector3 up    = transform.position + transform.up * rayCastOffset;
         Vector3 down  = transform.position - transform.up * rayCastOffset;
 
-        Debug.DrawRay (left, detectionDistance * transform.forward, Color.cyan);
-        Debug.DrawRay (right, detectionDistance * transform.forward, Color.cyan);
-        Debug.DrawRay (up, detectionDistance * transform.forward, Color.cyan);
-        Debug.DrawRay (down, detectionDistance * transform.forward, Color.cyan);
+        // Debug.DrawRay (left, detectionDistance * transform.forward, Color.cyan);
+        // Debug.DrawRay (right, detectionDistance * transform.forward, Color.cyan);
+        // Debug.DrawRay (up, detectionDistance * transform.forward, Color.cyan);
+        // Debug.DrawRay (down, detectionDistance * transform.forward, Color.cyan);
 
         if (engine == null) return false;
 

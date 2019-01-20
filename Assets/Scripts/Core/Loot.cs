@@ -6,6 +6,8 @@ public class Loot : MonoBehaviour, ITargetable
     public Item item;
     public Transform target;
 
+    public ParticleSystem deathFX;
+
     public bool beingLooted;
     public float pickupRange = 5;
     public float outOfBoundsRange = 100;
@@ -14,6 +16,8 @@ public class Loot : MonoBehaviour, ITargetable
 
     [Range(0, 10)]
     public float pullForce = .5f;
+
+    private Health health;
 
     public event TargetEventHandler BecameTargetable;
     public event TargetEventHandler BecameUntargetable;
@@ -26,6 +30,22 @@ public class Loot : MonoBehaviour, ITargetable
     private void OnBecameTargetable()
     {
         if (BecameTargetable != null) BecameTargetable(this);
+    }
+
+    private void Awake() 
+    {
+        health = Utilities.CheckComponent<Health>(gameObject);
+        health.HealthDepleted += HandleHealthDepleted;
+    }
+
+    private void HandleHealthDepleted()
+    {
+        if (deathFX != null)
+        {
+            Instantiate(deathFX, transform.position, Quaternion.identity);
+        }
+
+        Destroy(gameObject);
     }
 
     public void SetTarget(Transform newTarget, float pullForce)
@@ -96,6 +116,6 @@ public class Loot : MonoBehaviour, ITargetable
 
     public void SetupTargetIndicator(TargetIndicator indicator)
     {
-        indicator.header.text = item.name ?? "Empty Loot";
+        indicator.header.text = "Loot: " + item.name ?? "Empty Loot";
     }
 }

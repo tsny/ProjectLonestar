@@ -8,50 +8,59 @@ using UnityEngine.SceneManagement;
 
 public class HUDManager : MonoBehaviour
 {
-    public PlayerController playerController;
+    //public PlayerController pc;
 
-    public GameObject pause;
-    public GameObject weapons;
-    public GameObject settings;
-    public GameObject bg;
+    public GameObject pausePanel;
+    public GameObject weaponsPanel;
+    public GameObject settingsPanel;
+    public GameObject backgroundPanel;
+
+    public GameObject notificationSpawn;
+    public Notification notificationPF;
 
     public KeyCode weaponWheelKey;
     public KeyCode settingsKey;
+
+    public CooldownIndicator blinkIndicator;
+    public CooldownIndicator sidestepIndicator;
 
     public Text mouseFlightText;
     public Text cruiseText;
 
     public List<ShipUIElement> uiElements;
-    public AudioMixer audioMixer;
+
+    public AudioMixer sfxMixer;
+    public AudioMixer musicMixer;
+
     public Dropdown resolutionDropdown;
+    Resolution[] resolutions;
 
     public float slowDownScale = .5f;
-    Resolution[] resolutions;
 
     private void Update()
     {
         if (Input.GetKeyDown(weaponWheelKey))
         {
-            weapons.SetActive(true);
-            bg.SetActive(true);
+            weaponsPanel.SetActive(true);
+            backgroundPanel.SetActive(true);
             Time.timeScale = slowDownScale;
         }
         else if (Input.GetKeyUp(weaponWheelKey))
         {
-            weapons.SetActive(false);
-            bg.SetActive(false);
+            weaponsPanel.SetActive(false);
+            backgroundPanel.SetActive(false);
             Time.timeScale = 1;
         }
 
         if (Input.GetKeyDown(settingsKey))
         {
-            settings.SetActive(!settings.activeSelf);
+            settingsPanel.SetActive(!settingsPanel.activeSelf);
         }
     }
 
     private void Awake()
     {
-        InitResolutions();
+        InitResolutionPanel();
 
         GameStateUtils.GamePaused += HandleGamePaused;
         name = "SHIP HUD";
@@ -61,16 +70,26 @@ public class HUDManager : MonoBehaviour
         mouseFlightText.text = "";
     }
 
+    public void SpawnNotification(string text)
+    {
+        var noti = Instantiate(notificationPF, notificationSpawn.transform);
+        noti.Init(text);
+    }
+
     public void SetResolution (int resolutionIndex)
     {
-        Resolution resolution = resolutions[resolutionIndex];
-
+        Resolution resolution = GameSettings.Instance.resolutions[resolutionIndex];
         Screen.SetResolution(resolution.width, resolution.height, Screen.fullScreen);
     }
 
-    public void SetVolume(float volume)
+    public void SetSFXVolume(float volume)
     {
-        audioMixer.SetFloat("volume", volume);
+        sfxMixer.SetFloat("volume", volume);
+    }
+
+    public void SetMusicVolume(float volume)
+    {
+        musicMixer.SetFloat("volume", volume);
     }
 
     public void SetQuality(int qualityIndex)
@@ -90,25 +109,36 @@ public class HUDManager : MonoBehaviour
 
     public void SetPlayerController(PlayerController playerController)
     {
-        if (this.playerController == playerController) return;
-
-        if (this.playerController != null)
-        {
-            this.playerController.PossessedNewShip -= HandlePossessedNewShip;
-            this.playerController.MouseStateChanged -= HandleMouseStateChange;
-        }
-
-        this.playerController = playerController;
-
         playerController.PossessedNewShip += HandlePossessedNewShip;
         playerController.MouseStateChanged += HandleMouseStateChange;
         playerController.ship.cruiseEngine.CruiseStateChanged += HandleCruiseChanged;
+
+        GetComponentsInChildren(true, uiElements);
 
         if (playerController.ship != null)
         {
             uiElements.ForEach(x => x.SetShip(playerController.ship));
             SetCruiseText(playerController.ship.cruiseEngine.State);
+
+            if (blinkIndicator != null)
+            {
+                blinkIndicator.cd = playerController.ship.engine.blinkCD;
+            }
+
+            if (sidestepIndicator != null)
+            {
+                sidestepIndicator.cd = playerController.ship.engine.sidestepCD;
+            }
         }
+    }
+
+    private void OnDestroy() 
+    {
+        if (GameSettings.pc == null) return;
+
+        GameSettings.pc.PossessedNewShip -= HandlePossessedNewShip;
+        GameSettings.pc.MouseStateChanged -= HandleMouseStateChange;
+        GameSettings.pc.ship.cruiseEngine.CruiseStateChanged -= HandleCruiseChanged;
     }
 
     private void HandleCruiseChanged(CruiseEngine sender, CruiseState newState)
@@ -118,12 +148,13 @@ public class HUDManager : MonoBehaviour
 
     private void HandlePossessedNewShip(PlayerController sender, PossessionEventArgs args)
     {
-        uiElements.ForEach(x => x.SetShip(playerController.ship));
+        uiElements.ForEach(x => x.SetShip(sender.ship));
+        SetCruiseText(sender.ship.cruiseEngine.State);
     }
 
     private void HandleGamePaused(bool paused)
     {
-        pause.SetActive(paused);
+        pausePanel.SetActive(paused);
     }
 
     private void HandleMouseStateChange(MouseState state)
@@ -171,28 +202,31 @@ public class HUDManager : MonoBehaviour
         }
     }
 
-    private void InitResolutions()
+    private void InitResolutionPanel()
     {
-        resolutions = Screen.resolutions;
         resolutionDropdown.ClearOptions();
-        List<string> options = new List<string>();
+        resolutionDropdown.AddOptions(GameSettings.Instance.resolutionOptions);
 
-        int currentResolutionIndex = 0;
-
-        for (int i = 0; i < resolutions.Length; i++)
-        {
-            string option = resolutions[i].width + "x" + resolutions[i].height + " : " + resolutions[i].refreshRate + "hz";
-            options.Add(option);
-
-            if (resolutions[i].Equals(Screen.currentResolution))
+        resolutionDropdown.onValueChanged.AddListener
+        ( 
+            delegate
             {
-                currentResolutionIndex = i;
+                //var res = StringToResolution(resolutionDropdown.options[resolutionDropdown.value].text);
+                var res = GameSettings.Instance.resolutions[resolutionDropdown.value];
+                // Check to see if the fullscreen mode setting is correct here
+                Screen.SetResolution(res.width, res.height, Screen.fullScreenMode, res.refreshRate);
+                resolutionDropdown.RefreshShownValue();
             }
-        }
+        );
+        //resolutionDropdown.value = currentResolutionIndex;
+    }
 
-        resolutionDropdown.AddOptions(options);
-        resolutionDropdown.value = currentResolutionIndex;
-        resolutionDropdown.RefreshShownValue();
+    // Remove this if it doesn't end up getting used
+    public static Resolution StringToResolution(string input)
+    {
+        var res = new Resolution();
+
+        return res;
     }
 }
 

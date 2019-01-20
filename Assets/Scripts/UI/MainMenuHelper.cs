@@ -5,6 +5,7 @@ using UnityEngine;
 public class MainMenuHelper : MonoBehaviour 
 {
 	public Ship[] shipsToPutAtFullThrottle;
+	public Rigidbody cameraRb;
 
 	private void Start() 
 	{
@@ -12,5 +13,11 @@ public class MainMenuHelper : MonoBehaviour
 		{
 			ship.engine.Throttle = 1;	
 		}
+	}
+
+	// This will happen and then a fade out?
+	public void Activate()
+	{
+		cameraRb.velocity = new Vector3(0, -5, 0);
 	}
 }

@@ -15,12 +15,4 @@ public class NebulaEditor : Editor
         EGL.Space();
         EGL.FloatField("Radius", neb.dimensions.magnitude);
     }
-
-    private void OnDrawGizmos()
-    {
-        if (neb != null)
-        {
-            Gizmos.DrawWireSphere(neb.transform.position, neb.dimensions.magnitude);
-        }
-    }
 }

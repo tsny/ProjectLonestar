@@ -4,30 +4,34 @@ using UnityEngine;
 public class Cooldown : ScriptableObject
 {
     public bool logElapsed = false;
-    public bool destroyOnCompletion = true;
-    public bool decrementing = true;
+    public bool isDecrementing = false;
     public float duration = 2;
+    public float elapsed = 0;
+
+    public MonoBehaviour owner;
     public IEnumerator cr;
 
-    public static Cooldown Instantiate(MonoBehaviour caller, float dur, bool logElapsed = false)
+    public void Begin(MonoBehaviour caller)
     {
-        var cd = CreateInstance<Cooldown>();
+        owner = caller;
+        caller.StartCoroutine(CooldownCR());
+    }
 
-        cd.duration = dur;
-        cd.logElapsed = logElapsed;
-
-        caller.StartCoroutine(cd.CooldownCR());
-
-        return cd;
+    public void Stop()
+    {
+        owner.StopCoroutine(cr);
+        cr = null;
+        isDecrementing = false;
     }
 
     private IEnumerator CooldownCR()
     {
-        float elapsed = 0;
+        elapsed = 0;
+        isDecrementing = true;
 
         while (elapsed < duration)
         {
-            if (decrementing)
+            if (isDecrementing)
             {
                 elapsed += Time.deltaTime;
                 if (logElapsed) Debug.Log(elapsed);
@@ -36,6 +40,8 @@ public class Cooldown : ScriptableObject
             yield return new WaitForEndOfFrame();
         }
 
-        if (destroyOnCompletion) Destroy(this);
+        elapsed = 0;
+        cr = null;
+        isDecrementing = false;
     }
 }

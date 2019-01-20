@@ -68,7 +68,10 @@ public class ShipCamera : ShipComponent
     public static Vector3 GetMousePositionInWorld(Camera camera = null, bool drawRay = false, float aimRaycastDistance = 10000)
     {
         if (camera == null)
+        {
             camera = Camera.main;
+            Debug.LogWarning("Using Camera.main in ShipCamera!");
+        }
 
         Ray ray = camera.ScreenPointToRay(Input.mousePosition);
 

@@ -21,8 +21,8 @@ public class AsteroidFieldEditor : Editor
         ShowGameObjectInformation();
         EGL.Space();
 
-        EGL.LabelField("Radius", EditorStyles.boldLabel);
-        ShowRadiusInfromation();
+        EGL.LabelField("Spawn Area", EditorStyles.boldLabel);
+        ShowSpawnZoneInfo();
         EGL.Space();
 
         EGL.LabelField("Scale", EditorStyles.boldLabel);
@@ -35,8 +35,8 @@ public class AsteroidFieldEditor : Editor
     [DrawGizmo(GizmoType.Active)]
     static void ShowFieldRadi(AsteroidField field, GizmoType type)
     {
-        Gizmos.DrawWireSphere(field.transform.position, field.outerRadius);
-        Gizmos.DrawWireSphere(field.transform.position, field.innerRadius);
+        //Gizmos.DrawWireSphere(field.transform.position, field.outerRadius);
+        //Gizmos.DrawWireSphere(field.transform.position, field.innerRadius);
     }
 
     private void ShowScaleInformation()
@@ -55,10 +55,11 @@ public class AsteroidFieldEditor : Editor
         }
     }
 
-    private void ShowRadiusInfromation()
+    private void ShowSpawnZoneInfo()
     {
-        field.innerRadius = EGL.FloatField(new GUIContent("Inner Radius", "The inner radius of the field"), field.innerRadius);
-        field.outerRadius = EGL.Slider("Outer Radius", field.outerRadius, field.innerRadius, 10000 + field.innerRadius);
+        // field.innerRadius = EGL.FloatField(new GUIContent("Inner Radius", "The inner radius of the field"), field.innerRadius);
+        // field.outerRadius = EGL.Slider("Outer Radius", field.outerRadius, field.innerRadius, 10000 + field.innerRadius);
+        field.spawnZone = (BoxCollider) EGL.ObjectField("BoxCollider", field.spawnZone, typeof(BoxCollider), true);
     }
 
     private void ShowGameObjectInformation()
@@ -68,7 +69,7 @@ public class AsteroidFieldEditor : Editor
         if (field.useArrayOfAsteroids)
         {
             SerializedObject serialObject = new SerializedObject(target);
-            SerializedProperty serialProperty = serialObject.FindProperty("asteroids");
+            SerializedProperty serialProperty = serialObject.FindProperty("asteroidPrefabs");
 
             EGL.PropertyField(serialProperty, new GUIContent("Asteroids"), true);
 
@@ -77,18 +78,18 @@ public class AsteroidFieldEditor : Editor
 
         else
         {
-            var newAsteroidGameObject = (GameObject) EGL.ObjectField(new GUIContent("Asteroid Game Object", "The game object that represents the spawned asteroids"), field.asteroid, typeof(GameObject), false); 
+            var newAsteroidGameObject = (GameObject) EGL.ObjectField(new GUIContent("Asteroid Game Object", "The game object that represents the spawned asteroids"), field.asteroidPrefab, typeof(GameObject), false); 
 
             if (GUI.changed)
             {
-                field.asteroid = newAsteroidGameObject;
+                field.asteroidPrefab = newAsteroidGameObject;
             }
         }
     }
 
     private void ShowButtons()
     { 
-        using (new EditorGUI.DisabledScope(field.asteroid == null))
+        using (new EditorGUI.DisabledScope(field.asteroidPrefab == null))
         {
             if(GUILayout.Button("Generate Field"))
             {
@@ -99,6 +100,11 @@ public class AsteroidFieldEditor : Editor
         if(GUILayout.Button("Clear Field"))
         {
             field.ClearField();
+        }
+
+        if (GUILayout.Button("Toggle Asteroid Rotation"))
+        {
+            field.ToggleAsteroidRotation();
         }
     }
 }

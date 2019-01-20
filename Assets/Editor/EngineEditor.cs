@@ -38,12 +38,12 @@ public class EngineEditor : Editor
         
         if (GUILayout.Button("Powerthrust Down"))
         {
-            engine.SidestepLeft();
+            //engine.Sidestep();
         }
         
         if (GUILayout.Button("Powerthrust Up"))
         {
-            engine.SidestepLeft();
+            //engine.Sidestep();
         }
 
         if (GUILayout.Button("Blink Forward"))

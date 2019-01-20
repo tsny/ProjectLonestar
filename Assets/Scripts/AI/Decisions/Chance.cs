@@ -7,6 +7,11 @@ public class Chance : FLDecision
     [Range(1, 100)]
     public float chance = 50;
 
+    public override void Init()
+    {
+
+    }
+
     public override bool Decide(StateController controller)
     {
         return chance < Random.Range(1, 100);

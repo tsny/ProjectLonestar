@@ -12,6 +12,14 @@ public class ShipStatusUI : ShipUIElement
     public Text speedText;
 
     public Afterburner afterburnerHardpoint;
+    public Engine engine;
+
+    public override void SetShip(Ship ship)
+    {
+        base.SetShip(ship);
+        afterburnerHardpoint = ship.engine.aft;
+        engine = ship.engine;
+    }
 
     private void Update()
     {
@@ -29,7 +37,7 @@ public class ShipStatusUI : ShipUIElement
 
     private void SetText()
     {
-        speedText.text = "" + (int) ship.engine.Speed + " kph";
+        speedText.text = "" + (int) engine.Speed + " kph";
 
         if (afterburnerHardpoint != null)
         {

@@ -4,6 +4,11 @@ using System.Collections;
 [CreateAssetMenu(menuName = "AI/Decisions/InWeaponsRange")]
 public class InWeaponsRangeDecision : FLDecision
 {
+    public override void Init()
+    {
+
+    }
+
     public override bool Decide(StateController controller)
     {
         return IsInWeaponsRange(controller);
