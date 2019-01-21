@@ -4,6 +4,8 @@ using System.Collections;
 [CreateAssetMenu(menuName = "AI/Actions/FireActiveAction")]
 public class FullStop : FLAction
 {
+    public override void Init() {}
+
     public override void Act(StateController controller)
     {
         controller.ship.engine.Throttle = 0;

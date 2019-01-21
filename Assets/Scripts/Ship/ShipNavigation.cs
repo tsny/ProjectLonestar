@@ -144,7 +144,7 @@ public class ShipNavigation : ShipComponent
 
         if (Vector3.Distance(transform.position, target.transform.position) < combatTooCloseDistance)
         {
-            ship.engine.Yaw(90);
+            ship.engine.AddYaw(90);
         }
     }
 
@@ -155,7 +155,7 @@ public class ShipNavigation : ShipComponent
 
         while (time <= duration)
         {
-            ship.engine.Pitch(evadeCurve.Evaluate(time / duration));
+            ship.engine.AddPitch(evadeCurve.Evaluate(time / duration));
 
             yield return new WaitForSeconds(delayBetweenShots);
         }

@@ -128,7 +128,7 @@ public class FLTerminal : Terminal
     [RegisterCommand(Help = "Gives current ship unlimited energy", MinArgCount = 0, MaxArgCount = 0)]
     static void Impulse101(CommandArg[] args)
     {
-        var hp = GameSettings.pc.ship.hardpointSystem;
+        var hp = GameSettings.pc.ship.hpSys;
 
         hp.energyCapacity = 1000000;
         hp.energy = 1000000;
@@ -140,7 +140,7 @@ public class FLTerminal : Terminal
     [RegisterCommand(Help = "Gives current ship unlimited afterburner energy", MinArgCount = 0, MaxArgCount = 0)]
     static void Impulse102(CommandArg[] args)
     {
-        var abHardpoint = GameSettings.pc.ship.hardpointSystem.afterburner;
+        var abHardpoint = GameSettings.pc.ship.hpSys.afterburner;
         abHardpoint.stats.drainRate = abHardpoint.stats.drainRate == 0 ? 100 : 0;
 
         Log("Toggled infinite afterburner...");

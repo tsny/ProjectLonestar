@@ -70,6 +70,11 @@ public class HUDManager : MonoBehaviour
         mouseFlightText.text = "";
     }
 
+    private void Start()
+    {
+        SpawnNotification("HUD initializing...");
+    }
+
     public void SpawnNotification(string text)
     {
         var noti = Instantiate(notificationPF, notificationSpawn.transform);
@@ -82,20 +87,9 @@ public class HUDManager : MonoBehaviour
         Screen.SetResolution(resolution.width, resolution.height, Screen.fullScreen);
     }
 
-    public void SetSFXVolume(float volume)
-    {
-        sfxMixer.SetFloat("volume", volume);
-    }
-
-    public void SetMusicVolume(float volume)
-    {
-        musicMixer.SetFloat("volume", volume);
-    }
-
-    public void SetQuality(int qualityIndex)
-    {
-        QualitySettings.SetQualityLevel(qualityIndex);
-    }
+    public void SetSFXVolume(float volume) { sfxMixer.SetFloat("volume", volume); }
+    public void SetMusicVolume(float volume) { musicMixer.SetFloat("volume", volume); }
+    public void SetQuality(int qualityIndex) { QualitySettings.SetQualityLevel(qualityIndex); }
 
     public void SetFullscreen(bool isFullscreen)
     {
@@ -172,14 +166,17 @@ public class HUDManager : MonoBehaviour
 
             case CruiseState.Charging:
                 cruiseText.text = "Charging Cruise...";
+                SpawnNotification(cruiseText.text);
                 break;
 
             case CruiseState.On:
                 cruiseText.text = "Cruising";
+                SpawnNotification(cruiseText.text);
                 break;
 
             case CruiseState.Disrupted:
                 cruiseText.text = "Disrupted";
+                SpawnNotification(cruiseText.text);
                 break;
         }
     }
@@ -225,7 +222,6 @@ public class HUDManager : MonoBehaviour
     public static Resolution StringToResolution(string input)
     {
         var res = new Resolution();
-
         return res;
     }
 }

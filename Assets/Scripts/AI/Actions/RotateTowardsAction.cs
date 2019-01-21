@@ -4,6 +4,8 @@ using System.Collections;
 [CreateAssetMenu(menuName = "AI/Actions/RotateTowards")]
 public class RotateTowardsAction : FLAction
 {
+    public override void Init() {}
+
     public override void Act(StateController controller)
     {
         if (controller.targetTrans == null) return;

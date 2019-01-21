@@ -30,10 +30,7 @@ public class ShipSpawner : MonoBehaviour
 
     private void Awake()
     {
-        if (coll == null)
-        {
-            coll = GetComponent<Collider>();
-        }
+        coll = Utilities.CheckComponent<Collider>(gameObject);
     }
 
     private void OnTriggerEnter(Collider other)
@@ -57,9 +54,31 @@ public class ShipSpawner : MonoBehaviour
         }
     }
 
-    public static Ship SpawnShip(Ship shipGO, Vector3 spawnPosition, Loadout loadout = null)
+    public static Ship SpawnShip(Ship shipToSpawn, ShipSpawn spawnInfo, Vector3 spawnPosition)
     {
-        var ship = Instantiate(shipGO, spawnPosition, Quaternion.identity);
+        var ship = Instantiate(shipToSpawn, spawnPosition, Quaternion.identity);
+
+        ship.Died += (s) => { LootSpawner.SpawnLoot(s.transform.position, spawnInfo.lootInfo); };
+
+        var ai = ship.GetComponent<StateController>();
+
+        if (ai == null)
+        {
+            Debug.LogWarning("Spawning ship without AI Controller...");
+        }
+        else
+        {
+            ai.currentState = spawnInfo.state;
+            ai.targetTrans = spawnInfo.target;
+            ai.aiIsActive = true;
+        }
+
+        return ship;
+    }
+
+    public static Ship SpawnShip(Ship shipToSpawn, Vector3 spawnPosition, Loadout loadout = null)
+    {
+        var ship = Instantiate(shipToSpawn, spawnPosition, Quaternion.identity);
 
         if (ship == null)
         {
@@ -73,10 +92,11 @@ public class ShipSpawner : MonoBehaviour
         }
 
         //ship.hardpointSystem.MountLoadout(loadout);
-        foreach (Hardpoint hp in ship.hardpointSystem.hardpoints)
+        foreach (Hardpoint hp in ship.hpSys.hardpoints)
         {
             // Try mount
         }
+
 
         return ship;
     }
@@ -85,27 +105,10 @@ public class ShipSpawner : MonoBehaviour
     {
         List<Ship> spawnedShips = new List<Ship>();
 
-        foreach (var spawn in shipsToSpawn)
+        foreach (var spawnInfo in shipsToSpawn)
         {
-            for (int i = 0; i < spawn.numToSpawn; i++)
-            {
-                var ship = SpawnShip(spawn.ship, spawnPos + Utilities.RandomPointInBounds(bounds), spawn.loadout);
-                //ship.Init();
-                spawnedShips.Add(ship);
-
-                var ai = ship.GetComponent<StateController>();
-
-                if (ai == null)
-                {
-                    Debug.LogWarning("Spawning ship without AI Controller...");
-                }
-                else
-                {
-                    ai.currentState = spawn.state;
-                    ai.targetTrans = spawn.target;
-                    ai.aiIsActive = true;
-                }
-            }
+            for (int i = 0; i < spawnInfo.numToSpawn; i++)
+                spawnedShips.Add(SpawnShip(spawnInfo.ship, spawnInfo, spawnPos + Utilities.RandomPointInBounds(bounds)));
         }
 
         return spawnedShips;
@@ -117,6 +120,8 @@ public class ShipSpawn
     public bool isHostile;
     public int numToSpawn = 1;
     public Transform target;
+
+    public LootSpawnInfo lootInfo;
 
     public Vector3 spawnOffset = Vector3.one;
     public State state;

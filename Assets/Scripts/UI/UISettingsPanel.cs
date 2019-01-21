@@ -7,5 +7,5 @@ using System.Linq;
 
 public class UISettingsPanel : MonoBehaviour
 {
-
+    public void Toggle() { gameObject.SetActive(!gameObject.activeSelf); }
 }

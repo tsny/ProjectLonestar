@@ -9,6 +9,8 @@ public class ThrottleUpAction : FLAction
     public float raycastOffset = 5;
     public float raycastDistance = 25;
 
+    public override void Init() {}
+
     public override void Act(StateController controller)
     {
         if (controller.ship.engine.Throttle < threshold)

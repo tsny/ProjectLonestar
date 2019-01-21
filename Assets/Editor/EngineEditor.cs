@@ -12,10 +12,28 @@ public class EngineEditor : Editor
 
         if (Application.isPlaying == false) return;
 
-        EGL.FloatField("Speed", engine.Speed);
+        EGL.LabelField("Speed: " + engine.Speed);
 
         EGL.Space();
+        ShowButtons(engine);
+        EGL.Space();
 
+        EGL.LabelField("Pitch: " + engine.Pitch);
+        EGL.LabelField("Yaw: " + engine.Yaw);
+        EGL.LabelField("Roll: " + engine.Roll);
+
+        engine.Strafe = EGL.Slider("Strafe", engine.Strafe, -1, 1);
+        engine.Throttle = EGL.Slider("Throttle", engine.Throttle, 0, 1);
+    }
+
+    [DrawGizmo(GizmoType.Selected)]
+    static void ShowPredictedPath(Engine engine, GizmoType type)
+    {
+        if (!Application.isPlaying) return;
+    }
+
+    private void ShowButtons(Engine engine)
+    {
         if (GUILayout.Button("Throttle Up"))
         {
             engine.ThrottleUp();
@@ -50,10 +68,5 @@ public class EngineEditor : Editor
         {
             engine.Blink();
         }
-
-        EGL.Space();
-
-        engine.Strafe = EGL.Slider("Strafe", engine.Strafe, -1, 1);
-        engine.Throttle = EGL.Slider("Throttle", engine.Throttle, 0, 1);
     }
 }

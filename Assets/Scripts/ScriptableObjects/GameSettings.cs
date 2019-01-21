@@ -13,6 +13,8 @@ public class GameSettings : SingletonScriptableObject<GameSettings>
     public PlayerController pcPrefab;
     public Canvas nebulaCanvasPrefab;
 
+    public Loot lootPrefab;
+
     public Loadout defaultLoadout;
     public Inventory playerInventory;
 

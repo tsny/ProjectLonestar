@@ -25,8 +25,12 @@ public class GunEditor : Editor
         if (gun.projectile == null) return;
 
         //Ray ray = new Ray()
-        Vector3 projectileEndPoint = gun.transform.forward * gun.projectile.stats.range;
-        Debug.DrawRay(gun.SpawnPoint, projectileEndPoint, Color.green);
+        if (gun.rbTarget == null) return;
+        var pos = Utilities.CalculateAimPosition(gun.SpawnPoint, gun.rbTarget, gun.projectile);
+        Gizmos.DrawWireSphere(pos, 3);
+
+        //Vector3 projectileEndPoint = gun.transform.forward * gun.projectile.stats.range;
+        //Debug.DrawRay(gun.SpawnPoint, projectileEndPoint, Color.green);
         //Gizmos.DrawWireSphere(field.transform.position, field.outerRadius);
         //Gizmos.DrawWireSphere(field.transform.position, field.innerRadius);
     }

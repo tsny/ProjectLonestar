@@ -32,7 +32,7 @@ public class ShipStatusUI : ShipUIElement
     {
         healthBarImage.fillAmount = ship.health.health / ship.health.stats.maxHealth;
         shieldBarImage.fillAmount = ship.health.shield / ship.health.stats.maxShield;
-        energyBarImage.fillAmount = ship.hardpointSystem.energy / ship.hardpointSystem.energyCapacity;
+        energyBarImage.fillAmount = ship.hpSys.energy / ship.hpSys.energyCapacity;
     }
 
     private void SetText()

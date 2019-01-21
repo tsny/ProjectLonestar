@@ -102,12 +102,17 @@ public class PlayerController : MonoBehaviour
         shipCamera.SetTarget(newShip.cameraPosition);
 
         newShip.GetComponent<StateController>().currentState = null;
-        newShip.Died += Release;
+        newShip.Died += HandleShipDied;
 
         ship = newShip;
         lastShip = null;
         enabled = true;
         OnPossessedNewShip(new PossessionEventArgs(ship, null));
+    }
+
+    private void HandleShipDied(Ship ship)
+    {
+        Release();
     }
 
     public void Release()
@@ -117,10 +122,10 @@ public class PlayerController : MonoBehaviour
 
         foreach (var coll in ship.colliders)
         {
-            coll.tag = "Untagged";
+            coll.tag = "Ship";
         }
 
-        ship.Died -= Release;
+        ship.Died -= HandleShipDied;
 
         MouseState = MouseState.Off;
         flycam.enabled = true;
@@ -200,12 +205,12 @@ public class PlayerController : MonoBehaviour
 
         if(Input.GetKeyDown(InputManager.AfterburnerKey))
         {
-            ship.hardpointSystem.ToggleAfterburner(true);
+            ship.hpSys.ToggleAfterburner(true);
         }
         
         else if(Input.GetKeyUp(InputManager.AfterburnerKey))
         {
-            ship.hardpointSystem.ToggleAfterburner(false);
+            ship.hpSys.ToggleAfterburner(false);
         }
 
         if(Input.GetKeyDown(InputManager.ManualMouseFlightKey))
@@ -235,62 +240,62 @@ public class PlayerController : MonoBehaviour
         #region hardpoints
         if(Input.GetKey(InputManager.Hardpoint1Key))
         {
-            ship.hardpointSystem.FireWeaponHardpoint(1, target);
+            ship.hpSys.FireWeaponHardpoint(1, target);
         }
 
         if(Input.GetKey(InputManager.Hardpoint2Key))
         {
-            ship.hardpointSystem.FireWeaponHardpoint(2, target);
+            ship.hpSys.FireWeaponHardpoint(2, target);
         }
 
         if(Input.GetKey(InputManager.Hardpoint3Key))
         {
-            ship.hardpointSystem.FireWeaponHardpoint(3, target);
+            ship.hpSys.FireWeaponHardpoint(3, target);
         }
 
         if(Input.GetKey(InputManager.Hardpoint4Key))
         {
-            ship.hardpointSystem.FireWeaponHardpoint(4, target);
+            ship.hpSys.FireWeaponHardpoint(4, target);
         }
 
         if(Input.GetKey(InputManager.Hardpoint5Key))
         {
-            ship.hardpointSystem.FireWeaponHardpoint(5, target);
+            ship.hpSys.FireWeaponHardpoint(5, target);
         }
 
         if(Input.GetKey(InputManager.Hardpoint6Key))
         {
-            ship.hardpointSystem.FireWeaponHardpoint(6, target);
+            ship.hpSys.FireWeaponHardpoint(6, target);
         }
 
         if(Input.GetKey(InputManager.Hardpoint7Key))
         {
-            ship.hardpointSystem.FireWeaponHardpoint(7, target);
+            ship.hpSys.FireWeaponHardpoint(7, target);
         }
 
         if(Input.GetKey(InputManager.Hardpoint8Key))
         {
-            ship.hardpointSystem.FireWeaponHardpoint(8, target);
+            ship.hpSys.FireWeaponHardpoint(8, target);
         }
 
         if(Input.GetKey(InputManager.Hardpoint9Key))
         {
-            ship.hardpointSystem.FireWeaponHardpoint(9, target);
+            ship.hpSys.FireWeaponHardpoint(9, target);
         }
 
         if(Input.GetKey(InputManager.Hardpoint10Key))
         {
-            ship.hardpointSystem.FireWeaponHardpoint(10, target);
+            ship.hpSys.FireWeaponHardpoint(10, target);
         }
 
         if(Input.GetKey(InputManager.FireKey))
         {
-            ship.hardpointSystem.FireActiveWeapons(target);
+            ship.hpSys.FireActiveWeapons(target);
         }
 
         if (Input.GetKeyDown(InputManager.LootAllKey))
         {
-            ship.hardpointSystem.tractorBeam.TractorAllLoot();
+            ship.hpSys.tractorBeam.TractorAllLoot();
         }
         #endregion
     }
@@ -309,8 +314,8 @@ public class PlayerController : MonoBehaviour
 
             case MouseState.Toggled:
             case MouseState.Held:
-                engine.Pitch(GameStateUtils.GetMousePositionOnScreen().y);
-                engine.Yaw(GameStateUtils.GetMousePositionOnScreen().x);
+                engine.AddPitch(GameStateUtils.GetMousePositionOnScreen().y);
+                engine.AddYaw(GameStateUtils.GetMousePositionOnScreen().x);
                 break;
 
             default:

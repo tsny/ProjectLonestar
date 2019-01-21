@@ -105,6 +105,16 @@ public class Engine : ShipComponent
 
     public Afterburner aft;
 
+    private float _yaw;
+    public float Yaw { get { return _yaw; } }
+
+    private float _roll;
+    public float Roll { get { return _roll; } }
+
+    private float _pitch;
+    public float Pitch { get { return _pitch; } }
+
+
     public delegate void ThrottleChangedEventHandler(Engine sender, ThrottleChangeEventArgs e);
     public event ThrottleChangedEventHandler ThrottleChanged;
 
@@ -209,11 +219,7 @@ public class Engine : ShipComponent
             if (aft != null && aft.IsActive)
                 forces += rb.transform.forward * aft.stats.thrust;
 
-            //cf.relativeForce = forces;
             rb.AddForce(forces);
-            //forces = GetClampedVelocity(forces);
-            //print(forces);
-            //rb.velocity = forces;
         } 
     }
 
@@ -261,23 +267,26 @@ public class Engine : ShipComponent
         shipModel.localRotation = neutralRotation;
     }
 
-    public void Pitch(float amount)
+    public void AddPitch(float amount)
     {
         amount = Mathf.Clamp(amount, -1, 1);
         transform.Rotate(Vector3.left * amount * engineStats.turnSpeed);
+        _pitch = amount;
     }
 
-    public void Yaw(float amount)
+    public void AddYaw(float amount)
     {
         amount = Mathf.Clamp(amount, -1, 1);
         transform.Rotate(Vector3.up * amount * engineStats.turnSpeed);
+        _yaw = amount;
         VisualYawRotation(amount);
     }
 
-    public void Roll(float amount)
+    public void AddRoll(float amount)
     {
         amount = Mathf.Clamp(amount, -1, 1);
         transform.Rotate(Vector3.forward * amount * engineStats.turnSpeed);
+        _roll = amount;
     }
 
     private void VisualYawRotation(float amount)

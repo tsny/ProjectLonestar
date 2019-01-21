@@ -130,7 +130,7 @@ public class TargetIndicator : MonoBehaviour
         target = newTarget;
 
         if (Ship != null)
-        ship.Died += () => { Destroy(gameObject); };
+        ship.Died += (s) => { Destroy(gameObject); };
     }
 
     private void Update()

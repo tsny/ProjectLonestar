@@ -15,6 +15,8 @@ public class FireActiveAction : FLAction
 
     private int timesFired;
 
+    public override void Init() {}
+
     public override void Act(StateController controller)
     {
         FireActive(controller);
@@ -22,7 +24,26 @@ public class FireActiveAction : FLAction
 
     private void FireActive(StateController controller)
     {
+        if (!controller.HasTarget) return;
+        if (controller.DistanceToTarget > controller.weaponsRange) return;
+
         Vector3 target = controller.ship.aimPosition;
+        target += CalculateAimOffset();
+
+        var rb = controller.TargetShip.GetComponent<Rigidbody>(); 
+
+        if (rb == null)
+            controller.ship.hpSys.FireActiveWeapons(target);
+
+        else
+            controller.ship.hpSys.FireActiveWeapons(rb);
+
+        //Fire needs to return bool
+        //timesFired++;
+    }
+
+    private Vector3 CalculateAimOffset()
+    {
         var offsetModifier = Random.Range(1,2);
 
         if (useRange)
@@ -30,17 +51,14 @@ public class FireActiveAction : FLAction
             var chance = Random.Range(lowerRangeMissChance, upperRangeMissChance);
 
             if (Random.Range(1, 100) <= chance)
-                target += missOffset * offsetModifier;
+                return missOffset * offsetModifier;
         }
         else
         {
             if (Random.Range(1,100) <= missChance)
-                target += missOffset * offsetModifier;
+                return missOffset * offsetModifier;
         }
 
-        controller.ship.FireActiveWeapons(target);
-
-        //Fire needs to return bool
-        //timesFired++;
+        return Vector3.zero;
     }
 }

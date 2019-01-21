@@ -4,13 +4,9 @@ using System.Collections.Generic;
 
 public class StateController : MonoBehaviour
 {
-    public Ship TargetShip
-    {
-        get
-        {
-            return targetTrans == null ? null : targetTrans.GetComponent<Ship>();
-        }
-    }
+    public Ship TargetShip { get { return targetTrans ? targetTrans.GetComponent<Ship>() : null; } }
+    public float DistanceToTarget { get { return Vector3.Distance(ship.transform.position, targetTrans.position); } }
+    public bool HasTarget { get { return targetTrans; } }
 
     public Ship ship;
     public Transform targetTrans;
@@ -33,6 +29,7 @@ public class StateController : MonoBehaviour
 
     public float gotoDistanceThreshold = 100;
     public float combatDistanceThreshold = 20;
+    public float weaponsRange = 500;
 
     public bool aiIsActive;
 

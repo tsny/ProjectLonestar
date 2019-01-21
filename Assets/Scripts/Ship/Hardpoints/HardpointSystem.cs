@@ -30,6 +30,22 @@ public class HardpointSystem : ShipComponent
     public float chargeRate = .2f;
     public float timeTillRecharge = 3;
 
+    private float avgWepRange;
+    public float AverageWeaponRange
+    {
+        get
+        {
+            if (avgWepRange != 0)
+            {
+                float totalRange = 0;
+                foreach (var gun in guns) totalRange += gun.stats.range;
+                avgWepRange = totalRange / guns.Count;
+            } 
+            
+            return avgWepRange;
+        }
+    }
+
     private IEnumerator rechargeEnumerator;
     private IEnumerator cooldownEnumerator;
 
@@ -67,12 +83,13 @@ public class HardpointSystem : ShipComponent
     public void FireActiveWeapons(Vector3 target)
     {
         foreach (Gun gun in guns)
-        {
-            if (gun.IsActive)
-            {
-                FireWeaponHardpoint(gun, target);
-            }
-        }
+            if (gun.IsActive) FireWeaponHardpoint(gun, target);
+    }
+
+    public void FireActiveWeapons(Rigidbody target)
+    {
+        foreach (Gun gun in guns)
+            if (gun.IsActive) FireWeaponHardpoint(gun, target);
     }
 
     public void FireWeaponHardpoint(int hardpointSlot, Vector3 target)
@@ -92,6 +109,18 @@ public class HardpointSystem : ShipComponent
         if (CanFireWeapons == false || gun.stats == null) return;
 
         if (gun.stats.energyDraw < energy && gun.Fire(target, ship.colliders))
+        {
+            energy -= gun.stats.energyDraw;
+            if (WeaponFired != null) WeaponFired(gun);
+            BeginCooldown();
+        }
+    }
+
+    public void FireWeaponHardpoint(Gun gun, Rigidbody target)
+    {
+        if (CanFireWeapons == false || gun.stats == null) return;
+
+        if (gun.stats.energyDraw < energy && gun.FireAtMovingTarget(target, ship.colliders))
         {
             energy -= gun.stats.energyDraw;
             if (WeaponFired != null) WeaponFired(gun);

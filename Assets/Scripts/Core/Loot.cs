@@ -5,6 +5,7 @@ public class Loot : MonoBehaviour, ITargetable
 {
     public Item item;
     public Transform target;
+    public Rigidbody rb;
 
     public ParticleSystem deathFX;
 
@@ -22,20 +23,20 @@ public class Loot : MonoBehaviour, ITargetable
     public event TargetEventHandler BecameTargetable;
     public event TargetEventHandler BecameUntargetable;
 
-    private void OnBecameUntargetable()
-    {
-        if (BecameUntargetable != null) BecameUntargetable(this);
-    }
+    public Gradient grad;
 
-    private void OnBecameTargetable()
-    {
-        if (BecameTargetable != null) BecameTargetable(this);
-    }
+    public ParticleSystem baseSystem;
+    public ParticleSystem subSystem;
+
+    private void OnBecameUntargetable() { if (BecameUntargetable != null) BecameUntargetable(this); }
+    private void OnBecameTargetable() { if (BecameTargetable != null) BecameTargetable(this); }
 
     private void Awake() 
     {
         health = Utilities.CheckComponent<Health>(gameObject);
         health.HealthDepleted += HandleHealthDepleted;
+        item = Utilities.CheckScriptableObject<Item>(item);
+        rb = Utilities.CheckComponent<Rigidbody>(gameObject);
     }
 
     private void HandleHealthDepleted()
@@ -89,18 +90,18 @@ public class Loot : MonoBehaviour, ITargetable
 
         if (distanceToTarget < pickupRange)
         {
-            Inventory targetInventory = GameSettings.Instance.playerInventory;
+            // Inventory targetInventory = GameSettings.Instance.playerInventory;
 
-            if (targetInventory == null)
-            {
-                ClearTarget();
-                print("ERROR: No inventory");
-                return;
-            }
+            // if (targetInventory == null)
+            // {
+            //     ClearTarget();
+            //     print("ERROR: No inventory");
+            //     return;
+            // }
 
-            targetInventory.AddItem(item);
+            // targetInventory.AddItem(item);
 
-            OnBecameUntargetable();
+            // OnBecameUntargetable();
             Destroy(gameObject);
             return;
         }
@@ -111,11 +112,21 @@ public class Loot : MonoBehaviour, ITargetable
 
     public bool IsTargetable()
     {
-        throw new System.NotImplementedException();
+        return true;
     }
 
     public void SetupTargetIndicator(TargetIndicator indicator)
     {
         indicator.header.text = "Loot: " + item.name ?? "Empty Loot";
+    }
+
+    public void SetParticleColors(Gradient gradient)
+    {
+        var main = baseSystem.main;
+        main.startColor = gradient;
+        var sub = subSystem.main;
+        sub.startColor = gradient;
+        var trail = subSystem.trails;
+        trail.colorOverLifetime = gradient;
     }
 }

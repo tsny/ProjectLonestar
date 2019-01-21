@@ -36,13 +36,13 @@ public class CollisionAvoidance
 
         else if (Physics.Raycast (up, transform.forward, out hit, detectionDistance)) 
         {
-            engine.Pitch (-engine.engineStats.turnSpeed);
+            engine.AddPitch (-engine.engineStats.turnSpeed);
             return true;
         } 
 
         else if (Physics.Raycast (down, transform.forward, out hit, detectionDistance)) 
         {
-            engine.Pitch (engine.engineStats.turnSpeed);
+            engine.AddPitch (engine.engineStats.turnSpeed);
             return true;
         } 
 

@@ -9,6 +9,8 @@ public class GetRandomTarget : FLAction
     public bool includeAllies;
     // Select only allies?
 
+    public override void Init() {}
+
     public override void Act(StateController controller)
     {
         if (findOnlyShips)

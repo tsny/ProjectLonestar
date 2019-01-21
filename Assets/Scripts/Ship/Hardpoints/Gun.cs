@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class Gun : Hardpoint
 {
+    public Rigidbody rbTarget;
     public WeaponStats stats;
     public Projectile projectile;
     public Transform spawn;
@@ -56,23 +57,9 @@ public class Gun : Hardpoint
     public event EventHandler<EventArgs> Activated;
     public event EventHandler<EventArgs> Deactivated;
 
-    private void OnFired()
-    {
-        if (Fired != null)
-            Fired(this, EventArgs.Empty);
-    }
-
-    private void OnActivated()
-    {
-        if (Activated != null)
-            Activated(this, EventArgs.Empty);
-    }
-
-    private void OnDeactivated()
-    {
-        if (Deactivated != null)
-            Deactivated(this, EventArgs.Empty);
-    }
+    private void OnFired() { if (Fired != null) Fired(this, EventArgs.Empty); }
+    private void OnActivated() { if (Activated != null) Activated(this, EventArgs.Empty); }
+    private void OnDeactivated() { if (Deactivated != null) Deactivated(this, EventArgs.Empty); }
 
     public void Toggle()
     {
@@ -81,8 +68,7 @@ public class Gun : Hardpoint
 
     private void Awake()
     {
-        if (stats == null)
-            stats = ScriptableObject.CreateInstance<WeaponStats>();
+        stats = Utilities.CheckScriptableObject<WeaponStats>(stats);
     }
 
     public bool Fire(Vector3 target, Collider[] colliders)
@@ -94,6 +80,14 @@ public class Gun : Hardpoint
 
         StartCooldown(stats.cooldownDuration);
         return true;
+    }
+
+    public bool FireAtMovingTarget(Rigidbody rbt, Collider[] colliders)
+    {
+        rbTarget = rbt;
+        if (rbTarget == null) return false;
+        var pos = Utilities.CalculateAimPosition(SpawnPoint, rbt, projectile);
+        return Fire(pos, colliders);
     }
 
     public void Fire(Collider[] colliders)

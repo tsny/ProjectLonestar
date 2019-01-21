@@ -33,9 +33,11 @@ Originally the project was worked on in Unreal and looked pretty great like I me
 
 #### Youtube
 Brackeys - UI
+PastaSpace - Inspiration, Childhood-memories (/v/Lancer)
 
 #### Github
-@Stillwwater - Terminal
+[@Stillwwater](https://github.com/stillwwater) - [Terminal](https://github.com/stillwwater/command_terminal)
+[@Why485](https://www.youtube.com/user/Why485) - [Billboard Nebula](https://github.com/brihernandez/BillboardNebula)
 
 #### Unity Forums
 QuantumRyan - Automatic Version Incrementor  
@@ -47,6 +49,7 @@ Splash screen background - Funerium.Deviantart.com
 
 #### Google Fonts
 Krona One - Logo Fonts
+Julius Sans One
 
 #### Music
 fascinating earthbound objects - simultaneous eon (my version is a bit slowed/pitched down) 

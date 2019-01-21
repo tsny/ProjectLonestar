@@ -14,7 +14,7 @@ public class Ship : MonoBehaviour, ITargetable
 
     [Header("Ship Components")]
     public Health health;
-    public HardpointSystem hardpointSystem;
+    public HardpointSystem hpSys;
     public Vector3 aimPosition;
     public Engine engine;
     public CruiseEngine cruiseEngine;
@@ -29,28 +29,23 @@ public class Ship : MonoBehaviour, ITargetable
 
     public delegate void PossessionEventHandler(PlayerController pc, Ship sender, bool possessed);
     public delegate void EventHandler();
-    public delegate void SpawnEventHandler(Ship sender);
+    public delegate void ShipEventHandler(Ship sender);
 
-    public static event SpawnEventHandler Spawned;
+    public static event ShipEventHandler Spawned;
 
     public event PossessionEventHandler Possession;
     public event TargetEventHandler BecameTargetable;
     public event TargetEventHandler BecameUntargetable;
-    public event EventHandler Died;
+    public event ShipEventHandler Died;
 
-    private void OnBecameTargetable()
-    {
+    private void OnBecameTargetable() {
         //if (BecameTargetable != null) BecameTargetable(this);
     }
-
-    protected void OnPossession(PlayerController pc, bool possessed)
-    {
-        if (Possession != null) Possession(pc, this, possessed);
-    }
+    protected void OnPossession(PlayerController pc, bool possessed) { if (Possession != null) Possession(pc, this, possessed); }
 
     private void Awake()
     {
-        hardpointSystem = GetComponentInChildren<HardpointSystem>();
+        hpSys = GetComponentInChildren<HardpointSystem>();
         cruiseEngine = GetComponentInChildren<CruiseEngine>();
         engine = GetComponentInChildren<Engine>();
         rb = GetComponentInChildren<Rigidbody>();
@@ -106,7 +101,7 @@ public class Ship : MonoBehaviour, ITargetable
     {
         // Add the random pilot's name
         name = possessed ? "PLAYER SHIP" : "NPC SHIP"; 
-        tag = possessed ? "Player" : "Untagged";
+        tag = possessed ? "Player" : "Ship";
 
         if (possessed)
         {
@@ -122,19 +117,14 @@ public class Ship : MonoBehaviour, ITargetable
         OnPossession(pc, possessed);
     }
 
-    private void FixedUpdate()
-    {
-        ShipPhysicsStats.ClampShipVelocity(rb, physicsStats, cruiseEngine.State);
-    }
-
-    public void FireActiveWeapons(Vector3 target)
-    {
-        hardpointSystem.FireActiveWeapons(target);
-    }
+    // private void FixedUpdate()
+    // {
+    //     ShipPhysicsStats.ClampShipVelocity(rb, physicsStats, cruiseEngine.State);
+    // }
 
     public void FireActiveWeapons()
     {
-        hardpointSystem.FireActiveWeapons(aimPosition);
+        hpSys.FireActiveWeapons(aimPosition);
     }
 
     public void SetupTargetIndicator(TargetIndicator indicator)
@@ -166,13 +156,8 @@ public class Ship : MonoBehaviour, ITargetable
             Debug.LogWarning("Dying ship has no deathFX...");
         }
 
-        if (Died != null) Died();
+        if (Died != null) Died(this);
         Destroy(gameObject);
         // EVENT CALL ALSO? (ON DEATH)
     }
-
-    // public void TakeDamage(WeaponStats weapon)
-    // {
-    //     health.TakeDamage(weapon);
-    // }
 }

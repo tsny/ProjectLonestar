@@ -7,24 +7,28 @@ public class RotateOverCurve : FLAction
     public FlightAxis axis;
     public AnimationCurve curve;
 
+    public float turnAmount = .5f;
+
+    public override void Init() 
+    {
+        
+    }
+
     public override void Act(StateController controller)
     {
         switch (axis)
         {
             case FlightAxis.Pitch:
-                controller.ship.engine.Pitch(curve.Evaluate(controller.timeInCurrentState));
+                controller.ship.engine.AddPitch(turnAmount);
                 break;
                 
             case FlightAxis.Roll:
-                controller.ship.engine.Roll(curve.Evaluate(controller.timeInCurrentState));
+                controller.ship.engine.AddRoll(turnAmount);
                 break;
 
             case FlightAxis.Yaw:
-                controller.ship.engine.Yaw(curve.Evaluate(controller.timeInCurrentState));
+                controller.ship.engine.AddYaw(turnAmount);
                 break;
-
-            default:
-                return;
         }
     }
 }
