@@ -185,7 +185,6 @@ public class Engine : ShipComponent
         engineStats = Utilities.CheckScriptableObject<EngineStats>(engineStats);
         blinkCD = Utilities.CheckScriptableObject<Cooldown>(blinkCD);
         sidestepCD = Utilities.CheckScriptableObject<Cooldown>(sidestepCD);
-        
         shipModelOrigRot = shipModel.localRotation;
     }
 
@@ -212,15 +211,27 @@ public class Engine : ShipComponent
 
     private void FixedUpdate()
     {
-        if (!Drifting)
+        Vector3 forces = Vector3.zero;
+
+        if (Drifting && aft != null && aft.IsBurning)
         {
-            var forces = CalcStrafeForces() + CalcThrottleForces();
+            ShipPhysicsStats.ClampShipVelocity(rb, ship.physicsStats, CruiseState.On);
+            ShipPhysicsStats.HandleDrifting(rb, ship.physicsStats, false);
+            forces = CalcAfterburnerForces();
+        }
 
-            if (aft != null && aft.IsActive)
-                forces += rb.transform.forward * aft.stats.thrust;
+        else if (Drifting)
+        {
+            ShipPhysicsStats.HandleDrifting(rb, ship.physicsStats, true);
+        }
 
-            rb.AddForce(forces);
+        else if (!Drifting)
+        {
+            ShipPhysicsStats.HandleDrifting(rb, ship.physicsStats, false);
+            forces = CalcStrafeForces() + CalcThrottleForces() + CalcAfterburnerForces();
         } 
+
+        rb.AddForce(forces);
     }
 
     private Vector3 GetClampedVelocity(Vector3 velocity)
@@ -237,6 +248,13 @@ public class Engine : ShipComponent
     private Vector3 CalcThrottleForces()
     {
         return rb.transform.forward * Throttle * engineStats.enginePower;
+    }
+
+    private Vector3 CalcAfterburnerForces()
+    {
+        if (!aft || !aft.IsBurning) return Vector3.zero;
+
+        return rb.transform.forward * aft.stats.thrust;
     }
 
     public void ThrottleUp()

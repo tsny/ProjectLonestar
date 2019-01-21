@@ -13,7 +13,7 @@ public class AfterburnerEditor : Editor
 
         afterburner = target as Afterburner;
 
-        EGL.LabelField("Is Active?", afterburner.IsActive.ToString());
+        EGL.LabelField("Is Active?", afterburner.IsBurning.ToString());
         EGL.LabelField("Is On Cooldown?", afterburner.IsOnCooldown.ToString());
 
         ShowButtons();
@@ -23,11 +23,11 @@ public class AfterburnerEditor : Editor
     {
         if (Application.isPlaying == false || afterburner.stats == null) return;
 
-        var buttonString = afterburner.IsActive ? "Deactivate" : "Activate";
+        var buttonString = afterburner.IsBurning ? "Deactivate" : "Activate";
 
         if (GUILayout.Button(buttonString))
         {
-            if (afterburner.IsActive)
+            if (afterburner.IsBurning)
             {
                 afterburner.Deactivate();
             }

@@ -6,54 +6,30 @@ public class Afterburner : Hardpoint
 {
     public Rigidbody rb;
     public AfterburnerStats stats;
-
     public float charge;
 
-    public bool IsActive
-    {
-        get
-        {
-            return burnCoroutine != null;
-        }
-    }
+    public bool IsBurning { get { return burnCoroutine != null; } }
 
     private IEnumerator rechargeCoroutine;
     private IEnumerator burnCoroutine;
     private IEnumerator cooldownCoroutine;
 
-    public event EventHandler<AfterburnerEventArgs> Activated;
-    public event EventHandler<AfterburnerEventArgs> Deactivated;
+    public event ToggledEventHandler Toggled;
+    public delegate void ToggledEventHandler(bool toggle);
 
     private void Awake()
     {
-        if (stats == null)
-            stats = ScriptableObject.CreateInstance<AfterburnerStats>();
-
-        stats = Instantiate(stats);
-
-        if (rb == null)
-            rb = GetComponentInChildren<Rigidbody>();
-
+        stats = Utilities.CheckScriptableObject<AfterburnerStats>(stats);
+        if (rb == null) rb = GetComponentInChildren<Rigidbody>();
         charge = stats.capacity;
     }
 
-    private void OnActivated()
-    {
-        if (Activated != null)
-            Activated(this, new AfterburnerEventArgs(true));
-    }
-
-    private void OnDeactivated()
-    {
-        if (Deactivated != null)
-            Deactivated(this, new AfterburnerEventArgs(false));
-    }
+    private void OnActivated() { if (Toggled != null) Toggled(true); }
+    private void OnDeactivated() { if (Toggled != null) Toggled(false); }
 
     public void Activate()
     {
-        if (rb == null) return;
-
-        if (IsActive) return;
+        if (rb == null || IsBurning) return;
 
         burnCoroutine = Burn();
         StartCoroutine(burnCoroutine);
@@ -63,15 +39,13 @@ public class Afterburner : Hardpoint
 
     public void Deactivate()
     {
-        if (!IsActive) return;
+        if (!IsBurning) return;
 
-        if (burnCoroutine != null)
-            StopCoroutine(burnCoroutine);
+        if (burnCoroutine != null) StopCoroutine(burnCoroutine);
 
         burnCoroutine = null;
 
         BeginRecharge();
-
         OnDeactivated();
     }
 
@@ -130,19 +104,7 @@ public class Afterburner : Hardpoint
     private IEnumerator Cooldown()
     {
         yield return new WaitForSeconds(stats.cooldownDuration);
-
         cooldownCoroutine = null;
-
         BeginRecharge();
-    }
-}
-
-public class AfterburnerEventArgs : EventArgs
-{
-    public bool wasActivated;
-
-    public AfterburnerEventArgs(bool wasActivated)
-    {
-        this.wasActivated = wasActivated;
     }
 }
