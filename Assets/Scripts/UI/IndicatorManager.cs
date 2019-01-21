@@ -14,6 +14,7 @@ public class IndicatorManager : ShipUIElement
     private void Awake()
     {
         Ship.Spawned += HandleShipSpawned;
+        Loot.Spawned += HandleLootSpawned;
     }
 
     private void HandleShipSpawned(Ship ship)
@@ -22,6 +23,11 @@ public class IndicatorManager : ShipUIElement
         {
             AddIndicator(ship.gameObject);
         }
+    }
+
+    private void HandleLootSpawned(Loot loot)
+    {
+        AddIndicator(loot.gameObject);
     }
 
     private void Start() 

@@ -10,6 +10,7 @@ public class StateController : MonoBehaviour
 
     public Ship ship;
     public Transform targetTrans;
+    public bool importantToPlayer = true;
 
     public Ship[] allies;
     public Ship[] enemies;
@@ -25,8 +26,9 @@ public class StateController : MonoBehaviour
     public State currentState;
     public State remainState;
 
-    private Queue<State> pastStates = new Queue<State>();
+    public Queue<State> pastStates = new Queue<State>();
 
+    public float maxPlayerDistance = 2000;
     public float gotoDistanceThreshold = 100;
     public float combatDistanceThreshold = 20;
     public float weaponsRange = 500;

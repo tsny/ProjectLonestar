@@ -23,6 +23,9 @@ public class Loot : MonoBehaviour, ITargetable
     public event TargetEventHandler BecameTargetable;
     public event TargetEventHandler BecameUntargetable;
 
+    public static event LootEventHandler Spawned;
+    public delegate void LootEventHandler(Loot sender);
+
     public Gradient grad;
 
     public ParticleSystem baseSystem;
@@ -37,6 +40,11 @@ public class Loot : MonoBehaviour, ITargetable
         health.HealthDepleted += HandleHealthDepleted;
         item = Utilities.CheckScriptableObject<Item>(item);
         rb = Utilities.CheckComponent<Rigidbody>(gameObject);
+    }
+
+    private void Start() 
+    {
+        if (Spawned != null) Spawned(this);
     }
 
     private void HandleHealthDepleted()

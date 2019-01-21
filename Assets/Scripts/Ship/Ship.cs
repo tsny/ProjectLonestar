@@ -10,8 +10,8 @@ public class Ship : MonoBehaviour, ITargetable
     public EngineStats engineStats;
     public ShipDetails shipDetails;
     public ShipPhysicsStats physicsStats;
-    //public ShipStats stats;
 
+    // TODO: Make some of these into properties
     [Header("Ship Components")]
     public Health health;
     public HardpointSystem hpSys;
@@ -28,7 +28,6 @@ public class Ship : MonoBehaviour, ITargetable
     public Transform firstPersonCameraPosition;
 
     public delegate void PossessionEventHandler(PlayerController pc, Ship sender, bool possessed);
-    public delegate void EventHandler();
     public delegate void ShipEventHandler(Ship sender);
 
     public static event ShipEventHandler Spawned;
@@ -38,9 +37,8 @@ public class Ship : MonoBehaviour, ITargetable
     public event TargetEventHandler BecameUntargetable;
     public event ShipEventHandler Died;
 
-    private void OnBecameTargetable() {
-        //if (BecameTargetable != null) BecameTargetable(this);
-    }
+    private void OnBecameTargetable() { }
+
     protected void OnPossession(PlayerController pc, bool possessed) { if (Possession != null) Possession(pc, this, possessed); }
 
     private void Awake()
@@ -157,6 +155,7 @@ public class Ship : MonoBehaviour, ITargetable
         }
 
         if (Died != null) Died(this);
+
         Destroy(gameObject);
         // EVENT CALL ALSO? (ON DEATH)
     }

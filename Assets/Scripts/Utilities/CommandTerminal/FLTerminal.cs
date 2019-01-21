@@ -193,6 +193,12 @@ public class FLTerminal : Terminal
         FindObjectOfType<HUDManager>().SpawnNotification(text);
     }
 
+    [RegisterCommand(MinArgCount = 0, MaxArgCount = 0)]
+    static void Test()
+    {
+        //GameSettings.pc.GetComponent<StateController>().test
+    }
+
     private Ship FindClosestShip(Ship[] ships)
     {
         ships.ToList().Remove(GameSettings.pc.ship);

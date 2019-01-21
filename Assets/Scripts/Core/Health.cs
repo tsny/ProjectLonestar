@@ -44,19 +44,12 @@ public class Health : MonoBehaviour
         armor = stats.startingArmor;
     } 
 
-    private void OnTookDamage(WeaponStats weapon)
-    {
-        if (TookDamage != null) TookDamage();
-    }
-
-    private void OnHealthDepleted()
-    {
-        if (HealthDepleted != null) HealthDepleted();
-    }
+    private void OnTookDamage(WeaponStats weapon) { if (TookDamage != null) TookDamage(); }
+    private void OnHealthDepleted() { if (HealthDepleted != null) HealthDepleted(); }
 
     public virtual void TakeDamage(WeaponStats weapon)
     {
-        if (_inv) return;
+        if (_inv || health <= stats.minHealth) return;
 
         if (shield >= stats.minShield)
         {
