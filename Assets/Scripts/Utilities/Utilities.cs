@@ -63,10 +63,17 @@ public static class Utilities
         return aim;
     }
 
-     public static bool Chance(float percent)
+     public static bool Chance(float percent, bool logResult = false)
      {
         percent = Mathf.Clamp(percent, 1, 100);
         var roll = Random.Range(1, 100);
-        return percent <= roll;
+        var result = percent >= roll;
+
+        if (logResult)
+        {
+            Debug.Log(result + ", Chance: " + percent + ", Roll: " + roll + ", Out of: 100");
+        }
+
+        return result;
      }
 }

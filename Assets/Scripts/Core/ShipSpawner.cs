@@ -58,7 +58,8 @@ public class ShipSpawner : MonoBehaviour
     {
         var ship = Instantiate(shipToSpawn, spawnPosition, Quaternion.identity);
 
-        ship.Died += (s) => { LootSpawner.SpawnLoot(s.transform.position, spawnInfo.lootInfo); };
+        //ship.Died += (s) => { LootSpawner.SpawnLoot(s.transform.position, spawnInfo.lootInfo); };
+        ship.Died += (s) => { LootSpawner.SpawnLoot(s.transform.position, spawnInfo.dl); };
 
         var ai = ship.GetComponent<StateController>();
 
@@ -120,12 +121,11 @@ public class ShipSpawn
     public bool isHostile;
     public int numToSpawn = 1;
     public Transform target;
-
-    public LootSpawnInfo lootInfo;
-
+    public LootSpawnInfo[] lootInfo;
     public Vector3 spawnOffset = Vector3.one;
     public State state;
     public Ship ship;
     public Loadout loadout;
+    public DropList dl;
     // Relations to other ships??
 }

@@ -11,4 +11,16 @@ public class ShipStats : ScriptableObject
     public float energyChargeRate = 3;
     public float maxHealth = 100;
     public float cargoCapacity = 50;
+
+    private float _power = 100;
+    public float Power
+    {
+        get { return _power; }
+        set
+        {
+            value = Mathf.Clamp(value, 1, 1000);
+            _power = value;
+        }
+    }
+    public int level = 1;
 }
