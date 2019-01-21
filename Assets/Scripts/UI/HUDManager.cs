@@ -68,6 +68,13 @@ public class HUDManager : MonoBehaviour
 
         cruiseText.text = "Engines Nominal";
         mouseFlightText.text = "";
+
+        Loot.Looted += HandleDropLooted;
+    }
+
+    private void HandleDropLooted(Loot loot)
+    {
+        SpawnNotification("Looted " + loot.item.name);
     }
 
     private void Start()

@@ -19,7 +19,7 @@ public class ShipSpawner : MonoBehaviour
     // Default State
     // Default Actions?
     // Need to make this more complicated in order to individually make some ships hostile/friendly to one another
-    public ShipSpawn[] shipsToSpawn;
+    public ShipSpawnInfo[] shipsToSpawn;
 
     // Experiment
     private int wave = 1;
@@ -54,12 +54,12 @@ public class ShipSpawner : MonoBehaviour
         }
     }
 
-    public static Ship SpawnShip(Ship shipToSpawn, ShipSpawn spawnInfo, Vector3 spawnPosition)
+    public static Ship SpawnShip(Ship shipToSpawn, ShipSpawnInfo spawnInfo, Vector3 spawnPosition)
     {
         var ship = Instantiate(shipToSpawn, spawnPosition, Quaternion.identity);
 
         //ship.Died += (s) => { LootSpawner.SpawnLoot(s.transform.position, spawnInfo.lootInfo); };
-        ship.Died += (s) => { LootSpawner.SpawnLoot(s.transform.position, spawnInfo.dl); };
+        ship.Died += (s) => { LootSpawner.SpawnLoot(s.transform.position, spawnInfo); };
 
         var ai = ship.GetComponent<StateController>();
 
@@ -102,7 +102,7 @@ public class ShipSpawner : MonoBehaviour
         return ship;
     }
 
-    public static List<Ship> SpawnShips(ShipSpawn[] shipsToSpawn, Vector3 spawnPos, Bounds bounds)
+    public static List<Ship> SpawnShips(ShipSpawnInfo[] shipsToSpawn, Vector3 spawnPos, Bounds bounds)
     {
         List<Ship> spawnedShips = new List<Ship>();
 
@@ -116,16 +116,17 @@ public class ShipSpawner : MonoBehaviour
     }
 }
 [System.Serializable]
-public class ShipSpawn
+public class ShipSpawnInfo
 {
     public bool isHostile;
     public int numToSpawn = 1;
     public Transform target;
-    public LootSpawnInfo[] lootInfo;
     public Vector3 spawnOffset = Vector3.one;
     public State state;
     public Ship ship;
     public Loadout loadout;
+
     public DropList dl;
+    public LootSpawnInfo[] lootInfo;
     // Relations to other ships??
 }

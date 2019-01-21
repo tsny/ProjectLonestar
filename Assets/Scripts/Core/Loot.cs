@@ -24,7 +24,10 @@ public class Loot : MonoBehaviour, ITargetable
     public event TargetEventHandler BecameUntargetable;
 
     public static event LootEventHandler Spawned;
+    public static event LootEventHandler Looted;
+
     public delegate void LootEventHandler(Loot sender);
+    //public delegate void LootedEventHandler(Loot sender, Ship looter);
 
     public Gradient grad;
 
@@ -45,6 +48,13 @@ public class Loot : MonoBehaviour, ITargetable
     private void Start() 
     {
         if (Spawned != null) Spawned(this);
+        StartCoroutine(FinishSpawn());
+    }
+
+    private IEnumerator FinishSpawn(float waitDuration = 3)
+    {
+        yield return new WaitForSeconds(waitDuration);
+        Destroy(rb);
     }
 
     private void HandleHealthDepleted()
@@ -110,12 +120,19 @@ public class Loot : MonoBehaviour, ITargetable
             // targetInventory.AddItem(item);
 
             // OnBecameUntargetable();
+            if (Looted != null) Looted(this);
             Destroy(gameObject);
             return;
         }
 
         transform.LookAt(target.transform);
         transform.position = Vector3.Lerp(transform.position, target.transform.position, pullForce * Time.deltaTime);
+    }
+
+    [ContextMenu("test")]
+    public void Test()
+    {
+        if (Looted != null) Looted(this);
     }
 
     public bool IsTargetable()
@@ -130,6 +147,7 @@ public class Loot : MonoBehaviour, ITargetable
 
     public void SetParticleColors(Gradient gradient)
     {
+        grad = gradient;
         var main = baseSystem.main;
         main.startColor = gradient;
         var sub = subSystem.main;

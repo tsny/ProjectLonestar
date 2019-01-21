@@ -3,6 +3,13 @@ using UnityEngine;
 
 public class LootSpawner
 {
+    // Spawns ALL loot in SpawnInfo
+    public static void SpawnLoot(Vector3 position, ShipSpawnInfo info)
+    {
+        SpawnLoot(position, info.dl);
+        SpawnLoot(position, info.lootInfo);
+    }
+
     public static void SpawnLoot(Vector3 position, DropList dropList)
     {
         foreach (Drop drop in dropList.drops)
@@ -22,8 +29,6 @@ public class LootSpawner
         {
             lootDrops[i] = SpawnLootDrop(position, infoArray[i]);
         }
-
-        // Do some kinda logic to determine the loot's rarity
 
         return lootDrops;
     }

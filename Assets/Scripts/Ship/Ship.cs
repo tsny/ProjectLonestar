@@ -60,6 +60,10 @@ public class Ship : MonoBehaviour, ITargetable
         cruiseEngine.CruiseStateChanged += HandleCruiseChange;
         health.HealthDepleted += HandleHealthDepleted;
 
+    }
+
+    private void Start()
+    {
         if (Spawned != null) Spawned(this);
     }
 

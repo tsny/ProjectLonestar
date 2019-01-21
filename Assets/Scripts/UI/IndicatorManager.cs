@@ -32,7 +32,7 @@ public class IndicatorManager : ShipUIElement
 
     private void Start() 
     {
-        CreateIndicators();     
+        //CreateIndicators();     
     }
 
     // Not really perfomant at all, consider not using ever lol
