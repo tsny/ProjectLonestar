@@ -68,6 +68,7 @@ public class TargetIndicator : MonoBehaviour
 
     public float endFadeRange = 500;
     public float beginFadeRange = 250;
+    public CanvasGroup canvasGroup;
 
     private bool wasOnScreenLastFrame;
     private Vector3 originalScale;
@@ -232,20 +233,14 @@ public class TargetIndicator : MonoBehaviour
 
         if (DistanceFromTarget < beginFadeRange)
         {
-            newColor.a = 1;
+            canvasGroup.alpha = 1;
         }
         else
         {
-            //float distanceRatio = Mathf.Clamp(distanceFromTarget, beginFadeRange, endFadeRange);
-            //distanceRatio = distanceRatio / endFadeRange;
-
             float distanceRatio = DistanceFromTarget / endFadeRange;
             distanceRatio = Mathf.Clamp(distanceRatio, 0, 1);
-
-            newColor.a = 1 - distanceRatio;
+            canvasGroup.alpha = 1 - distanceRatio;
         }
-
-        buttonImage.color = newColor;
     }
 
     public void SetButtonColor(Item item)
