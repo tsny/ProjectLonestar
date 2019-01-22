@@ -228,9 +228,6 @@ public class TargetIndicator : MonoBehaviour
 
     private void CalculateTransparency()
     {
-        Color newColor;
-        newColor = buttonImage.color;
-
         if (DistanceFromTarget < beginFadeRange)
         {
             canvasGroup.alpha = 1;
@@ -241,6 +238,8 @@ public class TargetIndicator : MonoBehaviour
             distanceRatio = Mathf.Clamp(distanceRatio, 0, 1);
             canvasGroup.alpha = 1 - distanceRatio;
         }
+
+        if (canvasGroup.alpha == 0 && selected) Deselect();
     }
 
     public void SetButtonColor(Item item)
