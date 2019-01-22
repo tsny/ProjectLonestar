@@ -65,6 +65,8 @@ public class PlayerController : MonoBehaviour
         shipCamera = Utilities.CheckComponent<ShipCamera>(gameObject);
         flycam = Utilities.CheckComponent<Flycam>(gameObject);
         listener = Utilities.CheckComponent<AudioListener>(gameObject);
+
+        enabled = false;
     }
 
     protected virtual void OnPossessedNewShip(PossessionEventArgs args)
