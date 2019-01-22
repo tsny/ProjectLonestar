@@ -5,20 +5,24 @@ public class Loot : MonoBehaviour, ITargetable
 {
     public Item item;
     public Transform target;
-    public Rigidbody rb;
 
     public ParticleSystem deathFX;
 
-    public bool beingLooted;
+    public bool isBeingLooted;
     public float pickupRange = 5;
     public float outOfBoundsRange = 100;
 
-    public float distanceToTarget;
+    public float DistanceToTarget
+    {
+        get { return target ? Vector3.Distance(transform.position, target.transform.position) : 0; }
+    }
 
     [Range(0, 10)]
-    public float pullForce = .5f;
+    public float pullForce = 5;
 
     private Health health;
+    private Rigidbody rb;
+    private SphereCollider coll;
 
     public event TargetEventHandler BecameTargetable;
     public event TargetEventHandler BecameUntargetable;
@@ -43,6 +47,8 @@ public class Loot : MonoBehaviour, ITargetable
         health.HealthDepleted += HandleHealthDepleted;
         item = Utilities.CheckScriptableObject<Item>(item);
         rb = Utilities.CheckComponent<Rigidbody>(gameObject);
+        coll = Utilities.CheckComponent<SphereCollider>(gameObject);
+        coll.isTrigger = true;
     }
 
     private void Start() 
@@ -51,10 +57,23 @@ public class Loot : MonoBehaviour, ITargetable
         StartCoroutine(FinishSpawn());
     }
 
+    public void Init(Vector3 impulse)
+    {
+        rb.AddForce(impulse, ForceMode.Impulse);
+    }
+
     private IEnumerator FinishSpawn(float waitDuration = 3)
     {
         yield return new WaitForSeconds(waitDuration);
         Destroy(rb);
+    }
+
+    private void OnTriggerEnter(Collider other) 
+    {
+        if (other.CompareTag("Player"))
+        {
+            SetTarget(other.transform);
+        }
     }
 
     private void HandleHealthDepleted()
@@ -67,66 +86,55 @@ public class Loot : MonoBehaviour, ITargetable
         Destroy(gameObject);
     }
 
-    public void SetTarget(Transform newTarget, float pullForce)
+    public void SetTarget(Transform newTarget)
     {
         ClearTarget();
-
         target = newTarget;
-        beingLooted = true;
-        this.pullForce = pullForce;
-        distanceToTarget = Vector3.Distance(transform.position, target.transform.position);
-
-        StartCoroutine(GravitateCoroutine());
+        isBeingLooted = true;
     }
 
     public void ClearTarget()
     {
-        StopAllCoroutines();
-
         target = null;
-        beingLooted = false;
+        isBeingLooted = false;
     }
 
-    private IEnumerator GravitateCoroutine()
+    private void FixedUpdate()
     {
-        for (; ;)
-        {
-            GravitateTowardsLooter();
-            yield return new WaitForFixedUpdate();
-        }
+        GravitateTowardsLooter();
     }
 
     public void GravitateTowardsLooter()
     {
-        distanceToTarget = Vector3.Distance(transform.position, target.transform.position);
+        if (!target || !isBeingLooted) return;
 
-        if (distanceToTarget > outOfBoundsRange)
+        if (DistanceToTarget > outOfBoundsRange)
         {
             ClearTarget();
             return;
         }
 
-        if (distanceToTarget < pickupRange)
+        if (DistanceToTarget < pickupRange)
         {
-            // Inventory targetInventory = GameSettings.Instance.playerInventory;
+            Inventory targetInventory = GameSettings.Instance.playerInventory;
 
-            // if (targetInventory == null)
-            // {
-            //     ClearTarget();
-            //     print("ERROR: No inventory");
-            //     return;
-            // }
+            if (targetInventory == null)
+            {
+                ClearTarget();
+                Debug.LogError("ERROR: No inventory");
+                return;
+            }
 
-            // targetInventory.AddItem(item);
+            targetInventory.AddItem(item);
 
-            // OnBecameUntargetable();
+            OnBecameUntargetable();
             if (Looted != null) Looted(this);
+
             Destroy(gameObject);
             return;
         }
 
-        transform.LookAt(target.transform);
-        transform.position = Vector3.Lerp(transform.position, target.transform.position, pullForce * Time.deltaTime);
+        transform.position = Vector3.MoveTowards(transform.position, target.transform.position, pullForce);
     }
 
     [ContextMenu("test")]
@@ -143,6 +151,8 @@ public class Loot : MonoBehaviour, ITargetable
     public void SetupTargetIndicator(TargetIndicator indicator)
     {
         indicator.header.text = "Loot: " + item.name ?? "Empty Loot";
+        indicator.showHealthOnSelect = false;
+        indicator.reticle.gameObject.SetActive(false);
     }
 
     public void SetParticleColors(Gradient gradient)

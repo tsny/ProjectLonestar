@@ -16,6 +16,7 @@ public class FindRandomTarget : FLDecision
 
         if (onlyShips)
         {
+            // TODO: use the game manager's current list of alive ships?
             components = FindObjectsOfType<Ship>();
         }
 
@@ -26,9 +27,9 @@ public class FindRandomTarget : FLDecision
 
         if (components.Length > 1)
         {
-            controller.targetTrans = components[Random.Range(0, components.Length)].transform;
+            controller.Target = components[Random.Range(0, components.Length)].gameObject;
         }
 
-        return components.Length > 1;
+        return controller.HasTarget;
     }
 }

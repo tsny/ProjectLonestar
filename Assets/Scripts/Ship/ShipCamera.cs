@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -65,8 +66,10 @@ public class ShipCamera : ShipComponent
         FollowTarget();
     }
 
-    public static Vector3 GetMousePositionInWorld(Camera camera = null, bool drawRay = false, float aimRaycastDistance = 10000)
+    [Obsolete]
+    public static AimPosition GetMousePositionInWorld(Camera camera = null, bool drawRay = false, float castDistance = 10000)
     {
+        // TODO: Don't use camera.main at all?
         if (camera == null)
         {
             camera = Camera.main;
@@ -74,15 +77,16 @@ public class ShipCamera : ShipComponent
         }
 
         Ray ray = camera.ScreenPointToRay(Input.mousePosition);
-
-        RaycastHit hitInfo;
-
-        if (drawRay) Debug.DrawRay(ray.origin, ray.direction * aimRaycastDistance);
+        RaycastHit hit;
+        if (drawRay) Debug.DrawRay(ray.origin, ray.direction * castDistance);
 
         //Physics.Raycast(ray, out hitInfo, aimRaycastDistance, ~LayerMask.GetMask("Player"));
-        Physics.Raycast(ray, out hitInfo, aimRaycastDistance, 1 << LayerMask.NameToLayer("Default"));
+        // TODO: Change that layer to "Targetable"?
+        Physics.Raycast(ray, out hit, castDistance, 1 << LayerMask.NameToLayer("Default"));
 
-        return (hitInfo.collider != null) ? hitInfo.point : ray.GetPoint(aimRaycastDistance);
+        var pos = (hit.collider != null) ? hit.point : ray.GetPoint(castDistance);
+
+        return new AimPosition(pos, hit);
     }
 
     private void CalculateOffsets()
@@ -114,5 +118,65 @@ public class ShipCamera : ShipComponent
 
         transform.position = Vector3.Lerp(transform.position, newPosition, lerpSpeed);
         transform.rotation = transformToFollow.rotation;
+    }
+}
+
+// TODO: Move this to it's own file
+public class AimPosition
+{
+    public Vector3 pos;
+    public Rigidbody rb;
+
+    public RaycastHit hit;
+    public bool HitAnything { get { return hit.transform != null; } }
+    public bool HitTargetReticle { get { return hit.transform.CompareTag("TargetReticle"); } }
+    public TargetIndicator TargetIndicator { get { return hit.transform.GetComponent<TargetIndicator>(); } }
+    public Rigidbody TargetRb { get { return hit.rigidbody; } }
+
+    public AimPosition() {}
+    public AimPosition(Vector3 pos) { this.pos = pos; }
+    public AimPosition(Rigidbody rb) { this.rb = rb; }
+
+    public AimPosition(Vector3 pos, RaycastHit hit)
+    {
+        this.pos = pos;
+        this.hit = hit;
+    }
+    
+    public override string ToString()
+    {
+        var str = "Hit Anything: " + HitAnything;
+        if (HitAnything)
+        {
+            str += "\nHit Target Reticle: " + HitTargetReticle;
+            str += "\nTarget Has Rigidbody: " + TargetRb;
+        }
+
+        str += "\nPosition: " + pos;
+        str += "\nRb: " + rb;
+
+        return str;
+    } 
+
+    public static AimPosition FromMouse(Camera camera = null, bool drawRay = false, float castDistance = 10000)
+    {
+        // TODO: Don't use camera.main at all?
+        if (camera == null)
+        {
+            camera = Camera.main;
+            Debug.LogWarning("Using Camera.main!");
+        }
+
+        Ray ray = camera.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+        if (drawRay) Debug.DrawRay(ray.origin, ray.direction * castDistance);
+
+        //Physics.Raycast(ray, out hitInfo, aimRaycastDistance, ~LayerMask.GetMask("Player"));
+        // TODO: Change that layer to "Targetable"?
+        Physics.Raycast(ray, out hit, castDistance, 1 << LayerMask.NameToLayer("Targetable"));
+
+        var pos = (hit.collider != null) ? hit.point : ray.GetPoint(castDistance);
+
+        return new AimPosition(pos, hit);
     }
 }

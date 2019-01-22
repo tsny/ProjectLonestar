@@ -5,15 +5,20 @@ using UnityEngine;
 [CustomEditor(typeof(PlayerController))]
 public class PlayerControllerEditor : Editor 
 {
-    PlayerController playerController;
+    PlayerController cont;
 
     public override void OnInspectorGUI()
     {
         base.OnInspectorGUI();
 
-        playerController = target as PlayerController;
+        cont = target as PlayerController;
 
-        if (playerController.ship != null)
+        if (cont.CurrentAimPosition != null)
+        {
+            EditorGUILayout.TextArea(cont.CurrentAimPosition.ToString());
+        }
+
+        if (cont.ship != null)
         {
             ShowInspectorUnpossessionControls();
         }
@@ -23,7 +28,7 @@ public class PlayerControllerEditor : Editor
     {
         if (GUILayout.Button("Release"))
         {
-            playerController.Release();
+            cont.Release();
         }
     }
 }

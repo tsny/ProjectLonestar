@@ -11,9 +11,7 @@ public class ReachedDestinationDecision : FLDecision
 
     public override bool Decide(StateController controller)
     {
-        if (controller.targetTrans == null) return false;
-
-        float targetDistance = Vector3.Distance(controller.transform.position, controller.targetTrans.position);
-        return (targetDistance < controller.gotoDistanceThreshold);
+        if (!controller.HasTarget) return false;
+        return (controller.DistanceToTarget < controller.gotoDistanceThreshold);
     }
 }

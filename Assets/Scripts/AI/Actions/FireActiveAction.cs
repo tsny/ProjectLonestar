@@ -30,13 +30,13 @@ public class FireActiveAction : FLAction
         Vector3 target = controller.ship.aimPosition;
         target += CalculateAimOffset();
 
-        var rb = controller.TargetShip.GetComponent<Rigidbody>(); 
+        var rb = controller.TargetShip.rb;
 
         if (rb == null)
-            controller.ship.hpSys.FireActiveWeapons(target);
+            controller.ship.hpSys.FireActiveWeapons(new AimPosition(target));
 
         else
-            controller.ship.hpSys.FireActiveWeapons(rb);
+            controller.ship.hpSys.FireActiveWeapons(new AimPosition(rb));
 
         //Fire needs to return bool
         //timesFired++;

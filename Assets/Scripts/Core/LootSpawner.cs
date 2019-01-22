@@ -44,8 +44,7 @@ public class LootSpawner
         var randomY = Random.Range(-info.impulse, info.impulse);
         var randomZ = Random.Range(-info.impulse, info.impulse);
 
-        loot.rb.AddForce(randomX, randomY, randomZ, ForceMode.Impulse);
-
+        loot.Init(new Vector3 (randomX, randomY, randomZ));
         return loot;
     }
 

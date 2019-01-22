@@ -30,7 +30,7 @@ public class GetRandomTarget : FLAction
             var rnd = new System.Random();
             int r = rnd.Next(ships.Count); 
 
-            controller.targetTrans = ships[r].transform;
+            controller.Target = ships[r].gameObject;
         }
         else
         {
@@ -39,7 +39,7 @@ public class GetRandomTarget : FLAction
             var rnd = new System.Random();
             int r = rnd.Next(objs.Length);
 
-            controller.targetTrans = objs[r].transform;
+            controller.Target = objs[r].gameObject;
         }
     }
 }

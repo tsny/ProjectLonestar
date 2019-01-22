@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.Animations;
 using System.Collections.Generic;
 using UnityEngine.Rendering.PostProcessing;
+using UnityEngine.EventSystems;
 
 [RequireComponent(typeof(Camera), typeof(AudioListener), typeof(ShipCamera))]
 public class PlayerController : MonoBehaviour
@@ -29,10 +30,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-
-
-    // The amount of time that the controller waits until it 
-    // determines the player is trying to switch to manual mouse flight
+    [Tooltip("How long until manual flight is engaged after hold")]
     public float mouseHoldDelay = .1f;
 
     public Ship ship;
@@ -42,6 +40,9 @@ public class PlayerController : MonoBehaviour
     public Camera cam;
     public PostProcessLayer ppl;
     public AudioListener listener;
+    public float mouseRaycastDistance = 1000;
+
+    public AimPosition CurrentAimPosition {get; set;}
 
     public delegate void PossessionEventHandler(PlayerController sender, PossessionEventArgs args);
     public event PossessionEventHandler PossessedNewShip;
@@ -93,11 +94,6 @@ public class PlayerController : MonoBehaviour
 
         newShip.SetPossessed(this, true);
 
-        foreach (var coll in newShip.GetComponentsInChildren<Collider>())
-        {
-            coll.tag = "Player";                    
-        }
-
         flycam.enabled = false;
         shipCamera.SetTarget(newShip.cameraPosition);
 
@@ -119,12 +115,6 @@ public class PlayerController : MonoBehaviour
     {
         ship.SetPossessed(this, false);
         shipCamera.ClearTarget();
-
-        foreach (var coll in ship.colliders)
-        {
-            coll.tag = "Ship";
-        }
-
         ship.Died -= HandleShipDied;
 
         MouseState = MouseState.Off;
@@ -146,7 +136,7 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        Vector3 target = ShipCamera.GetMousePositionInWorld(cam);
+        CurrentAimPosition = GetCurrentAimPosition();
 
         if(Input.GetKeyDown(InputManager.PauseGameKey) && canPause)
         {
@@ -240,57 +230,57 @@ public class PlayerController : MonoBehaviour
         #region hardpoints
         if(Input.GetKey(InputManager.Hardpoint1Key))
         {
-            ship.hpSys.FireWeaponHardpoint(1, target);
+            ship.hpSys.FireWeaponHardpoint(1, CurrentAimPosition);
         }
 
         if(Input.GetKey(InputManager.Hardpoint2Key))
         {
-            ship.hpSys.FireWeaponHardpoint(2, target);
+            ship.hpSys.FireWeaponHardpoint(2, CurrentAimPosition);
         }
 
         if(Input.GetKey(InputManager.Hardpoint3Key))
         {
-            ship.hpSys.FireWeaponHardpoint(3, target);
+            ship.hpSys.FireWeaponHardpoint(3, CurrentAimPosition);
         }
 
         if(Input.GetKey(InputManager.Hardpoint4Key))
         {
-            ship.hpSys.FireWeaponHardpoint(4, target);
+            ship.hpSys.FireWeaponHardpoint(4, CurrentAimPosition);
         }
 
         if(Input.GetKey(InputManager.Hardpoint5Key))
         {
-            ship.hpSys.FireWeaponHardpoint(5, target);
+            ship.hpSys.FireWeaponHardpoint(5, CurrentAimPosition);
         }
 
         if(Input.GetKey(InputManager.Hardpoint6Key))
         {
-            ship.hpSys.FireWeaponHardpoint(6, target);
+            ship.hpSys.FireWeaponHardpoint(6, CurrentAimPosition);
         }
 
         if(Input.GetKey(InputManager.Hardpoint7Key))
         {
-            ship.hpSys.FireWeaponHardpoint(7, target);
+            ship.hpSys.FireWeaponHardpoint(7, CurrentAimPosition);
         }
 
         if(Input.GetKey(InputManager.Hardpoint8Key))
         {
-            ship.hpSys.FireWeaponHardpoint(8, target);
+            ship.hpSys.FireWeaponHardpoint(8, CurrentAimPosition);
         }
 
         if(Input.GetKey(InputManager.Hardpoint9Key))
         {
-            ship.hpSys.FireWeaponHardpoint(9, target);
+            ship.hpSys.FireWeaponHardpoint(9, CurrentAimPosition);
         }
 
         if(Input.GetKey(InputManager.Hardpoint10Key))
         {
-            ship.hpSys.FireWeaponHardpoint(10, target);
+            ship.hpSys.FireWeaponHardpoint(10, CurrentAimPosition);
         }
 
         if(Input.GetKey(InputManager.FireKey))
         {
-            ship.hpSys.FireActiveWeapons(target);
+            ship.hpSys.FireActiveWeapons(CurrentAimPosition);
         }
 
         if (Input.GetKeyDown(InputManager.LootAllKey))
@@ -383,6 +373,28 @@ public class PlayerController : MonoBehaviour
             yield return new WaitForEndOfFrame();
         }
     }
+
+    private AimPosition GetCurrentAimPosition()
+    {
+        if (EventSystem.current == null) return null;
+
+        var sim = (CustomStandaloneInputModule) EventSystem.current.currentInputModule;
+        var go = sim.GetPointerData().pointerCurrentRaycast.gameObject;
+
+        if (go != null)
+        {
+            if (go.CompareTag("TargetReticle"))
+            {
+                var indicator = go.GetComponent<TargetReticle>().indicator;
+                if (indicator.targetRb != null)
+                {
+                    return new AimPosition(indicator.targetRb);
+                }
+            }
+        }
+
+        return AimPosition.FromMouse(cam, false, mouseRaycastDistance);
+    }
 }
 
 public class PossessionEventArgs : EventArgs
@@ -404,7 +416,3 @@ public class PossessionEventArgs : EventArgs
         this.oldShip = oldShip;
     }
 }
-
-
-
-

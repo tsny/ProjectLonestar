@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class Gun : Hardpoint
 {
+    public Vector3 target;
     public Rigidbody rbTarget;
     public WeaponStats stats;
     public Projectile projectile;
@@ -69,6 +70,40 @@ public class Gun : Hardpoint
     private void Awake()
     {
         stats = Utilities.CheckScriptableObject<WeaponStats>(stats);
+        SetTargetToNeutral();
+    }
+
+    public void SetTargetToNeutral()
+    {
+        target = transform.forward + transform.position;
+    }
+
+    public bool Fire(AimPosition aim, Collider[] colliders)
+    {
+        if (aim.HitAnything && aim.HitTargetReticle)
+        {
+            return FireAtMovingTarget(aim.TargetIndicator.Ship.rb, colliders);
+
+            // else
+            // {
+            //     return Fire(aim.hit.transform.position, colliders);
+            // }
+        }
+
+        else if (aim.rb != null)
+        {
+            return FireAtMovingTarget(aim.rb, colliders);
+        }
+
+        else
+        {
+            return Fire(aim.pos, colliders);
+        }
+    }
+
+    public bool Fire(Collider[] colliders)
+    {
+        return Fire(target, colliders);
     }
 
     public bool Fire(Vector3 target, Collider[] colliders)
@@ -88,10 +123,5 @@ public class Gun : Hardpoint
         if (rbTarget == null) return false;
         var pos = Utilities.CalculateAimPosition(SpawnPoint, rbt, projectile);
         return Fire(pos, colliders);
-    }
-
-    public void Fire(Collider[] colliders)
-    {
-        Fire(transform.forward + transform.position, colliders);
     }
 }

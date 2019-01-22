@@ -215,7 +215,7 @@ public class Engine : ShipComponent
 
         if (Drifting && aft != null && aft.IsBurning)
         {
-            ShipPhysicsStats.ClampShipVelocity(rb, ship.physicsStats, CruiseState.On);
+            ShipPhysicsStats.ClampShipVelocity(rb, ship.physicsStats, CruiseState.Off);
             ShipPhysicsStats.HandleDrifting(rb, ship.physicsStats, false);
             forces = CalcAfterburnerForces();
         }

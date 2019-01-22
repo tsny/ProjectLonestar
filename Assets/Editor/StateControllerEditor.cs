@@ -11,28 +11,30 @@ public class StateControllerEditor : Editor
 
         var cont = target as StateController;
 
+        EditorGUILayout.LabelField("Distance To Target: " + cont.DistanceToTarget);
+
         GUILayout.Space(10);
 
         if (Btn("Target Random Object"))
         {
             var targets = FindObjectsOfType<MeshRenderer>();
-            cont.targetTrans = targets[UnityEngine.Random.Range(0, targets.Length)].gameObject.transform;
+            cont.Target = targets[UnityEngine.Random.Range(0, targets.Length)].gameObject;
         }
 
         if (Btn("Target Random Ship"))
         {
             var targets = FindObjectsOfType<Ship>();
-            cont.targetTrans = targets[UnityEngine.Random.Range(0, targets.Length)].gameObject.transform;
+            cont.Target = targets[UnityEngine.Random.Range(0, targets.Length)].gameObject;
         }
 
         if (Btn("Target Player Ship"))
         {
-            cont.targetTrans = GameSettings.pc.ship.transform;
+            cont.Target = GameSettings.pc.ship.gameObject;
         }
 
         if (Btn("Clear Target"))
         {
-            cont.targetTrans = null;
+            cont.Target = null;
         }
 
         if (Btn("Clear Current State"))

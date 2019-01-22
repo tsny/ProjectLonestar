@@ -5,7 +5,7 @@ public class TargetExists : FLDecision
 {
     public override bool Decide(StateController controller)
     {
-        return controller.targetTrans != null;
+        return controller.HasTarget;
     }
 
     public override void Init()

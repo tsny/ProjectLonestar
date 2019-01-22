@@ -8,8 +8,8 @@ public class AimAtTarget : FLAction
 
     public override void Act(StateController controller)
     {
-        if (controller.targetTrans == null) return;
+        if (!controller.HasTarget) return;
 
-        controller.ship.aimPosition = controller.targetTrans.position;
+        controller.ship.aimPosition = controller.TargetTransform.position;
     }
 }

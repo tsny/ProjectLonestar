@@ -14,18 +14,12 @@ public class Inventory : ScriptableObject
 
     public List<Item> Items
     {
-        get
-        {
-            return items;
-        }
-        set
-        {
-            items = value;
-        }
+        get { return items; }
+        set { items = value; }
     }
 
-    public List<Item> items;
-    public GameObject lootPrefab;
+    public List<Item> items = new List<Item>();
+    public Loot lootPrefab;
     
     /// <summary>
     /// Adds an item to the inventory and returns a new item if the inventory is full 
@@ -34,13 +28,13 @@ public class Inventory : ScriptableObject
     /// <returns></returns>
     public Item AddItem(Item item)
     {
-        item = (Item) CreateInstance(item.GetType().Name);
+        item = Item.Instantiate(item);
 
         if (item.canStack)
         {
             Item foundItem = FindNonFullStack(item);
 
-            if(foundItem != null)
+            if (foundItem != null)
             {
                 if (foundItem.SpaceRemaining >= item.quantity)
                 {
@@ -63,16 +57,13 @@ public class Inventory : ScriptableObject
             }
         }
 
-        else
+        if( !IsFull)
         {
-            if(!IsFull)
-            {
-                items.Add(item);
-                return null;
-            }
-
-            else return item;
+            items.Add(item);
+            return null;
         }
+
+        else return item;
     }
 
     public Item FindNonFullStack(Item item)
@@ -90,7 +81,7 @@ public class Inventory : ScriptableObject
 
     public void JettisonItem(Item item, Vector3 spawnPosition)
     {
-        Loot loot = Instantiate(lootPrefab, spawnPosition - Vector3.down, Quaternion.identity).GetComponent<Loot>();
+        Loot loot = Instantiate(lootPrefab, spawnPosition - Vector3.down, Quaternion.identity);
         loot.item = item;
     }
 }

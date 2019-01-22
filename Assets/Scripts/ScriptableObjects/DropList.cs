@@ -4,17 +4,6 @@ using UnityEngine;
 public class DropList : ScriptableObject 
 {
     public Drop[] drops;
-
-    public void Evaluate()
-    {
-        foreach (Drop drop in drops)
-        {
-            if (Utilities.Chance(drop.chance))
-            {
-
-            }
-        }
-    }
 }
 
 [System.Serializable]

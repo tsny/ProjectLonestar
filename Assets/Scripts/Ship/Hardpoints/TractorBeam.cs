@@ -15,7 +15,7 @@ public class TractorBeam : Hardpoint
 
             if (loot == null) continue;
 
-            loot.SetTarget(transform, tractor.pullForce);
+            loot.SetTarget(transform);
         }
 
         StartCooldown(tractor.cooldownDuration);

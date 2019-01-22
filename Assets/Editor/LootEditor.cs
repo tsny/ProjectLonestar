@@ -9,6 +9,8 @@ public class LootEditor : Editor
         base.OnInspectorGUI();
         var loot = target as Loot;         
 
+        EditorGUILayout.LabelField("Distance To Target: " + loot.DistanceToTarget);
+
         if (loot.baseSystem && loot.subSystem)
         {
             loot.SetParticleColors(loot.grad);

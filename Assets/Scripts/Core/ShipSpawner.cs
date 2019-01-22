@@ -70,7 +70,7 @@ public class ShipSpawner : MonoBehaviour
         else
         {
             ai.currentState = spawnInfo.state;
-            ai.targetTrans = spawnInfo.target;
+            ai.Target = spawnInfo.target;
             ai.aiIsActive = true;
         }
 
@@ -120,7 +120,7 @@ public class ShipSpawnInfo
 {
     public bool isHostile;
     public int numToSpawn = 1;
-    public Transform target;
+    public GameObject target;
     public Vector3 spawnOffset = Vector3.one;
     public State state;
     public Ship ship;

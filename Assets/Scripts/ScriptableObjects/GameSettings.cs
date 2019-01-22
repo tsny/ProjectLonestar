@@ -41,6 +41,8 @@ public class GameSettings : SingletonScriptableObject<GameSettings>
         DontDestroyOnLoad(pc);
 
         DontDestroyOnLoad(pc.GetComponent<NebulaCameraFog>().fadeQuad = Instantiate(Instance.nebulaCanvasPrefab).GetComponent<Image>());
+
+        Instance.playerInventory = Utilities.CheckScriptableObject<Inventory>(Instance.playerInventory);
     }
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]

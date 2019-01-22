@@ -34,13 +34,7 @@ public class TargetIndicator : MonoBehaviour
             return DistanceFromTarget < endFadeRange;
         }
     }
-    public Ship Ship
-    {
-        get
-        {
-            return target.GetComponent<Ship>();
-        }
-    }
+    public Ship Ship { get; set; }
     public float DistanceFromTarget
     {
         get
@@ -51,6 +45,7 @@ public class TargetIndicator : MonoBehaviour
 
     private Health targetHealth;
     public bool selected;
+    public bool showHealthOnSelect = true;
 
     public Text header;
     public GameObject content;
@@ -58,6 +53,7 @@ public class TargetIndicator : MonoBehaviour
     [Header("Target")]
 
     public GameObject target;
+    public Rigidbody targetRb;
 
     public GameObject healthObject;
     public GameObject shieldObject;
@@ -76,6 +72,7 @@ public class TargetIndicator : MonoBehaviour
     private bool wasOnScreenLastFrame;
     private Vector3 originalScale;
 
+    public TargetReticle reticle;
     public Animator animator;
     public Image buttonImage;
     public new Camera camera;
@@ -96,7 +93,7 @@ public class TargetIndicator : MonoBehaviour
     private void Start()
     {
         camera = GameSettings.pc.cam != null ? GameSettings.pc.cam : Camera.main;
-        ShowHealthBars(false);
+        ToggleHealthBars(false);
         ShowName(false);
     }
 
@@ -104,25 +101,20 @@ public class TargetIndicator : MonoBehaviour
     {
         //newTarget.SetupTargetIndicator(this);
 
-        Ship ship = newTarget.GetComponent<Ship>();
-        if (ship == GameSettings.pc.ship)
+        Ship = newTarget.GetComponent<Ship>();
+        if (Ship == GameSettings.pc.ship)
         {
             Destroy(gameObject);
         }
 
-        var targetIndicator = newTarget.GetComponent<ITargetable>();
-        if (targetIndicator != null)
+        var iTargetable = newTarget.GetComponent<ITargetable>();
+        if (iTargetable != null)
         {
-            targetIndicator.SetupTargetIndicator(this);
+            iTargetable.SetupTargetIndicator(this);
         }
 
         targetHealth = newTarget.GetComponent<Health>();
-
-        if (targetHealth.Invulnerable)
-        {
-            shieldBarImage.gameObject.SetActive(false);
-            healthBarImage.gameObject.SetActive(false);
-        }
+        targetRb = newTarget.GetComponent<Rigidbody>();
 
         name = "T-IND: " + newTarget.name;
         enabled = true;
@@ -130,7 +122,7 @@ public class TargetIndicator : MonoBehaviour
         target = newTarget;
 
         if (Ship != null)
-        ship.Died += (s) => { Destroy(gameObject); };
+            Ship.Died += (s) => { Destroy(gameObject); };
     }
 
     private void Update()
@@ -158,12 +150,12 @@ public class TargetIndicator : MonoBehaviour
     {
         if (selected) return;
 
-        selected = true;
-
-        ShowHealthBars(true);
+        if (showHealthOnSelect) ToggleHealthBars(true);
         ShowName(true);
         buttonImage.raycastTarget = false;
         animator.SetTrigger("Select");
+
+        selected = true;
         if (Selected != null) Selected(this);
     }
 
@@ -173,7 +165,7 @@ public class TargetIndicator : MonoBehaviour
 
         selected = false;
 
-        ShowHealthBars(false);
+        ToggleHealthBars(false);
         ShowName(false);
         buttonImage.raycastTarget = true;
         animator.SetTrigger("Select");
@@ -261,7 +253,7 @@ public class TargetIndicator : MonoBehaviour
         buttonImage.color = Item.GetMatchingColor(item);
     }
 
-    private void ShowHealthBars(bool value)
+    private void ToggleHealthBars(bool value)
     {
         healthObject.SetActive(value);
         shieldObject.SetActive(value);

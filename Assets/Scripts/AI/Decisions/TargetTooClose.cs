@@ -10,8 +10,8 @@ public class TargetTooClose : FLDecision
 
     public override bool Decide(StateController controller)
     {
-        if (controller.targetTrans == null) return false;
+        if (!controller.HasTarget) return false;
 
-        return Vector3.Distance(controller.ship.transform.position, controller.targetTrans.position) <= controller.combatDistanceThreshold;
+        return controller.DistanceToTarget <= controller.combatDistanceThreshold;
     }
 }

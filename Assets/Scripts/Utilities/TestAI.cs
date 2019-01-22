@@ -14,6 +14,6 @@ public class TestAI : MonoBehaviour
         Quaternion newRot = Quaternion.LookRotation(target.transform.position - ship.transform.position);
         ship.transform.rotation = Quaternion.Slerp(ship.transform.rotation, newRot, ship.engineStats.turnSpeed * Time.deltaTime);
 
-        ship.FireActiveWeapons();
+        //ship.FireActiveWeapons();
     }
 }

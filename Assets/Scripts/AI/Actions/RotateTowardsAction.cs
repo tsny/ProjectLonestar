@@ -8,9 +8,9 @@ public class RotateTowardsAction : FLAction
 
     public override void Act(StateController controller)
     {
-        if (controller.targetTrans == null) return;
+        if (!controller.HasTarget) return;
 
-        Quaternion newRot = Quaternion.LookRotation(controller.targetTrans.position - controller.ship.transform.position);
+        Quaternion newRot = Quaternion.LookRotation(controller.TargetTransform.position - controller.ship.transform.position);
         controller.ship.transform.rotation = Quaternion.Slerp(controller.ship.transform.rotation, newRot, controller.ship.engineStats.turnSpeed * Time.deltaTime);
     }
 }

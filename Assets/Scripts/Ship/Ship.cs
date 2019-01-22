@@ -60,6 +60,11 @@ public class Ship : MonoBehaviour, ITargetable
         cruiseEngine.CruiseStateChanged += HandleCruiseChange;
         health.HealthDepleted += HandleHealthDepleted;
 
+        foreach (Collider coll in colliders)
+        {
+            var newLayer = LayerMask.NameToLayer("Default");
+            coll.gameObject.layer = newLayer;
+        }
     }
 
     private void Start()
@@ -110,23 +115,14 @@ public class Ship : MonoBehaviour, ITargetable
             transform.SetSiblingIndex(0);
         }
 
-        foreach(Transform transform in transform)
+        foreach (Collider coll in colliders)
         {
-            var newLayer = possessed ? LayerMask.NameToLayer("Player") : 0;
-            transform.gameObject.layer = newLayer;
+            var newLayer = possessed ? LayerMask.NameToLayer("Player") : LayerMask.NameToLayer("Default");
+            coll.gameObject.layer = newLayer;
+            coll.tag = possessed ? "Player" : "Untagged";
         }
 
         OnPossession(pc, possessed);
-    }
-
-    // private void FixedUpdate()
-    // {
-    //     ShipPhysicsStats.ClampShipVelocity(rb, physicsStats, cruiseEngine.State);
-    // }
-
-    public void FireActiveWeapons()
-    {
-        hpSys.FireActiveWeapons(aimPosition);
     }
 
     public void SetupTargetIndicator(TargetIndicator indicator)
@@ -139,9 +135,6 @@ public class Ship : MonoBehaviour, ITargetable
 
     public bool IsTargetable()
     {
-		// Do some kind of check if ship has cloak
-        // hasCloak ? false : true;
-
         return true;
     }
 

@@ -15,6 +15,7 @@ public class HardpointSystem : ShipComponent
     public TractorBeam tractorBeam;
     public CruiseEngine cruiseEngine;
 
+    // TODO: Change this!! Either encapsulate or set on spawn
     public Hardpoint[] hardpoints
     {
         get
@@ -80,19 +81,13 @@ public class HardpointSystem : ShipComponent
         else afterburner.Deactivate();
     }
 
-    public void FireActiveWeapons(Vector3 target)
+    public void FireActiveWeapons(AimPosition aimPos)
     {
         foreach (Gun gun in guns)
-            if (gun.IsActive) FireWeaponHardpoint(gun, target);
+            if (gun.IsActive) FireWeaponHardpoint(gun, aimPos);
     }
 
-    public void FireActiveWeapons(Rigidbody target)
-    {
-        foreach (Gun gun in guns)
-            if (gun.IsActive) FireWeaponHardpoint(gun, target);
-    }
-
-    public void FireWeaponHardpoint(int hardpointSlot, Vector3 target)
+    public void FireWeaponHardpoint(int hardpointSlot, AimPosition aim)
     {
         hardpointSlot--;
 
@@ -100,15 +95,15 @@ public class HardpointSystem : ShipComponent
 
         if (guns[hardpointSlot] != null)
         {
-            FireWeaponHardpoint(guns[hardpointSlot], target);
+            FireWeaponHardpoint(guns[hardpointSlot], aim);
         }
     }
 
-    public void FireWeaponHardpoint(Gun gun, Vector3 target)
+    public void FireWeaponHardpoint(Gun gun, AimPosition aim)
     {
         if (CanFireWeapons == false || gun.stats == null) return;
 
-        if (gun.stats.energyDraw < energy && gun.Fire(target, ship.colliders))
+        if (gun.stats.energyDraw < energy && gun.Fire(aim, ship.colliders))
         {
             energy -= gun.stats.energyDraw;
             if (WeaponFired != null) WeaponFired(gun);
@@ -116,25 +111,21 @@ public class HardpointSystem : ShipComponent
         }
     }
 
-    public void FireWeaponHardpoint(Gun gun, Rigidbody target)
-    {
-        if (CanFireWeapons == false || gun.stats == null) return;
+    // public void FireWeaponHardpoint(Gun gun, Rigidbody target)
+    // {
+    //     if (CanFireWeapons == false || gun.stats == null) return;
 
-        if (gun.stats.energyDraw < energy && gun.FireAtMovingTarget(target, ship.colliders))
-        {
-            energy -= gun.stats.energyDraw;
-            if (WeaponFired != null) WeaponFired(gun);
-            BeginCooldown();
-        }
-    }
+    //     if (gun.stats.energyDraw < energy && gun.FireAtMovingTarget(target, ship.colliders))
+    //     {
+    //         energy -= gun.stats.energyDraw;
+    //         if (WeaponFired != null) WeaponFired(gun);
+    //         BeginCooldown();
+    //     }
+    // }
 
     public void BeginCooldown()
     {
-        if (cooldownEnumerator != null)
-        {
-            StopCoroutine(cooldownEnumerator);
-        }
-
+        if (cooldownEnumerator != null) StopCoroutine(cooldownEnumerator);
         cooldownEnumerator = CooldownCoroutine();
         StartCoroutine(cooldownEnumerator);
     }
@@ -142,7 +133,6 @@ public class HardpointSystem : ShipComponent
     public void StopCooldown()
     {
         if (cooldownEnumerator == null) return;
-
         StopCoroutine(cooldownEnumerator);
         cooldownEnumerator = null; 
     }
@@ -155,20 +145,14 @@ public class HardpointSystem : ShipComponent
 
     public void StopRecharging()
     {
-        if (rechargeEnumerator != null)
-        {
-            StopCoroutine(rechargeEnumerator);
-        }
-
+        if (rechargeEnumerator != null) StopCoroutine(rechargeEnumerator);
         rechargeEnumerator = null;
     }
 
     private IEnumerator CooldownCoroutine()
     {
         StopRecharging();
-
         yield return new WaitForSeconds(timeTillRecharge);
-
         StartRecharging();
     }
 

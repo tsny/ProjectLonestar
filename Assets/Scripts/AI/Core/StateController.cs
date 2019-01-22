@@ -4,12 +4,50 @@ using System.Collections.Generic;
 
 public class StateController : MonoBehaviour
 {
-    public Ship TargetShip { get { return targetTrans ? targetTrans.GetComponent<Ship>() : null; } }
-    public float DistanceToTarget { get { return Vector3.Distance(ship.transform.position, targetTrans.position); } }
-    public bool HasTarget { get { return targetTrans; } }
+    private Ship _targetShip;
+    public Ship TargetShip 
+    { 
+        get 
+        { 
+            return _targetShip;
 
-    public Ship ship;
-    public Transform targetTrans;
+        } 
+        set
+        {
+            _targetShip = value;
+        }
+    }
+    private Transform _targetTrans;
+    public Transform TargetTransform
+    {
+        get
+        {
+            return _targetTrans;
+        }
+        set
+        {
+            _targetTrans = value;
+        }
+    }
+    public float DistanceToTarget { get { return _targetTrans ? Vector3.Distance(ship.transform.position, _targetTrans.position) : 0; } }
+    public bool HasTarget { get { return Target != null; } }
+
+    [HideInInspector] public Ship ship;
+    public GameObject _target;
+    public GameObject Target
+    {
+        get
+        {
+            return _target;
+        }
+        set
+        {
+            if (!value) return;
+            _targetShip = value.GetComponent<Ship>();
+            _targetTrans = value.transform;
+            _target = value;
+        }
+    }
     public bool importantToPlayer = true;
 
     public Ship[] allies;
@@ -22,18 +60,18 @@ public class StateController : MonoBehaviour
 
     [Header("State")]
 
+    public bool aiIsActive;
     public State stopState;
     public State currentState;
     public State remainState;
 
     public Queue<State> pastStates = new Queue<State>();
 
+    [Header("Details")]
     public float maxPlayerDistance = 2000;
     public float gotoDistanceThreshold = 100;
     public float combatDistanceThreshold = 20;
     public float weaponsRange = 500;
-
-    public bool aiIsActive;
 
     public float timeInCurrentState;
 
