@@ -8,57 +8,54 @@ public class ShipSpawner : MonoBehaviour
 {
     public bool destroyOnTrigger = true;
 
-    public int numToSpawn = 1;
-    public float spawnRadius = 50;
     public float spawnDelay = 1;
     public float destroyDelay = 3;
     public float distanceApart = 5;
 
     public Transform target;
+    public UnityEvent onTriggered;
 
     // Default State
     // Default Actions?
     // Need to make this more complicated in order to individually make some ships hostile/friendly to one another
     public ShipSpawnInfo[] shipsToSpawn;
 
-    // Experiment
-    private int wave = 1;
-    private int shipsPerWave = 1;
-    private float waveDuration = 10;
+    // TODO: Experiment with these
+    // private int wave = 1;
+    // private int shipsPerWave = 1;
+    // private float waveDuration = 10;
 
-    private Collider coll;
+    private BoxCollider coll;
 
     private void Awake()
     {
-        coll = Utilities.CheckComponent<Collider>(gameObject);
+        coll = Utilities.CheckComponent<BoxCollider>(gameObject);
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.tag == "Player")
-        {
-            Destroy(coll);
-            TriggerSelf();
-        }
+        if (other.tag == "Player") { TriggerSelf(); }
     }
 
     public void TriggerSelf()
     {
         SpawnShips(shipsToSpawn, transform.position, coll.bounds);
 
+        onTriggered.Invoke();
+
         // Spawn all
         // Destroy self or implement wave feature if we want more ships to spawn later
         if (destroyOnTrigger)
         {
+            coll.enabled = false;
             Destroy(gameObject, destroyDelay);
         }
     }
 
-    public static Ship SpawnShip(Ship shipToSpawn, ShipSpawnInfo spawnInfo, Vector3 spawnPosition)
+    public static Ship SpawnShip(ShipSpawnInfo spawnInfo, Vector3 spawnPosition)
     {
-        var ship = Instantiate(shipToSpawn, spawnPosition, Quaternion.identity);
+        var ship = Instantiate(spawnInfo.ship, spawnPosition, Quaternion.identity);
 
-        //ship.Died += (s) => { LootSpawner.SpawnLoot(s.transform.position, spawnInfo.lootInfo); };
         ship.Died += (s) => { LootSpawner.SpawnLoot(s.transform.position, spawnInfo); };
 
         var ai = ship.GetComponent<StateController>();
@@ -77,40 +74,19 @@ public class ShipSpawner : MonoBehaviour
         return ship;
     }
 
-    public static Ship SpawnShip(Ship shipToSpawn, Vector3 spawnPosition, Loadout loadout = null)
+    public static Ship SpawnShip(Ship ship, Vector3 spawn)
     {
-        var ship = Instantiate(shipToSpawn, spawnPosition, Quaternion.identity);
-
-        if (ship == null)
-        {
-            Debug.LogError("Tried spawning ship without Ship component attached...");
-            return null;
-        }
-
-        if (loadout == null)
-        {
-           loadout = ScriptableObject.CreateInstance<Loadout>();
-        }
-
-        //ship.hardpointSystem.MountLoadout(loadout);
-        foreach (Hardpoint hp in ship.hpSys.hardpoints)
-        {
-            // Try mount
-        }
-
-
-        return ship;
+        var spawnInfo = new ShipSpawnInfo();
+        spawnInfo.ship = ship;
+        return SpawnShip(spawnInfo, spawn);
     }
 
     public static List<Ship> SpawnShips(ShipSpawnInfo[] shipsToSpawn, Vector3 spawnPos, Bounds bounds)
     {
         List<Ship> spawnedShips = new List<Ship>();
 
-        foreach (var spawnInfo in shipsToSpawn)
-        {
-            for (int i = 0; i < spawnInfo.numToSpawn; i++)
-                spawnedShips.Add(SpawnShip(spawnInfo.ship, spawnInfo, spawnPos + Utilities.RandomPointInBounds(bounds)));
-        }
+        for (int i = 0; i < shipsToSpawn.Length; i++)
+            spawnedShips.Add(SpawnShip(shipsToSpawn[i], spawnPos + Utilities.RandomPointInBounds(bounds)));
 
         return spawnedShips;
     }
@@ -118,8 +94,6 @@ public class ShipSpawner : MonoBehaviour
 [System.Serializable]
 public class ShipSpawnInfo
 {
-    public bool isHostile;
-    public int numToSpawn = 1;
     public GameObject target;
     public Vector3 spawnOffset = Vector3.one;
     public State state;

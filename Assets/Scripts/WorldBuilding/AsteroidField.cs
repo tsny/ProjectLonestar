@@ -51,7 +51,7 @@ public class AsteroidField : MonoBehaviour
 
         for (int i = 0; i < desiredAsteroids; i++)
         {
-            var asteroid = CreateAsteroid();
+            CreateAsteroid();
         }
     }
 

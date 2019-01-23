@@ -9,14 +9,14 @@ public class TargetIndicator : MonoBehaviour
     {
         get
         {
-            return camera.WorldToScreenPoint(target.transform.position);
+            return cam.WorldToScreenPoint(target.transform.position);
         }
     }
     public bool TargetIsOnScreen
     {
         get
         {
-            Vector3 targetViewportPoint = camera.WorldToScreenPoint(target.transform.position);
+            Vector3 targetViewportPoint = cam.WorldToScreenPoint(target.transform.position);
             return targetViewportPoint.z > 0;
         }
     }
@@ -39,7 +39,7 @@ public class TargetIndicator : MonoBehaviour
     {
         get
         {
-            return target != null ? Vector3.Distance(camera.transform.position, target.transform.position) : 0;
+            return target != null ? Vector3.Distance(cam.transform.position, target.transform.position) : 0;
         }
     }
 
@@ -76,7 +76,7 @@ public class TargetIndicator : MonoBehaviour
     public TargetReticle reticle;
     public Animator animator;
     public Image buttonImage;
-    public new Camera camera;
+    public Camera cam;
 
     public delegate void SelectionEventHandler(TargetIndicator selectedIndicator);
     public delegate void TargetDestroyedEventHandler(TargetIndicator source);
@@ -93,7 +93,7 @@ public class TargetIndicator : MonoBehaviour
 
     private void Start()
     {
-        camera = GameSettings.pc.cam != null ? GameSettings.pc.cam : Camera.main;
+        cam = GameSettings.pc.cam != null ? GameSettings.pc.cam : Camera.main;
         ToggleHealthBars(false);
         ShowName(false);
     }

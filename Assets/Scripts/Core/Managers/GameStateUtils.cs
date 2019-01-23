@@ -63,7 +63,7 @@ public class GameStateUtils : UnityEngine.Object
     {
         GameObject nearest = null;
 
-        List<Ship> ships = FindObjectsOfType<Ship>().ToList();
+        //List<Ship> ships = FindObjectsOfType<Ship>().ToList();
 
         return nearest;
     }

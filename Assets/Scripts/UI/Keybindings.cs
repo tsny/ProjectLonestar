@@ -40,8 +40,8 @@ public class Keybindings : MonoBehaviour
 
         foreach (var key in dict.Keys)
         {
-            var text = Instantiate(keyText, keyVlg.transform);
-            var btn = Instantiate(changeKeyButton, buttonBlg.transform);
+            //var text = Instantiate(keyText, keyVlg.transform);
+            //var btn = Instantiate(changeKeyButton, buttonBlg.transform);
 
             // finish this
             //btn.onClick.AddListener() => {}

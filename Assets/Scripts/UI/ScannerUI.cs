@@ -10,7 +10,7 @@ public class ScannerUI : ShipUIElement
     public VerticalLayoutGroup buttonVLG;
 
     private Dictionary<ITargetable, ScannerPanelButton> targetButtonPairs = new Dictionary<ITargetable, ScannerPanelButton>();
-    private Scanner scanner;
+    //private Scanner scanner;
 
     public override void SetShip(Ship ship)
     {
@@ -73,10 +73,10 @@ public class ScannerUI : ShipUIElement
 
     public void PopulatePanel()
     {
-        foreach (var target in scanner.targets)
-        {
-            CreatePanelButton(target);
-        }
+        //foreach (var target in scanner.targets)
+        //{
+            //CreatePanelButton(target);
+        //}
     }
 
     private void RefreshPanel()

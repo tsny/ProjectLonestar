@@ -84,7 +84,7 @@ public class GameSettings : SingletonScriptableObject<GameSettings>
         pc.listener.enabled = true;
         //
 
-        var playerShip = ShipSpawner.SpawnShip(shipPrefab, Vector3.zero, defaultLoadout);
+        var playerShip = ShipSpawner.SpawnShip(shipPrefab, Vector3.zero);
         pc.Possess(playerShip);
 
         var hud = FindObjectOfType<HUDManager>();

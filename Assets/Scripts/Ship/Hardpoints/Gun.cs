@@ -8,7 +8,7 @@ public class Gun : Hardpoint
     public WeaponStats stats;
     public Projectile projectile;
     public Transform spawn;
-    public new AudioSource audio;
+    public AudioSource audioSource;
     public AudioClip clip;
 
     [Range(0,1)]

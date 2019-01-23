@@ -71,7 +71,8 @@ public class FLTerminal : Terminal
 
         if (Terminal.IssuedError) return;
 
-        Ship shipToSpawn = null;
+        var spawnInfo = new ShipSpawnInfo();
+
         Ship spawnedShip = null;
         int timesToSpawn = 1;
 
@@ -83,16 +84,16 @@ public class FLTerminal : Terminal
             // case nomad
             // case bship
             case "self":
-                shipToSpawn = GameSettings.pc.ship;
+                spawnInfo.ship = GameSettings.pc.ship;
                 break;
 
             case "random":
-                shipToSpawn = ships[Random.Range(0, ships.Length)];
+                spawnInfo.ship = ships[Random.Range(0, ships.Length)];
                 break;
 
             case "nearest":
                 // FindNearestShip(ships)
-                shipToSpawn = null;
+                spawnInfo.ship = null;
                 break;
 
             default:
@@ -107,7 +108,7 @@ public class FLTerminal : Terminal
 
         for (int i = 0; i < timesToSpawn; i++)
         {
-            spawnedShip = ShipSpawner.SpawnShip(shipToSpawn, GameSettings.pc.transform.position + GameSettings.pc.transform.forward * 10);
+            spawnedShip = ShipSpawner.SpawnShip(spawnInfo, GameSettings.pc.transform.position + GameSettings.pc.transform.forward * (10 + i));
         }
 
         if (args.Length > 2)

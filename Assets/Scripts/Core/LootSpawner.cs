@@ -14,7 +14,7 @@ public class LootSpawner
     {
         foreach (Drop drop in dropList.drops)
         {
-            if (Utilities.Chance(drop.chance, true))
+            if (Utilities.Chance(drop.chance, false))
             {
                 SpawnLootDrop(position, drop.spawnInfo);
             }
