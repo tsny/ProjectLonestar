@@ -10,7 +10,20 @@ public class Engine : ShipComponent
 
     [Header("Model")]
     public float shipModelZModifier = 1;
-    public Transform shipModel;
+    private Transform _shipBaseTransform;
+    public Transform ShipBaseTransform
+    {
+        get
+        {
+            return _shipBaseTransform;
+        }
+        set
+        {
+            if (!value) return;
+            _shipBaseTransform = value;
+            shipModelOrigRot = value.localRotation;
+        }
+    }
     public float lerpModifier = .1f;
     public ConstantForce cf;
     private Quaternion shipModelOrigRot;
@@ -185,7 +198,6 @@ public class Engine : ShipComponent
         engineStats = Utilities.CheckScriptableObject<EngineStats>(engineStats);
         blinkCD = Utilities.CheckScriptableObject<Cooldown>(blinkCD);
         sidestepCD = Utilities.CheckScriptableObject<Cooldown>(sidestepCD);
-        shipModelOrigRot = shipModel.localRotation;
     }
 
     private void OnDriftingChange(bool isDrifting)
@@ -281,8 +293,11 @@ public class Engine : ShipComponent
         neutralRotation = Quaternion.Lerp(transform.rotation, neutralRotation, Time.deltaTime);
         transform.rotation = neutralRotation;
 
-        neutralRotation = Quaternion.Lerp(shipModel.localRotation, shipModelOrigRot, lerpModifier);
-        shipModel.localRotation = neutralRotation;
+        if (ShipBaseTransform != null)
+        {
+            neutralRotation = Quaternion.Lerp(ShipBaseTransform.localRotation, shipModelOrigRot, lerpModifier);
+            ShipBaseTransform.localRotation = neutralRotation;
+        }
     }
 
     public void AddPitch(float amount)
@@ -309,7 +324,7 @@ public class Engine : ShipComponent
 
     private void VisualYawRotation(float amount)
     {
-        if (shipModel == null) 
+        if (ShipBaseTransform == null) 
         {
             Debug.LogWarning(gameObject + " has no ship model in the inspector");
             return;
@@ -317,7 +332,7 @@ public class Engine : ShipComponent
 
         // Rotate the model slightly based on yawOffset
         Vector3 turnRotation = shipModelOrigRot.eulerAngles + new Vector3(0, 0, -amount * shipModelZModifier);
-        shipModel.localRotation = Quaternion.Euler(turnRotation);
+        ShipBaseTransform.localRotation = Quaternion.Euler(turnRotation);
     }
 }
 

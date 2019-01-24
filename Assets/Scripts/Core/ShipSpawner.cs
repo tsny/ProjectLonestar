@@ -52,20 +52,31 @@ public class ShipSpawner : MonoBehaviour
         }
     }
 
-    public static Ship SpawnShip(ShipSpawnInfo spawnInfo, Vector3 spawnPosition)
+    public static Ship SpawnShip(ShipSpawnInfo spawnInfo, Vector3 spawnPosition, bool forPlayer = false)
     {
-        var ship = Instantiate(spawnInfo.ship, spawnPosition, Quaternion.identity);
+        if (spawnInfo.shipBase == null)
+        {
+            Debug.LogWarning("Spawning ship w/o selecting base, spawning default ship...");
+            spawnInfo.shipBase = GameSettings.Instance.defaultShipBase;
+        }
 
-        ship.Died += (s) => { LootSpawner.SpawnLoot(s.transform.position, spawnInfo); };
+        var ship = Instantiate(spawnInfo.ship, spawnPosition, Quaternion.identity);
+        ship.ShipBase = spawnInfo.shipBase;
 
         var ai = ship.GetComponent<StateController>();
 
         if (ai == null)
         {
+            ship.Died += (s) => { LootSpawner.SpawnLoot(s.transform.position, spawnInfo); };
             Debug.LogWarning("Spawning ship without AI Controller...");
+        }
+        else if (forPlayer)
+        {
+            ai.currentState = null;
         }
         else
         {
+            ship.Died += (s) => { LootSpawner.SpawnLoot(s.transform.position, spawnInfo); };
             ai.currentState = spawnInfo.state;
             ai.Target = spawnInfo.target;
             ai.aiIsActive = true;
@@ -74,11 +85,11 @@ public class ShipSpawner : MonoBehaviour
         return ship;
     }
 
-    public static Ship SpawnShip(Ship ship, Vector3 spawn)
+    public static Ship SpawnShip(Ship ship, Vector3 spawn, bool forPlayer = false)
     {
         var spawnInfo = new ShipSpawnInfo();
         spawnInfo.ship = ship;
-        return SpawnShip(spawnInfo, spawn);
+        return SpawnShip(spawnInfo, spawn, forPlayer);
     }
 
     public static List<Ship> SpawnShips(ShipSpawnInfo[] shipsToSpawn, Vector3 spawnPos, Bounds bounds)
@@ -99,6 +110,7 @@ public class ShipSpawnInfo
     public State state;
     public Ship ship;
     public Loadout loadout;
+    public GameObject shipBase;
 
     public DropList dl;
     public LootSpawnInfo[] lootInfo;

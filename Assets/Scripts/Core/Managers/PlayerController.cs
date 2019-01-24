@@ -378,7 +378,7 @@ public class PlayerController : MonoBehaviour
 
     private AimPosition GetCurrentAimPosition()
     {
-        if (Time.time < 3) return null;
+        if (Time.timeSinceLevelLoad < 1.5) return null;
 
         var sim = (CustomStandaloneInputModule) EventSystem.current.currentInputModule;
         var go = sim.GetPointerData().pointerCurrentRaycast.gameObject;

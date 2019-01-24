@@ -8,24 +8,15 @@ public class HardpointSystem : ShipComponent
     public List<Gun> guns = new List<Gun>();
 
     [Header("Individual Hardpoints")]
-
     public Afterburner afterburner;
     public Shield shield;
     public Scanner scanner;
     public TractorBeam tractorBeam;
     public CruiseEngine cruiseEngine;
 
-    // TODO: Change this!! Either encapsulate or set on spawn
-    public Hardpoint[] hardpoints
-    {
-        get
-        {
-            return GetComponentsInChildren<Hardpoint>();
-        }
-    }
+    public List<Hardpoint> hardpoints;
 
     [Header("Energy")]
-
     public float energy = 100;
     public float energyCapacity = 100;
     public float chargeRate = .2f;
@@ -75,6 +66,18 @@ public class HardpointSystem : ShipComponent
     public delegate void WeaponFiredEventHandler(Gun gunFired);
     public event WeaponFiredEventHandler WeaponFired;
 
+    public override void Initialize(Ship sender)
+    {
+        base.Initialize(sender);
+
+        sender.GetComponentsInChildren<Hardpoint>(true, hardpoints);
+        sender.GetComponentsInChildren<Gun>(true, guns);
+
+        afterburner = sender.GetComponentInChildren<Afterburner>();
+        shield = sender.GetComponentInChildren<Shield>();
+        cruiseEngine = sender.cruiseEngine;
+    }
+
     public void ToggleAfterburner(bool toggle)
     {
         if (toggle) afterburner.Activate();
@@ -103,7 +106,7 @@ public class HardpointSystem : ShipComponent
     {
         if (CanFireWeapons == false || gun.stats == null) return;
 
-        if (gun.stats.energyDraw < energy && gun.Fire(aim, ship.colliders))
+        if (gun.stats.energyDraw < energy && gun.Fire(aim, ship.colliders.ToArray()))
         {
             energy -= gun.stats.energyDraw;
             if (WeaponFired != null) WeaponFired(gun);

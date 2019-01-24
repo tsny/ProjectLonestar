@@ -108,7 +108,8 @@ public class FLTerminal : Terminal
 
         for (int i = 0; i < timesToSpawn; i++)
         {
-            spawnedShip = ShipSpawner.SpawnShip(spawnInfo, GameSettings.pc.transform.position + GameSettings.pc.transform.forward * (10 + i));
+            //spawnedShip = ShipSpawner.SpawnShip(spawnInfo, GameSettings.pc.transform.position + GameSettings.pc.transform.forward * (10 + i));
+            spawnedShip = Instantiate(spawnInfo.ship, GameSettings.pc.transform.position + GameSettings.pc.transform.forward * (10 + i), Quaternion.identity);
         }
 
         if (args.Length > 2)

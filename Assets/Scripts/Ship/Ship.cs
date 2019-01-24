@@ -19,11 +19,31 @@ public class Ship : MonoBehaviour, ITargetable
     public Engine engine;
     public CruiseEngine cruiseEngine;
     public Rigidbody rb;
-    public Collider[] colliders;
+    public List<Collider> colliders;
+
+    private GameObject _shipBase;
+    public GameObject ShipBase
+    {
+        get
+        {
+            return _shipBase;
+        }
+        set
+        {
+            // Maybe make this component based instead?
+            if (_shipBase) DestroyImmediate(_shipBase.gameObject);
+            _shipBase = Instantiate(value, transform);
+            _shipBase.transform.localPosition = Vector3.zero;
+            engine.ShipBaseTransform = _shipBase.transform;
+            Init();
+        }
+    }
 
     public ParticleSystem deathFX;
 
     [Header("Other")]
+    private bool _possessed;
+    public bool Possessed { get { return _possessed; } }
     public Transform cameraPosition;
     public Transform firstPersonCameraPosition;
 
@@ -41,34 +61,39 @@ public class Ship : MonoBehaviour, ITargetable
 
     protected void OnPossession(PlayerController pc, bool possessed) { if (Possession != null) Possession(pc, this, possessed); }
 
-    private void Awake()
+    public void Init()
     {
-        hpSys = GetComponentInChildren<HardpointSystem>();
-        cruiseEngine = GetComponentInChildren<CruiseEngine>();
-        engine = GetComponentInChildren<Engine>();
-        rb = GetComponentInChildren<Rigidbody>();
-        colliders = GetComponentsInChildren<Collider>();
+        if (ShipBase == null)
+        {
+            ShipBase = GameSettings.Instance.defaultShipBase;
+            return;
+        }
 
-        // Maybe make this required? CheckComponent<Health>
-        health = GetComponentInChildren<Health>();
+        GetComponentsInChildren<Collider>(true, colliders);
+
+        foreach (Collider coll in colliders)
+        {
+            var newLayer = _possessed ? LayerMask.NameToLayer("Player") : LayerMask.NameToLayer("Default");
+            coll.gameObject.layer = newLayer;
+            coll.tag = _possessed ? "Player" : "Untagged";
+        }
 
         var components = GetComponentsInChildren<ShipComponent>();
         components.ToList().ForEach(x => x.Initialize(this));
 
+        name = ShipBase.name;
+    }
+
+    private void Start()
+    {
         engine.DriftingChange += HandleDriftingChange;
         engine.ThrottleChanged += HandleThrottleChange;
         cruiseEngine.CruiseStateChanged += HandleCruiseChange;
         health.HealthDepleted += HandleHealthDepleted;
 
-        foreach (Collider coll in colliders)
-        {
-            var newLayer = LayerMask.NameToLayer("Default");
-            coll.gameObject.layer = newLayer;
-        }
-    }
+        if (ShipBase == null)
+            ShipBase = GameSettings.Instance.defaultShipBase;
 
-    private void Start()
-    {
         if (Spawned != null) Spawned(this);
     }
 
@@ -122,6 +147,7 @@ public class Ship : MonoBehaviour, ITargetable
             coll.tag = possessed ? "Player" : "Untagged";
         }
 
+        _possessed = possessed;
         OnPossession(pc, possessed);
     }
 

@@ -13,6 +13,8 @@ public class GameSettings : SingletonScriptableObject<GameSettings>
     public PlayerController pcPrefab;
     public Canvas nebulaCanvasPrefab;
 
+    public GameObject defaultShipBase;
+
     public Loot lootPrefab;
 
     public Loadout defaultLoadout;
@@ -84,7 +86,7 @@ public class GameSettings : SingletonScriptableObject<GameSettings>
         pc.listener.enabled = true;
         //
 
-        var playerShip = ShipSpawner.SpawnShip(shipPrefab, Vector3.zero);
+        var playerShip = ShipSpawner.SpawnShip(shipPrefab, Vector3.zero, true);
         pc.Possess(playerShip);
 
         var hud = FindObjectOfType<HUDManager>();

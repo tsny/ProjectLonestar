@@ -12,14 +12,26 @@ public class ShipEditor : Editor
         base.OnInspectorGUI();
         ship = target as Ship;
 
+        EditorGUI.BeginChangeCheck();
+
+        var newBase = (GameObject) EditorGUILayout.ObjectField("ShipBase", ship.ShipBase, typeof(GameObject), false);
+
+        if (EditorGUI.EndChangeCheck())
+        {
+            ship.ShipBase = newBase;
+        }
+
         if (Application.isPlaying && GUILayout.Button("Die")) 
             ship.Die();
+
+        if (Application.isPlaying)
+            EditorGUILayout.Toggle("Is Possessed?", ship.Possessed);
 
         ShowPossessButton();
         ShowPossessionHandle();
     }
 
-    void ShowPossessionHandle()
+    private void ShowPossessionHandle()
     {
         if (!Application.isPlaying || GameSettings.pc.ship == ship) return;
 

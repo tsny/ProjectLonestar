@@ -12,32 +12,23 @@ public class ShipEffectManager : ShipComponent
 
     public float currentScale = 1;
 
-    private Dictionary<ParticleSystem, Vector3> psDict = new Dictionary<ParticleSystem, Vector3>();
     private Vector3 originalScale;
 
     public override void Initialize(Ship sender)
     {
-        base.Initialize(sender);
-        sender.cruiseEngine.CruiseStateChanged += HandleCruiseChanged;
-        sender.Possession += HandleOwnerPossession;
-        sender.engine.DriftingChange += HandleDrifting;
+        // base.Initialize(sender);
 
-        foreach (ParticleSystem ps in engineEffects)
-        {
-            psDict.Add(ps, ps.transform.localScale);
-        }
+        // sender.cruiseEngine.CruiseStateChanged += HandleCruiseChanged;
+        // sender.Possession += HandleOwnerPossession;
+        // sender.engine.DriftingChange += HandleDrifting;
     }
 
     private void FixedUpdate()
     {
-        foreach (ParticleSystem ps in psDict.Keys)
-        {
-            Vector3 val;
-            if (psDict.TryGetValue(ps, out val))
-            {
-                ps.transform.localScale = val * ship.engine.Throttle;
-            }
-        }
+        // foreach (var ps in engineEffects)
+        // {
+        //     ps.transform.localScale = originalScale * ship.engine.Throttle;
+        // }
     }
 
     private void HandleDrifting(bool drifting)

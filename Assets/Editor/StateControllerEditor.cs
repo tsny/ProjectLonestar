@@ -43,23 +43,15 @@ public class StateControllerEditor : Editor
             cont.currentState = null;
         }
 
-        if (Btn("Toggle AI"))
+        if (Application.isPlaying && Btn("Toggle AI"))
         {
             cont.aiIsActive = !cont.aiIsActive;
         }
 
-        if (Btn("Full Stop"))
+        if (Application.isPlaying && Btn("Full Stop"))
         {
             cont.pastStates.Clear();
             cont.currentState = cont.stopState;
-        }
-
-        if (Btn("test"))
-        {
-            var decs = EditorUtils.FindAssetsByType<State>();
-            var rand = UnityEngine.Random.Range(0, decs.Count);
-            cont.currentState = decs[rand];
-            Debug.Log(decs[rand]);
         }
     }
 
