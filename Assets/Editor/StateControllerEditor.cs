@@ -11,7 +11,10 @@ public class StateControllerEditor : Editor
 
         var cont = target as StateController;
 
-        EditorGUILayout.LabelField("Distance To Target: " + cont.DistanceToTarget);
+        if (cont.HasTarget)
+        {
+            EditorGUILayout.LabelField("Distance To Target: " + cont.DistanceToTarget);
+        }
 
         GUILayout.Space(10);
 

@@ -115,6 +115,7 @@ public class Engine : ShipComponent
 
     public bool clampVelocity = true;
     private IEnumerator sidestepCR;
+    private IEnumerator blinkCR;
 
     public Afterburner aft;
 
@@ -137,6 +138,13 @@ public class Engine : ShipComponent
     public event EventHandler DriftingChange;
     public delegate void EventHandler(bool drifting);
 
+    public override void Initialize(Ship sender)
+    {
+        base.Initialize(sender);
+
+        ShipBaseTransform = sender.ShipBase.transform;
+    }
+
     public void SidestepRight()
     {
         if (sidestepCR != null || sidestepCD.isDecrementing) return;
@@ -153,12 +161,31 @@ public class Engine : ShipComponent
         StartCoroutine(sidestepCR);
     }
 
-    public void Blink()
+    public void Blink(bool forwards = true)
     {
-        if (blinkCD.isDecrementing) return;
+        if (blinkCR != null || blinkCD.isDecrementing) return;
+        blinkCR = BlinkCoroutine(.1f, forwards);
+        StartCoroutine(blinkCR);
+    }
 
-        transform.position = transform.position + transform.forward * (blinkDistance);
+    private IEnumerator BlinkCoroutine(float dur = .1f, bool forwards = true)
+    {
+        if (blinkCD.isDecrementing) yield break;
+
+        //ship.ShipBase.shipMesh.enabled = false;
+        ship.ShipBase.gameObject.SetActive(false);
+        // Make mesh invisible and disable colliders
+
+        yield return new WaitForSeconds(dur);
+
+        // reenable mesh/colliders
+        //ship.ShipBase.shipMesh.enabled = true;
+        ship.ShipBase.gameObject.SetActive(true);
+
+        var forwardsInt = forwards ? 1 : 0;
+        transform.position = transform.position + transform.forward * (blinkDistance * forwardsInt);
         blinkCD.Begin(this);
+        blinkCR = null;
     }
 
     public void BlinkBackwards()
@@ -243,7 +270,8 @@ public class Engine : ShipComponent
             forces = CalcStrafeForces() + CalcThrottleForces() + CalcAfterburnerForces();
         } 
 
-        rb.AddForce(forces);
+        if (forces != Vector3.zero)
+            rb.AddForce(forces);
     }
 
     private Vector3 GetClampedVelocity(Vector3 velocity)

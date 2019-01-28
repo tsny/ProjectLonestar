@@ -27,6 +27,13 @@ public class Afterburner : Hardpoint
     private void OnActivated() { if (Toggled != null) Toggled(true); }
     private void OnDeactivated() { if (Toggled != null) Toggled(false); }
 
+    public override void Initialize(Ship sender)
+    {
+        base.Initialize(sender);
+        rb = sender.rb;
+        stats = Utilities.CheckScriptableObject<AfterburnerStats>(stats);
+    }
+
     public void Activate()
     {
         if (rb == null || IsBurning) return;

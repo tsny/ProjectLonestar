@@ -14,11 +14,11 @@ public class ShipEditor : Editor
 
         EditorGUI.BeginChangeCheck();
 
-        var newBase = (GameObject) EditorGUILayout.ObjectField("ShipBase", ship.ShipBase, typeof(GameObject), false);
+        var newBase = (ShipBase) EditorGUILayout.ObjectField("ShipBase", ship.ShipBase, typeof(ShipBase), false);
 
         if (EditorGUI.EndChangeCheck())
         {
-            ship.ShipBase = newBase;
+            ship.Init(newBase);
         }
 
         if (Application.isPlaying && GUILayout.Button("Die")) 

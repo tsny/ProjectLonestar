@@ -52,7 +52,28 @@ public class ShipSpawner : MonoBehaviour
         }
     }
 
-    public static Ship SpawnShip(ShipSpawnInfo spawnInfo, Vector3 spawnPosition, bool forPlayer = false)
+    public static Ship SpawnNPC(ShipSpawnInfo spawnInfo, Vector3 pos)
+    {
+        var ship = SpawnShip(spawnInfo, pos);
+        var ai = ship.GetComponent<StateController>();
+
+        if (ai == null)
+        {
+            Debug.LogWarning("Spawning NPC without AI Controller...");
+        }
+        else
+        {
+            ai.currentState = spawnInfo.state;
+            ai.Target = spawnInfo.target;
+            ai.aiIsActive = true;
+        }
+
+        ship.Died += (s) => { LootSpawner.SpawnLoot(s.transform.position, spawnInfo); };
+
+        return ship;
+    }
+
+    public static Ship SpawnShip(ShipSpawnInfo spawnInfo, Vector3 pos)
     {
         if (spawnInfo.shipBase == null)
         {
@@ -60,36 +81,26 @@ public class ShipSpawner : MonoBehaviour
             spawnInfo.shipBase = GameSettings.Instance.defaultShipBase;
         }
 
-        var ship = Instantiate(spawnInfo.ship, spawnPosition, Quaternion.identity);
-        ship.ShipBase = spawnInfo.shipBase;
+        var ship = Instantiate(GameSettings.Instance.shipPrefab, pos, Quaternion.identity);
+        ship.Init(spawnInfo.shipBase);
 
-        var ai = ship.GetComponent<StateController>();
-
-        if (ai == null)
+        if (spawnInfo.loadout != null)
         {
-            ship.Died += (s) => { LootSpawner.SpawnLoot(s.transform.position, spawnInfo); };
-            Debug.LogWarning("Spawning ship without AI Controller...");
-        }
-        else if (forPlayer)
-        {
-            ai.currentState = null;
-        }
-        else
-        {
-            ship.Died += (s) => { LootSpawner.SpawnLoot(s.transform.position, spawnInfo); };
-            ai.currentState = spawnInfo.state;
-            ai.Target = spawnInfo.target;
-            ai.aiIsActive = true;
+            foreach (var proj in spawnInfo.loadout.projectiles)
+            {
+                // 1st pass: give each gun a projectile?
+                // find a gun    
+            }
         }
 
         return ship;
     }
 
-    public static Ship SpawnShip(Ship ship, Vector3 spawn, bool forPlayer = false)
+    public static Ship SpawnShip(Ship ship, Vector3 spawn)
     {
         var spawnInfo = new ShipSpawnInfo();
-        spawnInfo.ship = ship;
-        return SpawnShip(spawnInfo, spawn, forPlayer);
+        spawnInfo.shipBase = GameSettings.Instance.defaultShipBase;
+        return SpawnShip(spawnInfo, spawn);
     }
 
     public static List<Ship> SpawnShips(ShipSpawnInfo[] shipsToSpawn, Vector3 spawnPos, Bounds bounds)
@@ -97,21 +108,20 @@ public class ShipSpawner : MonoBehaviour
         List<Ship> spawnedShips = new List<Ship>();
 
         for (int i = 0; i < shipsToSpawn.Length; i++)
-            spawnedShips.Add(SpawnShip(shipsToSpawn[i], spawnPos + Utilities.RandomPointInBounds(bounds)));
+            spawnedShips.Add(SpawnNPC(shipsToSpawn[i], spawnPos + Utilities.RandomPointInBounds(bounds)));
 
         return spawnedShips;
     }
 }
+
 [System.Serializable]
 public class ShipSpawnInfo
 {
     public GameObject target;
     public Vector3 spawnOffset = Vector3.one;
     public State state;
-    public Ship ship;
     public Loadout loadout;
-    public GameObject shipBase;
-
+    public ShipBase shipBase;
     public DropList dl;
     public LootSpawnInfo[] lootInfo;
     // Relations to other ships??

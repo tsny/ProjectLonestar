@@ -17,19 +17,8 @@ public class StateController : MonoBehaviour
             _targetShip = value;
         }
     }
-    private Transform _targetTrans;
-    public Transform TargetTransform
-    {
-        get
-        {
-            return _targetTrans;
-        }
-        set
-        {
-            _targetTrans = value;
-        }
-    }
-    public float DistanceToTarget { get { return _targetTrans ? Vector3.Distance(ship.transform.position, _targetTrans.position) : 0; } }
+    public Transform TargetTransform { get { return _target.transform; } } 
+    public float DistanceToTarget { get { return TargetTransform ? Vector3.Distance(ship.transform.position, TargetTransform.position) : 0; } }
     public bool HasTarget { get { return Target != null; } }
 
     [HideInInspector] public Ship ship;
@@ -44,7 +33,6 @@ public class StateController : MonoBehaviour
         {
             if (!value) return;
             _targetShip = value.GetComponent<Ship>();
-            _targetTrans = value.transform;
             _target = value;
         }
     }

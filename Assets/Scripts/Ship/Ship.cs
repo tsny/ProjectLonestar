@@ -21,23 +21,8 @@ public class Ship : MonoBehaviour, ITargetable
     public Rigidbody rb;
     public List<Collider> colliders;
 
-    private GameObject _shipBase;
-    public GameObject ShipBase
-    {
-        get
-        {
-            return _shipBase;
-        }
-        set
-        {
-            // Maybe make this component based instead?
-            if (_shipBase) DestroyImmediate(_shipBase.gameObject);
-            _shipBase = Instantiate(value, transform);
-            _shipBase.transform.localPosition = Vector3.zero;
-            engine.ShipBaseTransform = _shipBase.transform;
-            Init();
-        }
-    }
+    private ShipBase _shipBase;
+    public ShipBase ShipBase { get { return _shipBase; } }
 
     public ParticleSystem deathFX;
 
@@ -57,31 +42,25 @@ public class Ship : MonoBehaviour, ITargetable
     public event TargetEventHandler BecameUntargetable;
     public event ShipEventHandler Died;
 
-    private void OnBecameTargetable() { }
+    private void OnBecameTargetable() { if (BecameTargetable != null) BecameTargetable(this); }
+    private void OnBecameUntargetable() { if (BecameUntargetable != null) BecameUntargetable(this); }
 
     protected void OnPossession(PlayerController pc, bool possessed) { if (Possession != null) Possession(pc, this, possessed); }
 
-    public void Init()
+    public void Init(ShipBase shipBase)
     {
-        if (ShipBase == null)
-        {
-            ShipBase = GameSettings.Instance.defaultShipBase;
-            return;
-        }
+        if (_shipBase) DestroyImmediate(_shipBase.gameObject);
+
+        _shipBase = Instantiate(shipBase, transform);
+        _shipBase.transform.localPosition = Vector3.zero;
 
         GetComponentsInChildren<Collider>(true, colliders);
-
         foreach (Collider coll in colliders)
         {
             var newLayer = _possessed ? LayerMask.NameToLayer("Player") : LayerMask.NameToLayer("Default");
             coll.gameObject.layer = newLayer;
             coll.tag = _possessed ? "Player" : "Untagged";
         }
-
-        var components = GetComponentsInChildren<ShipComponent>();
-        components.ToList().ForEach(x => x.Initialize(this));
-
-        name = ShipBase.name;
     }
 
     private void Start()
@@ -91,8 +70,12 @@ public class Ship : MonoBehaviour, ITargetable
         cruiseEngine.CruiseStateChanged += HandleCruiseChange;
         health.HealthDepleted += HandleHealthDepleted;
 
-        if (ShipBase == null)
-            ShipBase = GameSettings.Instance.defaultShipBase;
+        if (ShipBase == null) Init(GameSettings.Instance.defaultShipBase);
+
+        var components = GetComponentsInChildren<ShipComponent>();
+        components.ToList().ForEach(x => x.Initialize(this));
+
+        name = ShipBase.name;
 
         if (Spawned != null) Spawned(this);
     }

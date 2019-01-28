@@ -155,8 +155,8 @@ public class PlayerController : MonoBehaviour
 
         else if(Input.GetKeyUp(InputManager.ThrottleUpKey))
         {
-            Action action = ship.engine.Blink;
-            StartCoroutine(DoubleTap(InputManager.ThrottleUpKey, action));
+            Action<bool> action = ship.engine.Blink;
+            StartCoroutine(DoubleTap(InputManager.ThrottleUpKey, action, true));
         }
 
         if(Input.GetKey(InputManager.ThrottleDownKey) || Input.GetAxis("Mouse ScrollWheel") < 0f)
@@ -368,6 +368,23 @@ public class PlayerController : MonoBehaviour
             if (Input.GetKey(pressedKey))
             {
                 action();
+                yield break;
+            }
+        
+            elapsed += Time.deltaTime;
+            yield return new WaitForEndOfFrame();
+        }
+    }
+
+    IEnumerator DoubleTap(KeyCode pressedKey, Action<bool> action, bool value)
+    {
+        float elapsed = 0;
+
+        while (elapsed < doubleTapDuration)
+        {
+            if (Input.GetKey(pressedKey))
+            {
+                action(value);
                 yield break;
             }
         

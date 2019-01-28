@@ -67,58 +67,59 @@ public class FLTerminal : Terminal
     [RegisterCommand(Help = "Spawns a ship. Usage: spawn 'entity' 'times' 'possess?'", MinArgCount = 1, MaxArgCount = 3)]
     static void Spawn(CommandArg[] args)
     {
-        string entity = args[0].String;
+        // TODO: REDO THIS
+        // string entity = args[0].String;
 
-        if (Terminal.IssuedError) return;
+        // if (Terminal.IssuedError) return;
 
-        var spawnInfo = new ShipSpawnInfo();
+        // var spawnInfo = new ShipSpawnInfo();
 
-        Ship spawnedShip = null;
-        int timesToSpawn = 1;
+        // Ship spawnedShip = null;
+        // int timesToSpawn = 1;
 
-        var ships = FindObjectsOfType<Ship>();
+        // var ships = FindObjectsOfType<Ship>();
 
-        switch (entity)
-        {
-            // case crazy
-            // case nomad
-            // case bship
-            case "self":
-                spawnInfo.ship = GameSettings.pc.ship;
-                break;
+        // switch (entity)
+        // {
+        //     // case crazy
+        //     // case nomad
+        //     // case bship
+        //     case "self":
+        //         //spawnInfo.ship = GameSettings.pc.ship;
+        //         break;
 
-            case "random":
-                spawnInfo.ship = ships[Random.Range(0, ships.Length)];
-                break;
+        //     case "random":
+        //         //spawnInfo.ship = ships[Random.Range(0, ships.Length)];
+        //         break;
 
-            case "nearest":
-                // FindNearestShip(ships)
-                spawnInfo.ship = null;
-                break;
+        //     case "nearest":
+        //         // FindNearestShip(ships)
+        //         //spawnInfo.ship = null;
+        //         break;
 
-            default:
-                Log("Could not spawn entity of name " + entity);
-                return;
-        }
+        //     default:
+        //         Log("Could not spawn entity of name " + entity);
+        //         return;
+        // }
 
-        if (args.Length > 1)
-        {
-            timesToSpawn = args[1].Int;
-        }
+        // if (args.Length > 1)
+        // {
+        //     timesToSpawn = args[1].Int;
+        // }
 
-        for (int i = 0; i < timesToSpawn; i++)
-        {
-            //spawnedShip = ShipSpawner.SpawnShip(spawnInfo, GameSettings.pc.transform.position + GameSettings.pc.transform.forward * (10 + i));
-            spawnedShip = Instantiate(spawnInfo.ship, GameSettings.pc.transform.position + GameSettings.pc.transform.forward * (10 + i), Quaternion.identity);
-        }
+        // for (int i = 0; i < timesToSpawn; i++)
+        // {
+        //     //spawnedShip = ShipSpawner.SpawnShip(spawnInfo, GameSettings.pc.transform.position + GameSettings.pc.transform.forward * (10 + i));
+        //     //spawnedShip = Instantiate(spawnInfo.ship, GameSettings.pc.transform.position + GameSettings.pc.transform.forward * (10 + i), Quaternion.identity);
+        // }
 
-        if (args.Length > 2)
-        {
-            if (args[2].Bool)
-            {
-                GameSettings.pc.Possess(spawnedShip);
-            }
-        }
+        // if (args.Length > 2)
+        // {
+        //     if (args[2].Bool)
+        //     {
+        //         GameSettings.pc.Possess(spawnedShip);
+        //     }
+        // }
     }
 
     [RegisterCommand(Help = "Toggles the game's time scale between 1 and 0", MinArgCount = 0, MaxArgCount = 0)]

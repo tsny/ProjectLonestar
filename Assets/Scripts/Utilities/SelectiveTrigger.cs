@@ -8,13 +8,6 @@ public class SelectiveTrigger : MonoBehaviour
     public UnityEvent onTrigger;
     public string[] validTag = {"Player"};
 
-    private Collider coll;
-
-    private void Awake()
-    {
-        coll = GetComponent<Collider>();
-    }
-
     private void OnTriggerEnter(Collider other)
     {
         foreach (var tag in validTag)

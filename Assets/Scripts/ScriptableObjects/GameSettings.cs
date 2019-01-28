@@ -13,7 +13,7 @@ public class GameSettings : SingletonScriptableObject<GameSettings>
     public PlayerController pcPrefab;
     public Canvas nebulaCanvasPrefab;
 
-    public GameObject defaultShipBase;
+    public ShipBase defaultShipBase;
 
     public Loot lootPrefab;
 
@@ -75,7 +75,7 @@ public class GameSettings : SingletonScriptableObject<GameSettings>
 
     public void SpawnGlobalPrefabs()
     {
-        var term = new GameObject().AddComponent<FLTerminal>();
+        new GameObject().AddComponent<FLTerminal>();
     }
 
     public void HandleGameplayScene()
@@ -86,7 +86,7 @@ public class GameSettings : SingletonScriptableObject<GameSettings>
         pc.listener.enabled = true;
         //
 
-        var playerShip = ShipSpawner.SpawnShip(shipPrefab, Vector3.zero, true);
+        var playerShip = ShipSpawner.SpawnShip(shipPrefab, Vector3.zero);
         pc.Possess(playerShip);
 
         var hud = FindObjectOfType<HUDManager>();
@@ -104,17 +104,17 @@ public class GameSettings : SingletonScriptableObject<GameSettings>
         resolutions = Screen.resolutions;
         resolutionOptions = new List<string>();
 
-        int currentResolutionIndex = 0;
+        //int currentResolutionIndex = 0;
 
         for (int i = 0; i < resolutions.Length; i++)
         {
             string option = resolutions[i].width + "x" + resolutions[i].height + " : " + resolutions[i].refreshRate + "hz";
             resolutionOptions.Add(option);
 
-            if (resolutions[i].Equals(Screen.currentResolution))
-            {
-                currentResolutionIndex = i;
-            }
+            // if (resolutions[i].Equals(Screen.currentResolution))
+            // {
+            //     currentResolutionIndex = i;
+            // }
         }
     }
 }
