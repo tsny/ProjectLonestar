@@ -76,7 +76,7 @@ public class HardpointSystem : ShipComponent
     {
         if (!energyCooldown.isDecrementing)
         {
-            while (energy <= energyCapacity)
+            if (energy < energyCapacity)
             {
                 energy += chargeRate;
                 energy = Mathf.Clamp(energy, 0, energyCapacity);

@@ -120,11 +120,7 @@ public class TargetIndicator : MonoBehaviour
             return;
         }
 
-        if (!target.targetable)
-        {
-            content.SetActive(false);
-            return;
-        }
+        if (!ShouldContinueUpdate()) return;
 
         RangeCheck();
 
@@ -153,6 +149,34 @@ public class TargetIndicator : MonoBehaviour
         if (Selected != null) Selected(this);
     }
 
+    private bool ShouldContinueUpdate()
+    {
+        if (!target.targetable && content.activeSelf)
+        {
+            content.SetActive(false);
+            return false;
+        }
+
+        // Only reactivate children if the target was not onscreen
+        // in the last frame and is now.
+        if (TargetIsOnScreen && !wasOnScreenLastFrame)
+        {
+            content.SetActive(true);
+            return true;
+        }
+
+        // If the target is now offscreen but was on screen in the
+        // last frame, then deactivate children
+        if (!TargetIsOnScreen && wasOnScreenLastFrame)
+        {
+            content.SetActive(false);
+            wasOnScreenLastFrame = false;
+            return false;
+        }
+
+        return true;
+    }
+
     public virtual void Deselect()
     {
         if (!selected) return;
@@ -169,28 +193,6 @@ public class TargetIndicator : MonoBehaviour
 
     private void CalculatePosition()
     {
-        // Only reactivate children if the target was not onscreen
-        // in the last frame and is now.
-        if (TargetIsOnScreen && !wasOnScreenLastFrame)
-        {
-            content.SetActive(true);
-        }
-
-        // If the target is now offscreen but was on screen in the
-        // last frame, then deactivate children
-        else if (!TargetIsOnScreen && wasOnScreenLastFrame)
-        {
-            content.SetActive(false);
-            wasOnScreenLastFrame = false;
-            return;
-        }
-
-
-        else if (!TargetIsOnScreen && !wasOnScreenLastFrame)
-        {
-            return;
-        }
-
         Vector3 newPosition = TargetViewportPoint;
         newPosition.z = 0;
         transform.position = newPosition;
