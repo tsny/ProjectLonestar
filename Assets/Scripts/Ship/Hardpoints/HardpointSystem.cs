@@ -15,6 +15,7 @@ public class HardpointSystem : ShipComponent
     public CruiseEngine cruiseEngine;
 
     public List<Hardpoint> hardpoints;
+    public Cooldown energyCooldown;
 
     [Header("Energy")]
     public float energy = 100;
@@ -66,6 +67,23 @@ public class HardpointSystem : ShipComponent
     public delegate void WeaponFiredEventHandler(Gun gunFired);
     public event WeaponFiredEventHandler WeaponFired;
 
+    void Awake() 
+    {
+        energyCooldown = Utilities.CheckScriptableObject<Cooldown>(energyCooldown);
+    }
+
+    void Update()
+    {
+        if (!energyCooldown.isDecrementing)
+        {
+            while (energy <= energyCapacity)
+            {
+                energy += chargeRate;
+                energy = Mathf.Clamp(energy, 0, energyCapacity);
+            }
+        }
+    }
+
     public override void Initialize(Ship sender)
     {
         base.Initialize(sender);
@@ -110,62 +128,7 @@ public class HardpointSystem : ShipComponent
         {
             energy -= gun.stats.energyDraw;
             if (WeaponFired != null) WeaponFired(gun);
-            BeginCooldown();
-        }
-    }
-
-    // public void FireWeaponHardpoint(Gun gun, Rigidbody target)
-    // {
-    //     if (CanFireWeapons == false || gun.stats == null) return;
-
-    //     if (gun.stats.energyDraw < energy && gun.FireAtMovingTarget(target, ship.colliders))
-    //     {
-    //         energy -= gun.stats.energyDraw;
-    //         if (WeaponFired != null) WeaponFired(gun);
-    //         BeginCooldown();
-    //     }
-    // }
-
-    public void BeginCooldown()
-    {
-        if (cooldownEnumerator != null) StopCoroutine(cooldownEnumerator);
-        cooldownEnumerator = CooldownCoroutine();
-        StartCoroutine(cooldownEnumerator);
-    }
-
-    public void StopCooldown()
-    {
-        if (cooldownEnumerator == null) return;
-        StopCoroutine(cooldownEnumerator);
-        cooldownEnumerator = null; 
-    }
-
-    public void StartRecharging()
-    {
-        rechargeEnumerator = RechargeCoroutine();
-        StartCoroutine(rechargeEnumerator);
-    }
-
-    public void StopRecharging()
-    {
-        if (rechargeEnumerator != null) StopCoroutine(rechargeEnumerator);
-        rechargeEnumerator = null;
-    }
-
-    private IEnumerator CooldownCoroutine()
-    {
-        StopRecharging();
-        yield return new WaitForSeconds(timeTillRecharge);
-        StartRecharging();
-    }
-
-    private IEnumerator RechargeCoroutine()
-    {
-        while (energy < energyCapacity)
-        {
-            energy += chargeRate;
-            energy = Mathf.Clamp(energy, 0, energyCapacity);
-            yield return null;
+            energyCooldown.Begin(this);
         }
     }
 }

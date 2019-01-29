@@ -11,24 +11,25 @@ public class ShipEffectManager : ShipComponent
     public ParticleSystem dustEffect;
 
     public float currentScale = 1;
-
     private Vector3 originalScale;
 
     public override void Initialize(Ship sender)
     {
-        // base.Initialize(sender);
+        base.Initialize(sender);
 
-        // sender.cruiseEngine.CruiseStateChanged += HandleCruiseChanged;
-        // sender.Possession += HandleOwnerPossession;
-        // sender.engine.DriftingChange += HandleDrifting;
+        sender.cruiseEngine.CruiseStateChanged += HandleCruiseChanged;
+        sender.Possession += HandleOwnerPossession;
+        sender.engine.DriftingChange += HandleDrifting;
     }
 
     private void FixedUpdate()
     {
-        // foreach (var ps in engineEffects)
-        // {
-        //     ps.transform.localScale = originalScale * ship.engine.Throttle;
-        // }
+        if (!ship) return;
+
+        foreach (var ps in engineEffects)
+        {
+            ps.transform.localScale = originalScale * ship.engine.Throttle;
+        }
     }
 
     private void HandleDrifting(bool drifting)

@@ -90,6 +90,8 @@ public class ShipSpawner : MonoBehaviour
             {
                 // 1st pass: give each gun a projectile?
                 // find a gun    
+                ship.hpSys.guns.ForEach(x => x.projectile = proj);
+                print("this worked?");
             }
         }
 

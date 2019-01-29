@@ -1,31 +1,17 @@
 using UnityEngine;
 
-public class Tradelane : MonoBehaviour, ITargetable
+public class Tradelane : MonoBehaviour
 {
+    public TargetingInfo info;
     public Transform transformToMove;
     public Health health;
     public Collider coll;
     public Transform endPoint;
     public float thrust = 30;
 
-    public event TargetEventHandler BecameTargetable;
-    public event TargetEventHandler BecameUntargetable;
-
     private void Awake() 
     {
         health = Utilities.CheckComponent<Health>(gameObject);
-    }
-
-    public bool IsTargetable()
-    {
-        //throw new System.NotImplementedException();
-        return true;
-    }
-
-    public void SetupTargetIndicator(TargetIndicator indicator)
-    {
-        //throw new System.NotImplementedException();
-        indicator.header.text = "Trade Lane";
     }
 
     private void OnTriggerEnter(Collider other) 

@@ -43,17 +43,15 @@ public class TargetIndicator : MonoBehaviour
         }
     }
 
-    private Health targetHealth;
     public bool selected;
-    public bool showHealthOnSelect = true;
 
     public Text header;
     public GameObject content;
 
     [Header("Target")]
 
-    public GameObject target;
     public Rigidbody targetRb;
+    public TargetingInfo target;
 
     public GameObject healthObject;
     public GameObject shieldObject;
@@ -96,41 +94,35 @@ public class TargetIndicator : MonoBehaviour
         cam = GameSettings.pc.cam != null ? GameSettings.pc.cam : Camera.main;
         ToggleHealthBars(false);
         ShowName(false);
+        StartCoroutine(RefreshHeader(2));
     }
 
-    public virtual void SetTarget(GameObject newTarget)
+    public void SetTarget(TargetingInfo info)
     {
-        //newTarget.SetupTargetIndicator(this);
+        targetRb = info.GetComponent<Rigidbody>();
 
-        Ship = newTarget.GetComponent<Ship>();
-        if (Ship == GameSettings.pc.ship)
-        {
-            Destroy(gameObject);
-        }
-
-        var iTargetable = newTarget.GetComponent<ITargetable>();
-        if (iTargetable != null)
-        {
-            iTargetable.SetupTargetIndicator(this);
-        }
-
-        targetHealth = newTarget.GetComponent<Health>();
-        targetRb = newTarget.GetComponent<Rigidbody>();
-
-        name = "T-IND: " + newTarget.name;
-        enabled = true;
-
-        target = newTarget;
-
+        Ship = info.GetComponent<Ship>();
         if (Ship != null)
             Ship.Died += (s) => { Destroy(gameObject); };
+
+        targetRb = info.GetComponent<Rigidbody>();
+
+        name = "T_IND: " + info.name;
+        target = info;
+        enabled = true;
     }
 
     private void Update()
     {
-        if (target == null)
+        if (!HasTarget)
         {
             Destroy(gameObject);
+            return;
+        }
+
+        if (!target.targetable)
+        {
+            content.SetActive(false);
             return;
         }
 
@@ -141,17 +133,18 @@ public class TargetIndicator : MonoBehaviour
         CalculateTransparency();
 
         //if (Ship == null) return;
-        if (targetHealth == null) return;
+        if (target.health == null) return;
 
-        healthBarImage.fillAmount = targetHealth.health / targetHealth.stats.maxHealth;
-        shieldBarImage.fillAmount = targetHealth.shield / targetHealth.stats.maxShield;
+        var health = target.health;
+        healthBarImage.fillAmount = health.health / health.stats.maxHealth;
+        shieldBarImage.fillAmount = health.shield / health.stats.maxShield;
     }
 
     public virtual void Select()
     {
         if (selected) return;
 
-        if (showHealthOnSelect) ToggleHealthBars(true);
+        if (target.showHealthOnSelect) ToggleHealthBars(true);
         ShowName(true);
         buttonImage.raycastTarget = false;
         animator.SetTrigger("Select");
@@ -256,5 +249,14 @@ public class TargetIndicator : MonoBehaviour
     private void ShowName(bool value)
     {
         header.gameObject.SetActive(value);
+    }
+
+    private IEnumerator RefreshHeader(float waitDur)
+    {
+        while (true)
+        {
+            header.text = target.indicatorHeaderText + " - " + (int) DistanceFromTarget;
+            yield return new WaitForSeconds(waitDur);
+        }
     }
 }

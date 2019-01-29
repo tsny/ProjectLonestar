@@ -6,8 +6,12 @@ using UnityEngine.UI;
 
 public class IndicatorManager : ShipUIElement
 {
-    public GameObject indicatorPrefab;
+    public List<Ship> shipsInScene = new List<Ship>();
+    public TargetIndicator indicatorPrefab;
+    public ScannerPanelButton scannerPanelButtonPrefab;
+
     public Transform indicatorLayer;
+    public Transform scannerEntries;
 
     public TargetIndicator selectedIndicator;
 
@@ -15,48 +19,38 @@ public class IndicatorManager : ShipUIElement
     {
         Ship.Spawned += HandleShipSpawned;
         Loot.Spawned += HandleLootSpawned;
+
+        TargetingInfo.Spawned += (info) => { AddIndicator(info); };
+    }
+
+    private void HandleShipDied(Ship ship)
+    {
+        shipsInScene.Remove(ship);
     }
 
     private void HandleShipSpawned(Ship ship)
     {
-        if (GameSettings.pc.ship != null && GameSettings.pc.ship != ship)
-        {
-            AddIndicator(ship.gameObject);
-        }
+        //if (GameSettings.pc.ship != null && GameSettings.pc.ship != ship)
+            //AddIndicator(ship.gameObject);
+
+        shipsInScene.Add(ship);
+
+        ship.Died += HandleShipDied;
+
+        // var btn = Instantiate(scannerPanelButtonPrefab, scannerEntries);
+        // btn.Setup(ship, this.ship);
     }
 
     private void HandleLootSpawned(Loot loot)
     {
-        AddIndicator(loot.gameObject);
-    }
-
-    private void Start() 
-    {
-        //CreateIndicators();     
+        //AddIndicator(loot.gameObject);
     }
 
     // Not really perfomant at all, consider not using ever lol
     private void CreateIndicators()
     {
-        //var targets = FindObjectsOfType<Ship>().ToList();
-        var targets = FindObjectsOfType<MonoBehaviour>().OfType<ITargetable>();
-
-        foreach (var target in targets)
-        {
-            var curr = target as MonoBehaviour;
-            AddIndicator(curr.gameObject);
-        }
-
-        // foreach (var ship in targets)
-        // {
-        //     if (ship == GameSettings.pc.ship)
-        //     {
-        //         targets.Remove(ship);
-        //         break;
-        //     }
-        // }
-
-        //targets.ForEach(x => AddIndicator(x.));
+        var targets = FindObjectsOfType<TargetingInfo>();
+        foreach (var target in targets) AddIndicator(target);
     }
 
     private void HandleShipReleased(PlayerController sender, PossessionEventArgs args)
@@ -87,10 +81,10 @@ public class IndicatorManager : ShipUIElement
         selectedIndicator = null;
     }
 
-    public void AddIndicator(GameObject target)
+    public void AddIndicator(TargetingInfo info)
     {
-        TargetIndicator newIndicator = Instantiate(indicatorPrefab, indicatorLayer).GetComponent<TargetIndicator>();
-        newIndicator.SetTarget(target);
+        var newIndicator = Instantiate(indicatorPrefab, indicatorLayer);
+        newIndicator.SetTarget(info);
         newIndicator.Selected += HandleIndicatorSelected;
     }
 }

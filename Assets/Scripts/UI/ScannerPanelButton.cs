@@ -9,11 +9,19 @@ public class ScannerPanelButton : MonoBehaviour
     private Ship owner;
     public Text text;
 
+    public void Setup(Ship target, Ship owner)
+    {
+        this.owner = owner;
+        targetTransform = target.transform;
+        name = target.name;
+
+        StartCoroutine(UpdateText());
+    }
+
     public void Setup(ITargetable target, Ship owner)
     {
         //this.target = target;
         this.owner = owner;
-
         var component = target as MonoBehaviour;
 
         if (component == null)
@@ -39,5 +47,7 @@ public class ScannerPanelButton : MonoBehaviour
 
             yield return new WaitForSeconds(2);
         }
+
+        Destroy(gameObject);
     }
 }

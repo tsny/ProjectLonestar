@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-public class Loot : MonoBehaviour, ITargetable
+public class Loot : MonoBehaviour
 {
     public Item item;
     public Transform target;
@@ -20,35 +20,35 @@ public class Loot : MonoBehaviour, ITargetable
     [Range(0, 10)]
     public float pullForce = 5;
 
-    private Health health;
     private Rigidbody rb;
     private SphereCollider coll;
 
-    public event TargetEventHandler BecameTargetable;
-    public event TargetEventHandler BecameUntargetable;
+    public TargetingInfo targetInfo;
 
     public static event LootEventHandler Spawned;
     public static event LootEventHandler Looted;
 
     public delegate void LootEventHandler(Loot sender);
-    //public delegate void LootedEventHandler(Loot sender, Ship looter);
 
     public Gradient grad;
 
     public ParticleSystem baseSystem;
     public ParticleSystem subSystem;
 
-    private void OnBecameUntargetable() { if (BecameUntargetable != null) BecameUntargetable(this); }
-    private void OnBecameTargetable() { if (BecameTargetable != null) BecameTargetable(this); }
-
     private void Awake() 
     {
-        health = Utilities.CheckComponent<Health>(gameObject);
-        health.HealthDepleted += HandleHealthDepleted;
         item = Utilities.CheckScriptableObject<Item>(item);
         rb = Utilities.CheckComponent<Rigidbody>(gameObject);
         coll = Utilities.CheckComponent<SphereCollider>(gameObject);
         coll.isTrigger = true;
+
+        targetInfo = Utilities.CheckComponent<TargetingInfo>(gameObject);
+
+        string headerText = "Loot: " + item.name ?? "Empty Loot";
+        targetInfo.Init(headerText, null, false);
+
+        //indicator.showHealthOnSelect = false;
+        //indicator.reticle.gameObject.SetActive(false);
     }
 
     private void Start() 
@@ -127,7 +127,6 @@ public class Loot : MonoBehaviour, ITargetable
 
             targetInventory.AddItem(item);
 
-            OnBecameUntargetable();
             if (Looted != null) Looted(this);
 
             Destroy(gameObject);
@@ -135,24 +134,6 @@ public class Loot : MonoBehaviour, ITargetable
         }
 
         transform.position = Vector3.MoveTowards(transform.position, target.transform.position, pullForce);
-    }
-
-    [ContextMenu("test")]
-    public void Test()
-    {
-        if (Looted != null) Looted(this);
-    }
-
-    public bool IsTargetable()
-    {
-        return true;
-    }
-
-    public void SetupTargetIndicator(TargetIndicator indicator)
-    {
-        indicator.header.text = "Loot: " + item.name ?? "Empty Loot";
-        indicator.showHealthOnSelect = false;
-        indicator.reticle.gameObject.SetActive(false);
     }
 
     public void SetParticleColors(Gradient gradient)

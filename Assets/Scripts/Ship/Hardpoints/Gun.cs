@@ -112,6 +112,7 @@ public class Gun : Hardpoint
 
         var proj = Instantiate(projectile, SpawnPoint, Quaternion.identity);
         proj.Initialize(target, stats, colliders);
+        if (clip && audioSource) audioSource.PlayOneShot(clip, volume);
 
         StartCooldown(stats.cooldownDuration);
         return true;

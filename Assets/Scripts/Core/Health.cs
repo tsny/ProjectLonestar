@@ -19,6 +19,8 @@ public class Health : MonoBehaviour
     }
     public HealthStats stats;
 
+    public HealthObject[] healthObjects;
+
     public float health = 100;
     public float shield = 100;
     public float armor;
@@ -37,6 +39,11 @@ public class Health : MonoBehaviour
 
     public void Init()
     {
+        // foreach (var obj in healthObjects)
+        // {
+        //     obj.Init();
+        // }
+
         stats = Utilities.CheckScriptableObject<HealthStats>(stats);
 
         health = stats.startingHealth;
@@ -70,5 +77,20 @@ public class Health : MonoBehaviour
         OnTookDamage(weapon);
 
         if (health <= stats.minHealth) OnHealthDepleted();
+    }
+}
+
+[System.Serializable]
+public class HealthObject
+{
+    public float current = 100;
+    public float start = 100;
+    public float max = 100;
+    public float min = 0;
+    //public healthtype;
+
+    public void Init()
+    {
+        current = start;
     }
 }

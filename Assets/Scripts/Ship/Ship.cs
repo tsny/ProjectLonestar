@@ -3,7 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Ship : MonoBehaviour, ITargetable
+public class Ship : MonoBehaviour
 {
     [Header("Stats")]
     public PilotDetails pilotDetails;
@@ -20,6 +20,7 @@ public class Ship : MonoBehaviour, ITargetable
     public CruiseEngine cruiseEngine;
     public Rigidbody rb;
     public List<Collider> colliders;
+    public TargetingInfo targetInfo;
 
     private ShipBase _shipBase;
     public ShipBase ShipBase { get { return _shipBase; } }
@@ -36,14 +37,9 @@ public class Ship : MonoBehaviour, ITargetable
     public delegate void ShipEventHandler(Ship sender);
 
     public static event ShipEventHandler Spawned;
-
-    public event PossessionEventHandler Possession;
-    public event TargetEventHandler BecameTargetable;
-    public event TargetEventHandler BecameUntargetable;
     public event ShipEventHandler Died;
 
-    private void OnBecameTargetable() { if (BecameTargetable != null) BecameTargetable(this); }
-    private void OnBecameUntargetable() { if (BecameUntargetable != null) BecameUntargetable(this); }
+    public event PossessionEventHandler Possession;
 
     protected void OnPossession(PlayerController pc, bool possessed) { if (Possession != null) Possession(pc, this, possessed); }
 
@@ -63,7 +59,14 @@ public class Ship : MonoBehaviour, ITargetable
         }
     }
 
-    private void Start()
+    void Awake()
+    {
+        targetInfo = Utilities.CheckComponent<TargetingInfo>(gameObject);
+        var header = shipDetails.shipName + " - PILOTNAMEHERE";
+        targetInfo.Init(header, health);
+    }
+
+    void Start()
     {
         engine.DriftingChange += HandleDriftingChange;
         engine.ThrottleChanged += HandleThrottleChange;
@@ -108,7 +111,6 @@ public class Ship : MonoBehaviour, ITargetable
 
     private void HandleHealthDepleted()
     {
-        //if (BecameUntargetable != null) BecameUntargetable(this);
         Die();
     }
 
@@ -130,21 +132,10 @@ public class Ship : MonoBehaviour, ITargetable
             coll.tag = possessed ? "Player" : "Untagged";
         }
 
+        targetInfo.targetable = !possessed;
+
         _possessed = possessed;
         OnPossession(pc, possessed);
-    }
-
-    public void SetupTargetIndicator(TargetIndicator indicator)
-    {
-        indicator.header.text = shipDetails.shipName;
-		
-		// Check if this ship has a shield and toggle shield bar based on that
-        //hull.TookDamage += indicator.HandleTargetTookDamage;
-    }
-
-    public bool IsTargetable()
-    {
-        return true;
     }
 
     public void Die()

@@ -199,6 +199,10 @@ public class Engine : ShipComponent
     private IEnumerator SidestepRoutine(Vector3 baseForce, ForceMode mode)
     {
         float elapsed = 0;
+        
+        // something like this
+        if (ShipBaseTransform)
+            ShipBaseTransform.Rotate(0, 0, sidestepDur / 360, Space.Self);
 
         while (elapsed < sidestepDur)
         {

@@ -47,6 +47,8 @@ public class FLTerminal : Terminal
     {
         var canvas = FindObjectOfType<HUDManager>().GetComponent<Canvas>();
         canvas.enabled = !canvas.enabled;
+        var result = canvas.enabled ? "enabled" : "disabled";
+        Log("HUD has been " + result);
     }
 
     [RegisterCommand(Name = "mount", Help = "Mounts a default loadout onto the current ship", MinArgCount = 0, MaxArgCount = 0)]
@@ -62,6 +64,13 @@ public class FLTerminal : Terminal
     {
         GameSettings.pc.ship.health.Invulnerable = !GameSettings.pc.ship.health.Invulnerable;
         Log("Godmode : " + GameSettings.pc.ship.health.Invulnerable);
+    }
+
+    [RegisterCommand(Help = "Kills currently possessed ship", MinArgCount = 0, MaxArgCount = 0)]
+    static void Kill(CommandArg[] args)
+    {
+        GameSettings.pc.ship.Die();
+        Log("Player ship destroyed...");
     }
 
     [RegisterCommand(Help = "Spawns a ship. Usage: spawn 'entity' 'times' 'possess?'", MinArgCount = 1, MaxArgCount = 3)]
@@ -194,12 +203,6 @@ public class FLTerminal : Terminal
             text = args[0].String;
 
         FindObjectOfType<HUDManager>().SpawnNotification(text);
-    }
-
-    [RegisterCommand(MinArgCount = 0, MaxArgCount = 0)]
-    static void Test()
-    {
-        //GameSettings.pc.GetComponent<StateController>().test
     }
 
     private Ship FindClosestShip(Ship[] ships)
