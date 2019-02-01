@@ -55,6 +55,7 @@ public class PlayerController : MonoBehaviour
     {
         if (FindObjectsOfType<PlayerController>().Length > 1)
         {
+            Debug.LogWarning("Tried to spawn PlayerController with one already in scene...");
             Destroy(gameObject);
             return;
         }
@@ -99,7 +100,7 @@ public class PlayerController : MonoBehaviour
         flycam.enabled = false;
         shipCamera.SetTarget(newShip.cameraPosition);
 
-        newShip.GetComponent<StateController>().currentState = null;
+        newShip.GetComponent<StateController>().ResetAI();
         newShip.Died += HandleShipDied;
 
         ship = newShip;
@@ -143,6 +144,7 @@ public class PlayerController : MonoBehaviour
         if(Input.GetKeyDown(InputManager.PauseGameKey) && canPause)
         {
             GameStateUtils.TogglePause();
+            return;
         }
 
         if(!inputAllowed || ship == null) return;
@@ -197,12 +199,12 @@ public class PlayerController : MonoBehaviour
 
         if(Input.GetKeyDown(InputManager.AfterburnerKey))
         {
-            ship.hpSys.ToggleAfterburner(true);
+            ship.ToggleAfterburner(true);
         }
         
         else if(Input.GetKeyUp(InputManager.AfterburnerKey))
         {
-            ship.hpSys.ToggleAfterburner(false);
+            ship.ToggleAfterburner(false);
         }
 
         if(Input.GetKeyDown(InputManager.ManualMouseFlightKey))
@@ -232,63 +234,59 @@ public class PlayerController : MonoBehaviour
         #region hardpoints
         if(Input.GetKey(InputManager.Hardpoint1Key))
         {
-            ship.hpSys.FireWeaponHardpoint(1, CurrentAimPosition);
+            ship.FireWeaponHardpoint(1, CurrentAimPosition);
         }
 
         if(Input.GetKey(InputManager.Hardpoint2Key))
         {
-            ship.hpSys.FireWeaponHardpoint(2, CurrentAimPosition);
+            ship.FireWeaponHardpoint(2, CurrentAimPosition);
         }
 
         if(Input.GetKey(InputManager.Hardpoint3Key))
         {
-            ship.hpSys.FireWeaponHardpoint(3, CurrentAimPosition);
+            ship.FireWeaponHardpoint(3, CurrentAimPosition);
         }
 
         if(Input.GetKey(InputManager.Hardpoint4Key))
         {
-            ship.hpSys.FireWeaponHardpoint(4, CurrentAimPosition);
+            ship.FireWeaponHardpoint(4, CurrentAimPosition);
         }
 
         if(Input.GetKey(InputManager.Hardpoint5Key))
         {
-            ship.hpSys.FireWeaponHardpoint(5, CurrentAimPosition);
+            ship.FireWeaponHardpoint(5, CurrentAimPosition);
         }
 
         if(Input.GetKey(InputManager.Hardpoint6Key))
         {
-            ship.hpSys.FireWeaponHardpoint(6, CurrentAimPosition);
+            ship.FireWeaponHardpoint(6, CurrentAimPosition);
         }
 
         if(Input.GetKey(InputManager.Hardpoint7Key))
         {
-            ship.hpSys.FireWeaponHardpoint(7, CurrentAimPosition);
+            ship.FireWeaponHardpoint(7, CurrentAimPosition);
         }
 
         if(Input.GetKey(InputManager.Hardpoint8Key))
         {
-            ship.hpSys.FireWeaponHardpoint(8, CurrentAimPosition);
+            ship.FireWeaponHardpoint(8, CurrentAimPosition);
         }
 
         if(Input.GetKey(InputManager.Hardpoint9Key))
         {
-            ship.hpSys.FireWeaponHardpoint(9, CurrentAimPosition);
+            ship.FireWeaponHardpoint(9, CurrentAimPosition);
         }
 
         if(Input.GetKey(InputManager.Hardpoint10Key))
         {
-            ship.hpSys.FireWeaponHardpoint(10, CurrentAimPosition);
+            ship.FireWeaponHardpoint(10, CurrentAimPosition);
         }
 
         if(Input.GetKey(InputManager.FireKey))
         {
-            ship.hpSys.FireActiveWeapons(CurrentAimPosition);
+            ship.FireActiveWeapons(CurrentAimPosition);
         }
 
-        if (Input.GetKeyDown(InputManager.LootAllKey))
-        {
-            ship.hpSys.tractorBeam.TractorAllLoot();
-        }
         #endregion
     }
 
@@ -316,7 +314,6 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    // Maybe make those ship cam changes events
     public void ToggleMouseFlight()
     {
         switch(MouseState)
@@ -395,7 +392,9 @@ public class PlayerController : MonoBehaviour
 
     private AimPosition GetCurrentAimPosition()
     {
-        if (Time.timeSinceLevelLoad < 1.5) return null;
+        // Work around for CustomStandaloneInput being null in the first couple seconds after the scene load
+        if (Time.timeSinceLevelLoad < 1) 
+            return AimPosition.FromMouse(cam, false, mouseRaycastDistance);
 
         var sim = (CustomStandaloneInputModule) EventSystem.current.currentInputModule;
         var go = sim.GetPointerData().pointerCurrentRaycast.gameObject;

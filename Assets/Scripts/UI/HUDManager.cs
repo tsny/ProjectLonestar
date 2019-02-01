@@ -5,18 +5,20 @@ using System.Collections.Generic;
 using UnityEngine.Audio;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
+using TMPro;
 
 public class HUDManager : MonoBehaviour
 {
-    //public PlayerController pc;
-
     public GameObject pausePanel;
     public GameObject weaponsPanel;
     public GameObject settingsPanel;
     public GameObject backgroundPanel;
+    public TextMeshProUGUI objectiveText;
 
     public GameObject notificationSpawn;
     public Notification notificationPF;
+    public AudioClip pickupClip;
+    public AudioSource audioSource;
 
     public KeyCode weaponWheelKey;
     public KeyCode settingsKey;
@@ -75,6 +77,7 @@ public class HUDManager : MonoBehaviour
     private void HandleDropLooted(Loot loot)
     {
         SpawnNotification("Looted " + loot.item.name);
+        audioSource.PlayOneShot(pickupClip);
     }
 
     private void Start()
@@ -122,14 +125,10 @@ public class HUDManager : MonoBehaviour
             SetCruiseText(playerController.ship.cruiseEngine.State);
 
             if (blinkIndicator != null)
-            {
                 blinkIndicator.cd = playerController.ship.engine.blinkCD;
-            }
 
             if (sidestepIndicator != null)
-            {
                 sidestepIndicator.cd = playerController.ship.engine.sidestepCD;
-            }
         }
     }
 

@@ -4,7 +4,7 @@ using UnityEngine;
 public class Cooldown : ScriptableObject
 {
     public bool logElapsed = false;
-    public bool isDecrementing = false;
+    public bool IsDecrementing { get { return cr != null; } }
     public float duration = 2;
     public float elapsed = 0;
 
@@ -13,25 +13,31 @@ public class Cooldown : ScriptableObject
 
     public void Begin(MonoBehaviour caller)
     {
+        if (IsDecrementing)
+        {
+            elapsed = 0;
+            return;
+        } 
+
         owner = caller;
-        caller.StartCoroutine(CooldownCR());
+        cr = CooldownCR();
+        caller.StartCoroutine(cr);
     }
 
     public void Stop()
     {
+        if (!IsDecrementing) return;
         owner.StopCoroutine(cr);
         cr = null;
-        isDecrementing = false;
     }
 
     private IEnumerator CooldownCR()
     {
         elapsed = 0;
-        isDecrementing = true;
 
         while (elapsed < duration)
         {
-            if (isDecrementing)
+            if (IsDecrementing)
             {
                 elapsed += Time.deltaTime;
                 if (logElapsed) Debug.Log(elapsed);
@@ -42,6 +48,5 @@ public class Cooldown : ScriptableObject
 
         elapsed = 0;
         cr = null;
-        isDecrementing = false;
     }
 }

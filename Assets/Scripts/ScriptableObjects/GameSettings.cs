@@ -7,14 +7,12 @@ using UnityEngine.UI;
 [CreateAssetMenu(menuName = "Settings/GameSettings")]
 public class GameSettings : SingletonScriptableObject<GameSettings>
 {
-    public Ship shipPrefab;
+    [Header("Default Prefabs")]
+    public Ship defaultShip;
     public HUDManager HUDPrefab;
     public FLTerminal terminalPrefab;
     public PlayerController pcPrefab;
     public Canvas nebulaCanvasPrefab;
-
-    public ShipBase defaultShipBase;
-
     public Loot lootPrefab;
 
     public Loadout defaultLoadout;
@@ -86,7 +84,7 @@ public class GameSettings : SingletonScriptableObject<GameSettings>
         pc.listener.enabled = true;
         //
 
-        var playerShip = ShipSpawner.SpawnShip(shipPrefab, Vector3.zero);
+        var playerShip = ShipSpawner.SpawnShip(defaultShip, Vector3.zero);
         pc.Possess(playerShip);
 
         var hud = FindObjectOfType<HUDManager>();

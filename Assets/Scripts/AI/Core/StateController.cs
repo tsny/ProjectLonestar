@@ -60,8 +60,8 @@ public class StateController : MonoBehaviour
     public float gotoDistanceThreshold = 100;
     public float combatDistanceThreshold = 20;
     public float weaponsRange = 500;
-
     public float timeInCurrentState;
+    public int timesFired;
 
     private void Awake()
     {
@@ -69,18 +69,31 @@ public class StateController : MonoBehaviour
         aiIsActive = true;
     }
 
+    public void ResetAI()
+    {
+        currentState = null;
+        Target = null;
+        aiIsActive = false;
+        enabled = false;
+        pastStates.Clear();
+        ResetStateData();
+    }
+
+    private void ResetStateData()
+    {
+        timeInCurrentState = 0;
+        timesFired = 0;
+    }
+
     private void Update()
     {
-        if (!aiIsActive) return;
-
-        if (currentState == null)
-        {
-            aiIsActive = false;
-            return;
-        }
+        if (!aiIsActive || currentState == null) return;
 
         currentState.UpdateState(this);
         timeInCurrentState += Time.deltaTime;
+
+        var playerTooFar = Vector3.Distance(GameSettings.pc.transform.position, transform.position) > maxPlayerDistance;
+        if (!importantToPlayer && playerTooFar) Destroy(gameObject);
     }
 
     private void OnDrawGizmos()
@@ -98,7 +111,7 @@ public class StateController : MonoBehaviour
         {
             pastStates.Enqueue(currentState);
             currentState = nextState;
-            timeInCurrentState = 0;
+            ResetStateData();
         }
 
         else if (nextState == null)
@@ -118,7 +131,7 @@ public class StateController : MonoBehaviour
                 currentState = stopState;
             }
 
-            timeInCurrentState = 0;
+            ResetStateData();
         }
     }
 }

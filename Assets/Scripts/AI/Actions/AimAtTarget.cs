@@ -6,10 +6,10 @@ public class AimAtTarget : FLAction
 {
     public override void Init() {}
 
-    public override void Act(StateController controller)
+    public override void Act(StateController cont)
     {
-        if (!controller.HasTarget) return;
+        if (!cont.HasTarget) return;
 
-        controller.ship.aimPosition = controller.TargetTransform.position;
+        cont.ship.aimPosition = cont.TargetTransform.position;
     }
 }

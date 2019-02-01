@@ -5,19 +5,19 @@ using UnityEngine;
 [CustomEditor(typeof(StateController))]
 public class StateControllerEditor : Editor
 {
+    StateController cont;
+
     public override void OnInspectorGUI()
     {
         base.OnInspectorGUI();
-
-        var cont = target as StateController;
-
-        if (cont.HasTarget)
-        {
-            EditorGUILayout.LabelField("Distance To Target: " + cont.DistanceToTarget);
-        }
-
+        cont = target as StateController;
+        if (cont.HasTarget) EditorGUILayout.LabelField("Distance To Target: " + cont.DistanceToTarget);
         GUILayout.Space(10);
+        ShowButtons();
+    }
 
+    private void ShowButtons()
+    {
         if (Btn("Target Random Object"))
         {
             var targets = FindObjectsOfType<MeshRenderer>();
@@ -31,25 +31,18 @@ public class StateControllerEditor : Editor
         }
 
         if (Btn("Target Player Ship"))
-        {
             cont.Target = GameSettings.pc.ship.gameObject;
-        }
 
         if (Btn("Clear Target"))
-        {
             cont.Target = null;
-        }
 
-        if (Btn("Clear Current State"))
-        {
-            cont.pastStates.Clear();
-            cont.currentState = null;
-        }
+        if (Btn("Reset AI"))
+            cont.ResetAI();
+
+        // Play-mode buttons
 
         if (Application.isPlaying && Btn("Toggle AI"))
-        {
             cont.aiIsActive = !cont.aiIsActive;
-        }
 
         if (Application.isPlaying && Btn("Full Stop"))
         {
@@ -58,14 +51,9 @@ public class StateControllerEditor : Editor
         }
     }
 
-    private void PlayingButtons()
+    private void OnSceneGUI() 
     {
-        if (!Application.isPlaying) return;
-    }
-
-    private void NonPlayingButtons()
-    {
-        if (Application.isPlaying) return;
+        if (cont.HasTarget) Debug.DrawLine(cont.transform.position, cont.TargetTransform.position, Color.cyan);
     }
 
     private bool Btn(String str)

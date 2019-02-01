@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -44,36 +45,45 @@ public static class Utilities
     /// </summary>
     public static Vector3 RandomPointInBounds(Bounds bounds)
     {
-        var x = Random.Range(-bounds.extents.x, bounds.extents.x);
-        var y = Random.Range(-bounds.extents.y, bounds.extents.y);
-        var z = Random.Range(-bounds.extents.z, bounds.extents.z);
+        var x = UnityEngine.Random.Range(-bounds.extents.x, bounds.extents.x);
+        var y = UnityEngine.Random.Range(-bounds.extents.y, bounds.extents.y);
+        var z = UnityEngine.Random.Range(-bounds.extents.z, bounds.extents.z);
 
         return new Vector3(x, y, z);
     } 
 
     // TODO: Replace projectile ref with float for speed
     //public static Vector3 CalculateAimPosition(Vector3 spawnPoint, Rigidbody target, Float speed)
-    public static Vector3 CalculateAimPosition(Vector3 spawnPoint, Rigidbody target, Projectile proj)
+    public static Vector3 CalculateAimPosition(Vector3 spawnPoint, Rigidbody target, float speed)
     {
         Vector3 aim = Vector3.zero;
         var dist = Vector3.Distance(target.transform.position, spawnPoint);
-        var test = dist / proj.stats.thrust;
+        var test = dist / speed;
         //var anotherTest = Time.fixedDeltaTime * test;
         aim = target.transform.position + (target.velocity * test);
         return aim;
     }
 
-     public static bool Chance(float percent, bool logResult = false)
-     {
+    /// <summary>
+    /// Returns a bool representing a x in 100 chance
+    /// </summary>
+    public static bool Chance(float percent, bool logResultToConsole = false)
+    {
         percent = Mathf.Clamp(percent, 1, 100);
-        var roll = Random.Range(1, 100);
+        var roll = UnityEngine.Random.Range(1, 100);
         var result = percent >= roll;
 
-        if (logResult)
+        if (logResultToConsole)
         {
             Debug.Log(result + ", Chance: " + percent + ", Roll: " + roll + ", Out of: 100");
         }
 
         return result;
-     }
+    }
+
+    public static T RandomEnumValue<T> ()
+    {
+        var v = Enum.GetValues (typeof (T));
+        return (T) v.GetValue (new System.Random().Next(v.Length));
+    }
 }

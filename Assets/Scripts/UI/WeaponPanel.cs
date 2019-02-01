@@ -5,7 +5,6 @@ using System.Collections.Generic;
 
 public class WeaponPanel : ShipUIElement
 {
-    public HardpointSystem hardpointSystem;
     public VerticalLayoutGroup vlg;
     public GameObject weaponPanelButton;
 
@@ -26,12 +25,12 @@ public class WeaponPanel : ShipUIElement
 
     private void PopulatePanel()
     {
-        foreach (Gun gun in hardpointSystem.guns)
-        {
-            if (gun.projectile == null) continue;
+        // foreach (Gun gun in hardpointSystem.Guns)
+        // {
+        //     if (gun.projectile == null) continue;
 
-            Instantiate(weaponPanelButton, vlg.transform).GetComponent<GunPanelButton>().Initialize(gun);
-        }
+        //     Instantiate(weaponPanelButton, vlg.transform).GetComponent<GunPanelButton>().Initialize(gun);
+        // }
     }
 
     private void ClearPanel()

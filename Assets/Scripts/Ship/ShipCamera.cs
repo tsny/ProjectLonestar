@@ -66,29 +66,6 @@ public class ShipCamera : ShipComponent
         FollowTarget();
     }
 
-    [Obsolete]
-    public static AimPosition GetMousePositionInWorld(Camera camera = null, bool drawRay = false, float castDistance = 10000)
-    {
-        // TODO: Don't use camera.main at all?
-        if (camera == null)
-        {
-            camera = Camera.main;
-            Debug.LogWarning("Using Camera.main in ShipCamera!");
-        }
-
-        Ray ray = camera.ScreenPointToRay(Input.mousePosition);
-        RaycastHit hit;
-        if (drawRay) Debug.DrawRay(ray.origin, ray.direction * castDistance);
-
-        //Physics.Raycast(ray, out hitInfo, aimRaycastDistance, ~LayerMask.GetMask("Player"));
-        // TODO: Change that layer to "Targetable"?
-        Physics.Raycast(ray, out hit, castDistance, 1 << LayerMask.NameToLayer("Default"));
-
-        var pos = (hit.collider != null) ? hit.point : ray.GetPoint(castDistance);
-
-        return new AimPosition(pos, hit);
-    }
-
     private void CalculateOffsets()
     {
         var mouseCoords = GameStateUtils.GetMousePositionOnScreen();

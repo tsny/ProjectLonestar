@@ -13,49 +13,41 @@ public class FireActiveAction : FLAction
     public int timesToFire = 10;
     public Vector3 missOffset = Vector3.one;
 
-    private int timesFired;
-
     public override void Init() {}
 
-    public override void Act(StateController controller)
+    public override void Act(StateController cont)
     {
-        FireActive(controller);
-    }
+        if (!cont.HasTarget) return;
+        if (cont.DistanceToTarget > cont.weaponsRange) return;
 
-    private void FireActive(StateController controller)
-    {
-        if (!controller.HasTarget) return;
-        if (controller.DistanceToTarget > controller.weaponsRange) return;
-
-        Vector3 target = controller.ship.aimPosition;
+        Vector3 target = cont.ship.aimPosition;
         target += CalculateAimOffset();
 
-        var rb = controller.TargetShip.rb;
+        var rb = cont.TargetShip.rb;
+        var fired = false;
 
-        if (rb == null)
-            controller.ship.hpSys.FireActiveWeapons(new AimPosition(target));
+        if (rb == null || Utilities.Chance(50)) 
+            fired = cont.ship.FireActiveWeapons(new AimPosition(target));
+        else 
+            fired = cont.ship.FireActiveWeapons(new AimPosition(rb));
 
-        else
-            controller.ship.hpSys.FireActiveWeapons(new AimPosition(rb));
-
-        //Fire needs to return bool
-        //timesFired++;
+        if (fired) cont.timesFired++;
     }
 
     private Vector3 CalculateAimOffset()
     {
-        var offsetModifier = Random.Range(1,2);
+        var offsetModifier = Random.Range(0,5);
 
         if (useRange)
         {
             var chance = Random.Range(lowerRangeMissChance, upperRangeMissChance);
 
-            if (Random.Range(1, 100) <= chance)
+            if (Utilities.Chance(chance))
                 return missOffset * offsetModifier;
         }
         else
         {
-            if (Random.Range(1,100) <= missChance)
+            if (Utilities.Chance(missChance))
                 return missOffset * offsetModifier;
         }
 

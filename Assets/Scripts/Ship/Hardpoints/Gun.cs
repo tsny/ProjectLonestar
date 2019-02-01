@@ -122,7 +122,7 @@ public class Gun : Hardpoint
     {
         rbTarget = rbt;
         if (rbTarget == null) return false;
-        var pos = Utilities.CalculateAimPosition(SpawnPoint, rbt, projectile);
+        var pos = Utilities.CalculateAimPosition(SpawnPoint, rbt, stats.thrust);
         return Fire(pos, colliders);
     }
 }

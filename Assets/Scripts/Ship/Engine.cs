@@ -9,24 +9,12 @@ public class Engine : ShipComponent
     public new Transform transform;
 
     [Header("Model")]
-    public float shipModelZModifier = 1;
-    private Transform _shipBaseTransform;
-    public Transform ShipBaseTransform
-    {
-        get
-        {
-            return _shipBaseTransform;
-        }
-        set
-        {
-            if (!value) return;
-            _shipBaseTransform = value;
-            shipModelOrigRot = value.localRotation;
-        }
-    }
+    public Vector3 modelTurnOffset;
+    public float visualYawModifier = 1;
     public float lerpModifier = .1f;
-    public ConstantForce cf;
-    private Quaternion shipModelOrigRot;
+
+    public Transform meshTransform;
+    private Quaternion meshOriginalRot;
 
     public float Speed
     {
@@ -39,6 +27,7 @@ public class Engine : ShipComponent
 
     [Header("Stats")]
     public EngineStats engineStats;
+    public ShipPhysicsStats physicsStats;
 
     public Cooldown sidestepCD;
     public Cooldown blinkCD;
@@ -128,7 +117,6 @@ public class Engine : ShipComponent
     private float _pitch;
     public float Pitch { get { return _pitch; } }
 
-
     public delegate void ThrottleChangedEventHandler(Engine sender, ThrottleChangeEventArgs e);
     public event ThrottleChangedEventHandler ThrottleChanged;
 
@@ -138,49 +126,42 @@ public class Engine : ShipComponent
     public event EventHandler DriftingChange;
     public delegate void EventHandler(bool drifting);
 
-    public override void Initialize(Ship sender)
+    private void Awake() 
     {
-        base.Initialize(sender);
-
-        ShipBaseTransform = sender.ShipBase.transform;
+        meshOriginalRot = meshTransform.rotation;     
+        engineStats = Utilities.CheckScriptableObject<EngineStats>(engineStats);
+        blinkCD = Utilities.CheckScriptableObject<Cooldown>(blinkCD);
+        sidestepCD = Utilities.CheckScriptableObject<Cooldown>(sidestepCD);
     }
 
     public void SidestepRight()
     {
-        if (sidestepCR != null || sidestepCD.isDecrementing) return;
-
+        if (sidestepCR != null || sidestepCD.IsDecrementing) return;
         sidestepCR = SidestepRoutine(new Vector3(sidestepForce, 0, 0), ForceMode.Force);
         StartCoroutine(sidestepCR);
     }
 
     public void SidestepLeft()
     {
-        if (sidestepCR != null || sidestepCD.isDecrementing) return;
-
+        if (sidestepCR != null || sidestepCD.IsDecrementing) return;
         sidestepCR = SidestepRoutine(new Vector3(-sidestepForce, 0, 0), ForceMode.Force);
         StartCoroutine(sidestepCR);
     }
 
     public void Blink(bool forwards = true)
     {
-        if (blinkCR != null || blinkCD.isDecrementing) return;
+        if (blinkCR != null || blinkCD.IsDecrementing) return;
         blinkCR = BlinkCoroutine(.1f, forwards);
         StartCoroutine(blinkCR);
     }
 
     private IEnumerator BlinkCoroutine(float dur = .1f, bool forwards = true)
     {
-        if (blinkCD.isDecrementing) yield break;
+        if (blinkCD.IsDecrementing) yield break;
 
-        //ship.ShipBase.shipMesh.enabled = false;
-        ship.ShipBase.gameObject.SetActive(false);
-        // Make mesh invisible and disable colliders
-
+        meshTransform.gameObject.SetActive(false);
         yield return new WaitForSeconds(dur);
-
-        // reenable mesh/colliders
-        //ship.ShipBase.shipMesh.enabled = true;
-        ship.ShipBase.gameObject.SetActive(true);
+        meshTransform.gameObject.SetActive(true);
 
         var forwardsInt = forwards ? 1 : 0;
         transform.position = transform.position + transform.forward * (blinkDistance * forwardsInt);
@@ -190,7 +171,7 @@ public class Engine : ShipComponent
 
     public void BlinkBackwards()
     {
-        if (blinkCD.isDecrementing) return;
+        if (blinkCD.IsDecrementing) return;
 
         transform.position = transform.position + transform.forward * (-blinkDistance);
         blinkCD.Begin(this);
@@ -201,8 +182,8 @@ public class Engine : ShipComponent
         float elapsed = 0;
         
         // something like this
-        if (ShipBaseTransform)
-            ShipBaseTransform.Rotate(0, 0, sidestepDur / 360, Space.Self);
+        if (meshTransform)
+            meshTransform.Rotate(0, 0, sidestepDur / 360, Space.Self);
 
         while (elapsed < sidestepDur)
         {
@@ -222,13 +203,6 @@ public class Engine : ShipComponent
 
         sidestepCR = SidestepRoutine(new Vector3(sidestepForce * thrustBool, 0, 0), ForceMode.Force);
         StartCoroutine(sidestepCR);
-    }
-
-    private void Awake()
-    {
-        engineStats = Utilities.CheckScriptableObject<EngineStats>(engineStats);
-        blinkCD = Utilities.CheckScriptableObject<Cooldown>(blinkCD);
-        sidestepCD = Utilities.CheckScriptableObject<Cooldown>(sidestepCD);
     }
 
     private void OnDriftingChange(bool isDrifting)
@@ -256,21 +230,21 @@ public class Engine : ShipComponent
     {
         Vector3 forces = Vector3.zero;
 
-        if (Drifting && aft != null && aft.IsBurning)
+        if (Drifting && aft != null && aft.Burning)
         {
-            ShipPhysicsStats.ClampShipVelocity(rb, ship.physicsStats, CruiseState.Off);
-            ShipPhysicsStats.HandleDrifting(rb, ship.physicsStats, false);
+            ShipPhysicsStats.ClampShipVelocity(rb, physicsStats, CruiseState.Off);
+            ShipPhysicsStats.HandleDrifting(rb, physicsStats, false);
             forces = CalcAfterburnerForces();
         }
 
         else if (Drifting)
         {
-            ShipPhysicsStats.HandleDrifting(rb, ship.physicsStats, true);
+            ShipPhysicsStats.HandleDrifting(rb, physicsStats, true);
         }
 
         else if (!Drifting)
         {
-            ShipPhysicsStats.HandleDrifting(rb, ship.physicsStats, false);
+            ShipPhysicsStats.HandleDrifting(rb, physicsStats, false);
             forces = CalcStrafeForces() + CalcThrottleForces() + CalcAfterburnerForces();
         } 
 
@@ -296,7 +270,7 @@ public class Engine : ShipComponent
 
     private Vector3 CalcAfterburnerForces()
     {
-        if (!aft || !aft.IsBurning) return Vector3.zero;
+        if (!aft || !aft.Burning) return Vector3.zero;
 
         return rb.transform.forward * aft.stats.thrust;
     }
@@ -325,10 +299,10 @@ public class Engine : ShipComponent
         neutralRotation = Quaternion.Lerp(transform.rotation, neutralRotation, Time.deltaTime);
         transform.rotation = neutralRotation;
 
-        if (ShipBaseTransform != null)
+        if (meshTransform != null)
         {
-            neutralRotation = Quaternion.Lerp(ShipBaseTransform.localRotation, shipModelOrigRot, lerpModifier);
-            ShipBaseTransform.localRotation = neutralRotation;
+            neutralRotation = Quaternion.Lerp(meshTransform.localRotation, meshOriginalRot, lerpModifier);
+            meshTransform.localRotation = neutralRotation;
         }
     }
 
@@ -356,15 +330,15 @@ public class Engine : ShipComponent
 
     private void VisualYawRotation(float amount)
     {
-        if (ShipBaseTransform == null) 
+        if (meshTransform == null) 
         {
             Debug.LogWarning(gameObject + " has no ship model in the inspector");
             return;
         }
 
         // Rotate the model slightly based on yawOffset
-        Vector3 turnRotation = shipModelOrigRot.eulerAngles + new Vector3(0, 0, -amount * shipModelZModifier);
-        ShipBaseTransform.localRotation = Quaternion.Euler(turnRotation);
+        modelTurnOffset = meshOriginalRot.eulerAngles + new Vector3(0, 0, -amount * visualYawModifier);
+        meshTransform.localRotation = Quaternion.Euler(modelTurnOffset);
     }
 }
 

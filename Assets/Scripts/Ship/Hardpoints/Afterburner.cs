@@ -4,114 +4,63 @@ using UnityEngine;
 
 public class Afterburner : Hardpoint
 {
-    public Rigidbody rb;
     public AfterburnerStats stats;
     public float charge;
-
-    public bool IsBurning { get { return burnCoroutine != null; } }
-
-    private IEnumerator rechargeCoroutine;
-    private IEnumerator burnCoroutine;
-    private IEnumerator cooldownCoroutine;
+    public bool Burning {get; private set;}
+    public bool ignoreDrain;
+    public Cooldown outOfEnergyCooldown;
+    public ParticleSystem ps;
+    public new AudioSource audio;
 
     public event ToggledEventHandler Toggled;
     public delegate void ToggledEventHandler(bool toggle);
 
-    private void Awake()
-    {
-        stats = Utilities.CheckScriptableObject<AfterburnerStats>(stats);
-        if (rb == null) rb = GetComponentInChildren<Rigidbody>();
-        charge = stats.capacity;
-    }
-
     private void OnActivated() { if (Toggled != null) Toggled(true); }
     private void OnDeactivated() { if (Toggled != null) Toggled(false); }
 
-    public override void Initialize(Ship sender)
+    private void Awake()
     {
-        base.Initialize(sender);
-        rb = sender.rb;
+        outOfEnergyCooldown = Utilities.CheckScriptableObject<Cooldown>(outOfEnergyCooldown);
         stats = Utilities.CheckScriptableObject<AfterburnerStats>(stats);
+        charge = stats.capacity;
     }
 
     public void Activate()
     {
-        if (rb == null || IsBurning) return;
-
-        burnCoroutine = Burn();
-        StartCoroutine(burnCoroutine);
-
-        OnActivated();
+        if (Burning || outOfEnergyCooldown.IsDecrementing) return;
+        else
+        {
+            Burning = true;
+            ps.Play();
+            audio.Play();
+        }
     }
 
     public void Deactivate()
     {
-        if (!IsBurning) return;
-
-        if (burnCoroutine != null) StopCoroutine(burnCoroutine);
-
-        burnCoroutine = null;
-
-        BeginRecharge();
-        OnDeactivated();
-    }
-
-    public void BeginRecharge()
-    {
-        rechargeCoroutine = Recharge();
-        StartCoroutine(rechargeCoroutine);
-    }
-
-    public void EndRecharge()
-    {
-        if (rechargeCoroutine != null)
-            StopCoroutine(rechargeCoroutine);
-
-        rechargeCoroutine = null;
-    }
-
-    public void BeginCooldown()
-    {
-        cooldownCoroutine = Cooldown();
-        StartCoroutine(cooldownCoroutine);
-    }
-
-    private IEnumerator Recharge()
-    {
-        for(; ;)
+        if (!Burning) return;
+        else
         {
-            charge = Mathf.MoveTowards(charge, 100, stats.regenRate * Time.deltaTime);
-
-            if (charge >= 100) break;
-
-            yield return null;
+            Burning = false;
+            ps.Stop();
+            audio.Stop();
         }
-
-        rechargeCoroutine = null;
     }
 
-    private IEnumerator Burn()
+    void FixedUpdate()
     {
-        EndRecharge();
-
-        for(; ;)
+        if (Burning && !ignoreDrain)
         {
-            charge = Mathf.MoveTowards(charge, 0, stats.drainRate * Time.deltaTime);
-            if (charge <= 0) break;
-
-            //rb.AddForce(rb.transform.forward * afterburner.thrust);
-            yield return new WaitForFixedUpdate();
+            charge -= stats.drainRate;
+            if (charge <= 0)
+            {
+                outOfEnergyCooldown.Begin(this);
+                Deactivate();
+            }
         }
-
-        burnCoroutine = null;
-
-        BeginCooldown();
-    }
-
-    private IEnumerator Cooldown()
-    {
-        yield return new WaitForSeconds(stats.cooldownDuration);
-        cooldownCoroutine = null;
-        BeginRecharge();
+        else if (!outOfEnergyCooldown.IsDecrementing)
+        {
+            charge = Mathf.MoveTowards(charge, 100, stats.regenRate);
+        }
     }
 }

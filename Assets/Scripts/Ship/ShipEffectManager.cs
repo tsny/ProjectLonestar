@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ShipEffectManager : ShipComponent
+public class ShipEffectManager : MonoBehaviour
 {
+    public Ship ship;
     public ParticleSystem[] engineEffects;
     public TrailRenderer[] trailEffects;
     public ParticleSystem chargeCruiseEffect;
@@ -11,15 +12,13 @@ public class ShipEffectManager : ShipComponent
     public ParticleSystem dustEffect;
 
     public float currentScale = 1;
-    private Vector3 originalScale;
+    private Vector3 originalScale = Vector3.one;
 
-    public override void Initialize(Ship sender)
+    private void Awake() 
     {
-        base.Initialize(sender);
-
-        sender.cruiseEngine.CruiseStateChanged += HandleCruiseChanged;
-        sender.Possession += HandleOwnerPossession;
-        sender.engine.DriftingChange += HandleDrifting;
+        ship.cruiseEngine.CruiseStateChanged += HandleCruiseChanged;
+        ship.Possession += HandleOwnerPossession;
+        ship.engine.DriftingChange += HandleDrifting;
     }
 
     private void FixedUpdate()

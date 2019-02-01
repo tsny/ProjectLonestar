@@ -68,8 +68,7 @@ public class TargetIndicator : MonoBehaviour
     public float beginFadeRange = 250;
     public CanvasGroup canvasGroup;
 
-    private bool wasOnScreenLastFrame;
-    private Vector3 originalScale;
+    private Vector3 originalScale = Vector3.one;
 
     public TargetReticle reticle;
     public Animator animator;
@@ -120,7 +119,8 @@ public class TargetIndicator : MonoBehaviour
             return;
         }
 
-        if (!ShouldContinueUpdate()) return;
+        content.SetActive( (TargetIsOnScreen && target.targetable) );
+        if (!content.activeSelf) return;
 
         RangeCheck();
 
@@ -128,7 +128,6 @@ public class TargetIndicator : MonoBehaviour
         CalculateScale();
         CalculateTransparency();
 
-        //if (Ship == null) return;
         if (target.health == null) return;
 
         var health = target.health;
@@ -142,39 +141,12 @@ public class TargetIndicator : MonoBehaviour
 
         if (target.showHealthOnSelect) ToggleHealthBars(true);
         ShowName(true);
+        reticle.gameObject.SetActive(true);
         buttonImage.raycastTarget = false;
         animator.SetTrigger("Select");
 
         selected = true;
         if (Selected != null) Selected(this);
-    }
-
-    private bool ShouldContinueUpdate()
-    {
-        if (!target.targetable && content.activeSelf)
-        {
-            content.SetActive(false);
-            return false;
-        }
-
-        // Only reactivate children if the target was not onscreen
-        // in the last frame and is now.
-        if (TargetIsOnScreen && !wasOnScreenLastFrame)
-        {
-            content.SetActive(true);
-            return true;
-        }
-
-        // If the target is now offscreen but was on screen in the
-        // last frame, then deactivate children
-        if (!TargetIsOnScreen && wasOnScreenLastFrame)
-        {
-            content.SetActive(false);
-            wasOnScreenLastFrame = false;
-            return false;
-        }
-
-        return true;
     }
 
     public virtual void Deselect()
@@ -185,6 +157,7 @@ public class TargetIndicator : MonoBehaviour
 
         ToggleHealthBars(false);
         ShowName(false);
+        reticle.gameObject.SetActive(false);
         buttonImage.raycastTarget = true;
         animator.SetTrigger("Select");
 
@@ -196,7 +169,6 @@ public class TargetIndicator : MonoBehaviour
         Vector3 newPosition = TargetViewportPoint;
         newPosition.z = 0;
         transform.position = newPosition;
-        wasOnScreenLastFrame = true;
     }
 
     private void CalculateScale()

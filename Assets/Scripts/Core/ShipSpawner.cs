@@ -75,14 +75,13 @@ public class ShipSpawner : MonoBehaviour
 
     public static Ship SpawnShip(ShipSpawnInfo spawnInfo, Vector3 pos)
     {
-        if (spawnInfo.shipBase == null)
+        if (spawnInfo.ship == null)
         {
             Debug.LogWarning("Spawning ship w/o selecting base, spawning default ship...");
-            spawnInfo.shipBase = GameSettings.Instance.defaultShipBase;
+            spawnInfo.ship = GameSettings.Instance.defaultShip;
         }
 
-        var ship = Instantiate(GameSettings.Instance.shipPrefab, pos, Quaternion.identity);
-        ship.Init(spawnInfo.shipBase);
+        var ship = Instantiate(GameSettings.Instance.defaultShip, pos, Quaternion.identity);
 
         if (spawnInfo.loadout != null)
         {
@@ -90,7 +89,7 @@ public class ShipSpawner : MonoBehaviour
             {
                 // 1st pass: give each gun a projectile?
                 // find a gun    
-                ship.hpSys.guns.ForEach(x => x.projectile = proj);
+                //ship.hpSys.guns.ForEach(x => x.projectile = proj);
                 print("this worked?");
             }
         }
@@ -101,7 +100,7 @@ public class ShipSpawner : MonoBehaviour
     public static Ship SpawnShip(Ship ship, Vector3 spawn)
     {
         var spawnInfo = new ShipSpawnInfo();
-        spawnInfo.shipBase = GameSettings.Instance.defaultShipBase;
+        spawnInfo.ship = GameSettings.Instance.defaultShip;
         return SpawnShip(spawnInfo, spawn);
     }
 
@@ -123,7 +122,7 @@ public class ShipSpawnInfo
     public Vector3 spawnOffset = Vector3.one;
     public State state;
     public Loadout loadout;
-    public ShipBase shipBase;
+    public Ship ship;
     public DropList dl;
     public LootSpawnInfo[] lootInfo;
     // Relations to other ships??

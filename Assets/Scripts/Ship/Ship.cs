@@ -7,23 +7,74 @@ public class Ship : MonoBehaviour
 {
     [Header("Stats")]
     public PilotDetails pilotDetails;
-    public EngineStats engineStats;
     public ShipDetails shipDetails;
-    public ShipPhysicsStats physicsStats;
 
     // TODO: Make some of these into properties
     [Header("Ship Components")]
     public Health health;
-    public HardpointSystem hpSys;
     public Vector3 aimPosition;
+    public GameObject hardpointParent;
+    public List<Gun> guns;
     public Engine engine;
     public CruiseEngine cruiseEngine;
+    public Afterburner aft;
     public Rigidbody rb;
     public List<Collider> colliders;
     public TargetingInfo targetInfo;
 
-    private ShipBase _shipBase;
-    public ShipBase ShipBase { get { return _shipBase; } }
+    public bool CanFireWeapons
+    {
+        get
+        {
+            if (cruiseEngine == null) return true;
+
+            switch (cruiseEngine.State)
+            {
+                case CruiseState.Off:
+                case CruiseState.Disrupted:
+                    return true;
+
+                case CruiseState.Charging:
+                case CruiseState.On:
+                    return false;
+
+                default:
+                    return false;
+            }
+        }
+    }
+
+    private float avgWepRange;
+    public float AverageWeaponRange
+    {
+        get
+        {
+            if (avgWepRange != 0)
+            {
+                float totalRange = 0;
+                foreach (var gun in guns) totalRange += gun.stats.range;
+                avgWepRange = totalRange / guns.Count;
+            } 
+            
+            return avgWepRange;
+        }
+    }
+
+    public bool CanAfterburn
+    {
+        get
+        {
+            var state = cruiseEngine.State;
+            return (state == CruiseState.Off);
+        }
+    }
+
+    [Header("Energy")]
+
+    public Cooldown energyCooldown;
+    public float energy = 100;
+    public float energyCapacity = 100;
+    public float chargeRate = .2f;
 
     public ParticleSystem deathFX;
 
@@ -32,38 +83,30 @@ public class Ship : MonoBehaviour
     public bool Possessed { get { return _possessed; } }
     public Transform cameraPosition;
     public Transform firstPersonCameraPosition;
+    public float shipCollisionForce = 10;
+    public float collisionExplosionRadius = 10;
 
     public delegate void PossessionEventHandler(PlayerController pc, Ship sender, bool possessed);
     public delegate void ShipEventHandler(Ship sender);
+    public delegate void WeaponFiredEventHandler(Gun gunFired);
 
     public static event ShipEventHandler Spawned;
+    public event WeaponFiredEventHandler WeaponFired;
     public event ShipEventHandler Died;
-
     public event PossessionEventHandler Possession;
 
     protected void OnPossession(PlayerController pc, bool possessed) { if (Possession != null) Possession(pc, this, possessed); }
 
-    public void Init(ShipBase shipBase)
-    {
-        if (_shipBase) DestroyImmediate(_shipBase.gameObject);
-
-        _shipBase = Instantiate(shipBase, transform);
-        _shipBase.transform.localPosition = Vector3.zero;
-
-        GetComponentsInChildren<Collider>(true, colliders);
-        foreach (Collider coll in colliders)
-        {
-            var newLayer = _possessed ? LayerMask.NameToLayer("Player") : LayerMask.NameToLayer("Default");
-            coll.gameObject.layer = newLayer;
-            coll.tag = _possessed ? "Player" : "Untagged";
-        }
-    }
-
     void Awake()
     {
+        energyCooldown = Utilities.CheckScriptableObject<Cooldown>(energyCooldown);
+
         targetInfo = Utilities.CheckComponent<TargetingInfo>(gameObject);
         var header = shipDetails.shipName + " - PILOTNAMEHERE";
         targetInfo.Init(header, health);
+
+        hardpointParent.GetComponentsInChildren<Gun>(guns);
+        GetComponentsInChildren<Collider>(colliders);
     }
 
     void Start()
@@ -73,14 +116,21 @@ public class Ship : MonoBehaviour
         cruiseEngine.CruiseStateChanged += HandleCruiseChange;
         health.HealthDepleted += HandleHealthDepleted;
 
-        if (ShipBase == null) Init(GameSettings.Instance.defaultShipBase);
-
-        var components = GetComponentsInChildren<ShipComponent>();
-        components.ToList().ForEach(x => x.Initialize(this));
-
-        name = ShipBase.name;
+        SetLayersAndTags(_possessed);
 
         if (Spawned != null) Spawned(this);
+    }
+
+    void Update()
+    {
+        if (!energyCooldown.IsDecrementing)
+        {
+            if (energy < energyCapacity)
+            {
+                energy += chargeRate;
+                energy = Mathf.Clamp(energy, 0, energyCapacity);
+            }
+        }
     }
 
     private void HandleCruiseChange(CruiseEngine sender, CruiseState newState)
@@ -93,20 +143,16 @@ public class Ship : MonoBehaviour
 
     private void HandleThrottleChange(Engine sender, ThrottleChangeEventArgs e)
     {
-        if (e.IsAccelerating == false)
-        {
+        if (e.IsAccelerating == false) 
             cruiseEngine.StopAnyCruise();
-        }
     }
 
     private void HandleDriftingChange(bool drifting)
     {
         if (cruiseEngine != null && drifting)
-        {
             cruiseEngine.StopAnyCruise();
-        }
 
-        ShipPhysicsStats.HandleDrifting(rb, physicsStats, drifting);
+        ShipPhysicsStats.HandleDrifting(rb, engine.physicsStats, drifting);
     }
 
     private void HandleHealthDepleted()
@@ -120,17 +166,9 @@ public class Ship : MonoBehaviour
         name = possessed ? "PLAYER SHIP" : "NPC SHIP"; 
         tag = possessed ? "Player" : "Ship";
 
-        if (possessed)
-        {
-            transform.SetSiblingIndex(0);
-        }
+        if (possessed) transform.SetSiblingIndex(0);
 
-        foreach (Collider coll in colliders)
-        {
-            var newLayer = possessed ? LayerMask.NameToLayer("Player") : LayerMask.NameToLayer("Default");
-            coll.gameObject.layer = newLayer;
-            coll.tag = possessed ? "Player" : "Untagged";
-        }
+        SetLayersAndTags(possessed);
 
         targetInfo.targetable = !possessed;
 
@@ -138,22 +176,93 @@ public class Ship : MonoBehaviour
         OnPossession(pc, possessed);
     }
 
+    private void SetLayersAndTags(bool possessed)
+    {
+        tag = possessed ? "Player" : "Ship";
+
+        foreach (Collider coll in colliders)
+        {
+            var newLayer = possessed ? LayerMask.NameToLayer("Player") : LayerMask.NameToLayer("Default");
+            coll.gameObject.layer = newLayer;
+            coll.tag = possessed ? "Player" : "Ship";
+        }
+    }
+
     public void Die()
     {
         // EVENT CALL HERE (ON DYING)
 
         if (deathFX != null)
-        {
             Instantiate(deathFX, transform.position, Quaternion.identity);
-        }
         else
-        {
             Debug.LogWarning("Dying ship has no deathFX...");
-        }
 
         if (Died != null) Died(this);
 
         Destroy(gameObject);
         // EVENT CALL ALSO? (ON DEATH)
+    }
+
+    public void ToggleAfterburner(bool toggle)
+    {
+        if (toggle && CanAfterburn) aft.Activate();
+        else aft.Deactivate();
+    }
+
+    public bool FireActiveWeapons(AimPosition aimPos)
+    {
+        var allFired = false;
+
+        foreach (Gun gun in guns)
+        {
+            if (gun.IsActive) 
+            {
+                if (!FireWeaponHardpoint(gun, aimPos))
+                    allFired = false;
+            }
+        }
+
+        return allFired;
+    }
+
+    public bool FireWeaponHardpoint(int hardpointSlot, AimPosition aim)
+    {
+        hardpointSlot--;
+
+        if (hardpointSlot < 0 || hardpointSlot > guns.Count) 
+            return false;
+
+        if (guns[hardpointSlot] != null)
+        {
+            return FireWeaponHardpoint(guns[hardpointSlot], aim);
+        }
+
+        return false;
+    }
+
+    public bool FireWeaponHardpoint(Gun gun, AimPosition aim)
+    {
+        if (CanFireWeapons == false || gun.stats == null) 
+            return false;
+
+        if (gun.stats.energyDraw < energy && gun.Fire(aim, colliders.ToArray()))
+        {
+            energy -= gun.stats.energyDraw;
+            if (WeaponFired != null) WeaponFired(gun);
+            energyCooldown.Begin(this);
+            return true;
+        }
+
+        return false;
+    }
+
+    private void OnCollisionEnter(Collision other) 
+    {
+        if (other.gameObject.CompareTag("Ship"))
+        {
+            Vector3 cont = other.contacts[0].point;
+            rb.AddExplosionForce(shipCollisionForce, cont, collisionExplosionRadius, 3, ForceMode.Impulse);
+            print("hit ship");
+        }
     }
 }

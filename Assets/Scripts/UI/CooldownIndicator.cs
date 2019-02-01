@@ -10,7 +10,7 @@ public class CooldownIndicator : MonoBehaviour
     {
         if (image == null || cd == null) return;
 
-        if (cd.isDecrementing)
+        if (cd.IsDecrementing)
         {
             image.fillAmount = cd.elapsed / cd.duration;
         }

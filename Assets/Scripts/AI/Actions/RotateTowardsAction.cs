@@ -6,12 +6,13 @@ public class RotateTowardsAction : FLAction
 {
     public override void Init() {}
 
-    public override void Act(StateController controller)
+    public override void Act(StateController cont)
     {
-        if (!controller.HasTarget) return;
+        if (!cont.HasTarget) return;
+        var ship = cont.ship;
 
     // TOOD: Redo this so not always rotating?
-        Quaternion newRot = Quaternion.LookRotation(controller.TargetTransform.position - controller.ship.transform.position);
-        controller.ship.transform.rotation = Quaternion.Slerp(controller.ship.transform.rotation, newRot, controller.ship.engineStats.turnSpeed * Time.deltaTime);
+        Quaternion newRot = Quaternion.LookRotation(cont.TargetTransform.position - ship.transform.position);
+        cont.ship.transform.rotation = Quaternion.Slerp(ship.transform.rotation, newRot, ship.engine.engineStats.turnSpeed * Time.deltaTime);
     }
 }
