@@ -7,6 +7,7 @@ using UnityEngine.Events;
 public class ShipSpawner : MonoBehaviour
 {
     public bool destroyOnTrigger = true;
+    public bool targetPlayer;
 
     public float spawnDelay = 1;
     public float destroyDelay = 3;
@@ -64,7 +65,7 @@ public class ShipSpawner : MonoBehaviour
         else
         {
             ai.currentState = spawnInfo.state;
-            ai.Target = spawnInfo.target;
+            ai.Target = spawnInfo.target ?? GameSettings.pc.ship.gameObject;
             ai.aiIsActive = true;
         }
 
@@ -77,7 +78,7 @@ public class ShipSpawner : MonoBehaviour
     {
         if (spawnInfo.ship == null)
         {
-            Debug.LogWarning("Spawning ship w/o selecting base, spawning default ship...");
+            Debug.LogWarning("Spawning default ship");
             spawnInfo.ship = GameSettings.Instance.defaultShip;
         }
 

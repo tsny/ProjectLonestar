@@ -13,6 +13,7 @@ public class Engine : ShipComponent
     public float visualYawModifier = 1;
     public float lerpModifier = .1f;
 
+    public MeshRenderer mesh;
     public Transform meshTransform;
     private Quaternion meshOriginalRot;
 
@@ -36,6 +37,7 @@ public class Engine : ShipComponent
     public float sidestepDur = .2f;
     public float maxZVelocity = 10;
     public float blinkDistance = 20;
+    public float blinkDur = .4f;
 
     private float throttle;
     public float Throttle
@@ -151,7 +153,7 @@ public class Engine : ShipComponent
     public void Blink(bool forwards = true)
     {
         if (blinkCR != null || blinkCD.IsDecrementing) return;
-        blinkCR = BlinkCoroutine(.1f, forwards);
+        blinkCR = BlinkCoroutine(blinkDur, forwards);
         StartCoroutine(blinkCR);
     }
 
@@ -159,12 +161,12 @@ public class Engine : ShipComponent
     {
         if (blinkCD.IsDecrementing) yield break;
 
-        meshTransform.gameObject.SetActive(false);
-        yield return new WaitForSeconds(dur);
-        meshTransform.gameObject.SetActive(true);
-
+        mesh.enabled = false;
         var forwardsInt = forwards ? 1 : 0;
         transform.position = transform.position + transform.forward * (blinkDistance * forwardsInt);
+        yield return new WaitForSeconds(dur);
+        mesh.enabled = true;
+
         blinkCD.Begin(this);
         blinkCR = null;
     }

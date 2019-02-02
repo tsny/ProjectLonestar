@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-public class Gun : Hardpoint
+public class Gun : ShipComponent
 {
     public Vector3 target;
     public Rigidbody rbTarget;
@@ -18,7 +18,7 @@ public class Gun : Hardpoint
     {
         get
         {
-            if (!ignoreCooldown && IsOnCooldown) return false;
+            if (!ignoreCooldown && cooldown.IsDecrementing) return false;
             else if (projectile == null) return false;
             else return true;
         }
@@ -50,6 +50,7 @@ public class Gun : Hardpoint
         }
     }
     
+    public Cooldown cooldown;
     public bool ignoreCooldown = false;
     public bool useMaxTargetAngle = true;
     public float maxTargetAngle = 180;
@@ -70,6 +71,8 @@ public class Gun : Hardpoint
     private void Awake()
     {
         stats = Utilities.CheckScriptableObject<WeaponStats>(stats);
+        cooldown = Utilities.CheckScriptableObject<Cooldown>(cooldown);
+        cooldown.duration = stats.cooldownDuration;
         SetTargetToNeutral();
     }
 
@@ -114,7 +117,7 @@ public class Gun : Hardpoint
         proj.Initialize(target, stats, colliders);
         if (clip && audioSource) audioSource.PlayOneShot(clip, volume);
 
-        StartCooldown(stats.cooldownDuration);
+        cooldown.Begin(this);
         return true;
     }
 
