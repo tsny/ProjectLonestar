@@ -38,8 +38,8 @@ public class StateController : MonoBehaviour
     }
     public bool importantToPlayer = true;
 
-    public Ship[] allies;
-    public Ship[] enemies;
+    public List<Ship> allies;
+    public List<Ship> enemies;
 
     [Header("Gizmo")]
 
@@ -58,7 +58,7 @@ public class StateController : MonoBehaviour
     [Header("Details")]
     public float maxPlayerDistance = 2000;
     public float gotoDistanceThreshold = 100;
-    public float combatDistanceThreshold = 20;
+    public float combatDistTooClose = 20;
     public float weaponsRange = 500;
     public float timeInCurrentState;
     public int timesFired;
@@ -132,6 +132,27 @@ public class StateController : MonoBehaviour
             }
 
             ResetStateData();
+        }
+    }
+
+    public void TargetRandomEnemy()
+    {
+        if (enemies.Count < 1 || enemies == null) return;
+
+        while (enemies.Count > 1)
+        {
+            System.Random rnd = new System.Random();
+            int r = rnd.Next(enemies.Count);
+
+            if (enemies[r] == null)
+            {
+                enemies.RemoveAt(r);
+            }
+            else 
+            {
+                Target = enemies[r].gameObject;
+                break;
+            }
         }
     }
 }

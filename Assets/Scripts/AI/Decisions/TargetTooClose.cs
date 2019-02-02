@@ -12,6 +12,6 @@ public class TargetTooClose : FLDecision
     {
         if (!controller.HasTarget) return false;
 
-        return controller.DistanceToTarget <= controller.combatDistanceThreshold;
+        return controller.DistanceToTarget <= controller.combatDistTooClose;
     }
 }

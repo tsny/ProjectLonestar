@@ -11,6 +11,7 @@ public class Ship : MonoBehaviour
 
     // TODO: Make some of these into properties
     [Header("Ship Components")]
+    public StateController ai;
     public Health health;
     public Vector3 aimPosition;
     public GameObject hardpointParent;
@@ -100,6 +101,7 @@ public class Ship : MonoBehaviour
     void Awake()
     {
         energyCooldown = Utilities.CheckScriptableObject<Cooldown>(energyCooldown);
+        ai = Utilities.CheckComponent<StateController>(gameObject);
 
         targetInfo = Utilities.CheckComponent<TargetingInfo>(gameObject);
         var header = shipDetails.shipName + " - PILOTNAMEHERE";

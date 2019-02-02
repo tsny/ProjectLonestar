@@ -56,18 +56,10 @@ public class ShipSpawner : MonoBehaviour
     public static Ship SpawnNPC(ShipSpawnInfo spawnInfo, Vector3 pos)
     {
         var ship = SpawnShip(spawnInfo, pos);
-        var ai = ship.GetComponent<StateController>();
 
-        if (ai == null)
-        {
-            Debug.LogWarning("Spawning NPC without AI Controller...");
-        }
-        else
-        {
-            ai.currentState = spawnInfo.state;
-            ai.Target = spawnInfo.target ?? GameSettings.pc.ship.gameObject;
-            ai.aiIsActive = true;
-        }
+        ship.ai.currentState = spawnInfo.state;
+        ship.ai.Target = spawnInfo.target ?? GameSettings.pc.ship.gameObject;
+        ship.ai.aiIsActive = true;
 
         ship.Died += (s) => { LootSpawner.SpawnLoot(s.transform.position, spawnInfo); };
 
@@ -111,6 +103,18 @@ public class ShipSpawner : MonoBehaviour
 
         for (int i = 0; i < shipsToSpawn.Length; i++)
             spawnedShips.Add(SpawnNPC(shipsToSpawn[i], spawnPos + Utilities.RandomPointInBounds(bounds)));
+
+        foreach (var ship in spawnedShips)
+        {
+            if (ship.ai.allies == null)
+                ship.ai.allies = new List<Ship>();
+
+            foreach (var innerShip in spawnedShips)
+            {
+                if (ship != innerShip)
+                    ship.ai.allies.Add(innerShip);
+            }
+        }
 
         return spawnedShips;
     }

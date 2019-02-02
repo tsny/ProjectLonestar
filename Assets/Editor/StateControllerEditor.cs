@@ -24,10 +24,9 @@ public class StateControllerEditor : Editor
             cont.Target = targets[UnityEngine.Random.Range(0, targets.Length)].gameObject;
         }
 
-        if (Btn("Target Random Ship"))
+        if (Btn("Target Random Enemy"))
         {
-            var targets = FindObjectsOfType<Ship>();
-            cont.Target = targets[UnityEngine.Random.Range(0, targets.Length)].gameObject;
+            cont.TargetRandomEnemy();
         }
 
         if (Btn("Target Player Ship"))
