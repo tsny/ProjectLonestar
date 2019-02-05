@@ -88,15 +88,7 @@ public class TargetIndicator : MonoBehaviour
         content.SetActive(false);
     }
 
-    private void Start()
-    {
-        cam = GameSettings.pc.cam != null ? GameSettings.pc.cam : Camera.main;
-        ToggleHealthBars(false);
-        ShowName(false);
-        StartCoroutine(RefreshHeader(2));
-    }
-
-    public void SetTarget(TargetingInfo info)
+    public void Setup(TargetingInfo info, Camera cam)
     {
         targetRb = info.GetComponent<Rigidbody>();
 
@@ -108,6 +100,13 @@ public class TargetIndicator : MonoBehaviour
 
         name = "T_IND: " + info.name;
         target = info;
+
+        this.cam = cam ?? Camera.main;
+
+        ToggleHealthBars(false);
+        ShowName(false);
+        StartCoroutine(RefreshHeader(2));
+
         enabled = true;
     }
 

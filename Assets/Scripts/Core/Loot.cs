@@ -5,8 +5,9 @@ public class Loot : MonoBehaviour
 {
     public Item item;
     public Transform target;
-    public bool isImportantToPlayer;
-    public float maxPlayerDistance = 2000;
+
+    // public bool isImportantToPlayer;
+    // public float maxPlayerDistance = 2000;
 
     public ParticleSystem deathFX;
 
@@ -57,7 +58,7 @@ public class Loot : MonoBehaviour
     {
         if (Spawned != null) Spawned(this);
         StartCoroutine(FinishSpawn());
-        StartCoroutine(CheckPlayerDistance());
+        //StartCoroutine(CheckPlayerDistance());
     }
 
     public void Init(Vector3 impulse)
@@ -72,17 +73,17 @@ public class Loot : MonoBehaviour
     }
 
     // Maybe some kind of higher level AI should manage whether an agent or anything is too far away from the player
-    private IEnumerator CheckPlayerDistance()
-    {
-        while (true)
-        {
-            var playerTooFar = Vector3.Distance(GameSettings.pc.transform.position, transform.position) > maxPlayerDistance;
-            if (playerTooFar && !isImportantToPlayer) break;
-            yield return new WaitForSeconds(5);
-        }
+    // private IEnumerator CheckPlayerDistance()
+    // {
+    //     // while (true)
+    //     // {
+    //     //     var playerTooFar = Vector3.Distance(GameSettings.pc.transform.position, transform.position) > maxPlayerDistance;
+    //     //     if (playerTooFar && !isImportantToPlayer) break;
+    //     //     yield return new WaitForSeconds(5);
+    //     // }
 
-        Destroy(gameObject);
-    }
+    //     Destroy(gameObject);
+    // }
 
     private void OnTriggerEnter(Collider other) 
     {

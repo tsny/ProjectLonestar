@@ -264,7 +264,6 @@ public class Ship : MonoBehaviour
         {
             Vector3 cont = other.contacts[0].point;
             rb.AddExplosionForce(shipCollisionForce, cont, collisionExplosionRadius, 3, ForceMode.Impulse);
-            print("hit ship");
         }
     }
 }

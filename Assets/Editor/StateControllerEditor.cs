@@ -52,6 +52,7 @@ public class StateControllerEditor : Editor
 
     private void OnSceneGUI() 
     {
+        if (!cont) return;
         if (cont.HasTarget) Debug.DrawLine(cont.transform.position, cont.TargetTransform.position, Color.cyan);
     }
 

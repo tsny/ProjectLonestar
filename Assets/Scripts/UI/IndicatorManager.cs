@@ -10,6 +10,7 @@ public class IndicatorManager : ShipUIElement
     public TargetIndicator indicatorPrefab;
     public ScannerPanelButton scannerPanelButtonPrefab;
 
+    public Camera cam;
     public Transform indicatorLayer;
     public Transform scannerEntries;
 
@@ -30,15 +31,8 @@ public class IndicatorManager : ShipUIElement
 
     private void HandleShipSpawned(Ship ship)
     {
-        //if (GameSettings.pc.ship != null && GameSettings.pc.ship != ship)
-            //AddIndicator(ship.gameObject);
-
         shipsInScene.Add(ship);
-
         ship.Died += HandleShipDied;
-
-        // var btn = Instantiate(scannerPanelButtonPrefab, scannerEntries);
-        // btn.Setup(ship, this.ship);
     }
 
     private void HandleLootSpawned(Loot loot)
@@ -56,15 +50,13 @@ public class IndicatorManager : ShipUIElement
     private void HandleShipReleased(PlayerController sender, PossessionEventArgs args)
     {
         ClearIndicators();
-        ClearShip();
+        Clear();
     }
 
     private void HandleIndicatorSelected(TargetIndicator newIndicator)
     {
         if (selectedIndicator != null)
-        {
             selectedIndicator.Deselect();
-        }
 
         selectedIndicator = newIndicator;
     }
@@ -77,14 +69,16 @@ public class IndicatorManager : ShipUIElement
 
     public void DeselectCurrentIndicator()
     {
-        if (selectedIndicator != null) selectedIndicator.Deselect();
+        if (selectedIndicator != null) 
+            selectedIndicator.Deselect();
+
         selectedIndicator = null;
     }
 
     public void AddIndicator(TargetingInfo info)
     {
         var newIndicator = Instantiate(indicatorPrefab, indicatorLayer);
-        newIndicator.SetTarget(info);
+        newIndicator.Setup(info, cam);
         newIndicator.Selected += HandleIndicatorSelected;
     }
 }

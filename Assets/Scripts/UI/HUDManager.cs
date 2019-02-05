@@ -15,6 +15,8 @@ public class HUDManager : MonoBehaviour
     public GameObject backgroundPanel;
     public TextMeshProUGUI objectiveText;
 
+    public IndicatorManager im;
+
     public GameObject notificationSpawn;
     public Notification notificationPF;
     public AudioClip pickupClip;
@@ -64,14 +66,21 @@ public class HUDManager : MonoBehaviour
     {
         InitResolutionPanel();
 
+        if (FindObjectsOfType<HUDManager>().Length > 1)
+        {
+            Debug.LogWarning("Tried to spawn HUDManager with one already in scene...");
+            Destroy(gameObject);
+            return;
+        }
+
         GameStateUtils.GamePaused += HandleGamePaused;
+        Loot.Looted += HandleDropLooted;
+
         name = "SHIP HUD";
         GetComponentsInChildren(true, uiElements);
 
         cruiseText.text = "Engines Nominal";
         mouseFlightText.text = "";
-
-        Loot.Looted += HandleDropLooted;
     }
 
     private void HandleDropLooted(Loot loot)
@@ -111,34 +120,22 @@ public class HUDManager : MonoBehaviour
         SceneManager.LoadScene(GameSettings.Instance.menuSceneName);
     }
 
-    public void SetPlayerController(PlayerController playerController)
+    public void SetPlayerController(PlayerController pc)
     {
-        playerController.PossessedNewShip += HandlePossessedNewShip;
-        playerController.MouseStateChanged += HandleMouseStateChange;
-        playerController.ship.cruiseEngine.CruiseStateChanged += HandleCruiseChanged;
+        pc.PossessedNewShip += HandlePossessedNewShip;
+        pc.ReleasedShip += HandleReleasedShip;
+        pc.MouseStateChanged += HandleMouseStateChange;
 
         GetComponentsInChildren(true, uiElements);
 
-        if (playerController.ship != null)
-        {
-            uiElements.ForEach(x => x.SetShip(playerController.ship));
-            SetCruiseText(playerController.ship.cruiseEngine.State);
+        if (pc.ship != null) HandlePossessedNewShip(pc, null);
 
-            if (blinkIndicator != null)
-                blinkIndicator.cd = playerController.ship.engine.blinkCD;
-
-            if (sidestepIndicator != null)
-                sidestepIndicator.cd = playerController.ship.engine.sidestepCD;
-        }
+        im.cam = pc.cam;
     }
 
-    private void OnDestroy() 
+    private void HandleReleasedShip(PlayerController sender, PossessionEventArgs args)
     {
-        if (GameSettings.pc == null) return;
-
-        GameSettings.pc.PossessedNewShip -= HandlePossessedNewShip;
-        GameSettings.pc.MouseStateChanged -= HandleMouseStateChange;
-        GameSettings.pc.ship.cruiseEngine.CruiseStateChanged -= HandleCruiseChanged;
+        sender.ship.cruiseEngine.CruiseStateChanged -= HandleCruiseChanged;
     }
 
     private void HandleCruiseChanged(CruiseEngine sender, CruiseState newState)
@@ -148,8 +145,14 @@ public class HUDManager : MonoBehaviour
 
     private void HandlePossessedNewShip(PlayerController sender, PossessionEventArgs args)
     {
-        uiElements.ForEach(x => x.SetShip(sender.ship));
-        SetCruiseText(sender.ship.cruiseEngine.State);
+        uiElements.ForEach(x => x.Init(args.newShip));
+
+        SetCruiseText(args.newShip.cruiseEngine.State);
+
+        args.newShip.cruiseEngine.CruiseStateChanged += HandleCruiseChanged;
+
+        if (blinkIndicator != null) blinkIndicator.cd = args.newShip.engine.blinkCD;
+        if (sidestepIndicator != null) sidestepIndicator.cd = args.newShip.engine.sidestepCD;
     }
 
     private void HandleGamePaused(bool paused)

@@ -69,10 +69,7 @@ public class ShipSpawner : MonoBehaviour
     public static Ship SpawnShip(ShipSpawnInfo spawnInfo, Vector3 pos)
     {
         if (spawnInfo.ship == null)
-        {
-            Debug.LogWarning("Spawning default ship");
             spawnInfo.ship = GameSettings.Instance.defaultShip;
-        }
 
         var ship = Instantiate(GameSettings.Instance.defaultShip, pos, Quaternion.identity);
 

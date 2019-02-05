@@ -14,9 +14,9 @@ public class ShipStatusUI : ShipUIElement
     public Afterburner afterburnerHardpoint;
     public Engine engine;
 
-    public override void SetShip(Ship ship)
+    public override void Init(Ship ship)
     {
-        base.SetShip(ship);
+        base.Init(ship);
         afterburnerHardpoint = ship.engine.aft;
         engine = ship.engine;
     }

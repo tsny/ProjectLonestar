@@ -9,7 +9,12 @@ using UnityEngine.EventSystems;
 [RequireComponent(typeof(Camera), typeof(AudioListener), typeof(ShipCamera))]
 public class PlayerController : MonoBehaviour
 {
-    [Header("--- Input ---")]
+    private static PlayerController _inst;
+    public static PlayerController Instance { get { return _inst; } }
+
+    public HUDManager hudPrefab;
+
+    [Header("Input")]
     public bool canPause = true;
     public bool inputAllowed = true;
     public float doubleTapDuration = 1;
@@ -60,14 +65,13 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
+        _inst = this;
         name = "PLAYER CONTROLLER";
-
-        cam = Utilities.CheckComponent<Camera>(gameObject);
-        shipCamera = Utilities.CheckComponent<ShipCamera>(gameObject);
-        flycam = Utilities.CheckComponent<Flycam>(gameObject);
-        listener = Utilities.CheckComponent<AudioListener>(gameObject);
-
         enabled = false;
+
+        var hud = FindObjectOfType<HUDManager>();
+        if (!hud) hud = Instantiate(hudPrefab);
+        hud.SetPlayerController(this);
     }
 
     protected virtual void OnPossessedNewShip(PossessionEventArgs args)
@@ -80,20 +84,17 @@ public class PlayerController : MonoBehaviour
         if (ReleasedShip != null) ReleasedShip(this, new PossessionEventArgs(null, releasedShip));
     }
 
+    private void HandleShipDied(Ship ship)
+    {
+        Release();
+    }
+
     public void Possess(Ship newShip)
     {
-        if (newShip == null)
-        {
-            Release();
-            return;
-        }
-
+        if (!newShip) return;
         var oldShip = ship;
 
-        if (oldShip != null)
-        {
-            oldShip.SetPossessed(this, false);
-        }
+        Release();
 
         newShip.SetPossessed(this, true);
 
@@ -103,19 +104,17 @@ public class PlayerController : MonoBehaviour
         newShip.GetComponent<StateController>().ResetAI();
         newShip.Died += HandleShipDied;
 
-        ship = newShip;
-        lastShip = null;
-        enabled = true;
-        OnPossessedNewShip(new PossessionEventArgs(ship, null));
-    }
+        OnPossessedNewShip(new PossessionEventArgs(newShip, oldShip));
 
-    private void HandleShipDied(Ship ship)
-    {
-        Release();
+        ship = newShip;
+        lastShip = oldShip;
+        enabled = true;
     }
 
     public void Release()
     {
+        if (!ship) return;
+
         ship.SetPossessed(this, false);
         shipCamera.ClearTarget();
         ship.Died -= HandleShipDied;
@@ -125,16 +124,13 @@ public class PlayerController : MonoBehaviour
         enabled = false;
 
         lastShip = ship;
-        ship = null;
         OnReleasedShip(ship);
+        ship = null;
     }
 
     public void Repossess()
     {
-        if (lastShip != null)
-        {
-            Possess(lastShip);
-        }
+        if (lastShip != null) Possess(lastShip);
     }
 
     private void Update()
@@ -419,14 +415,6 @@ public class PossessionEventArgs : EventArgs
 {
     public Ship newShip;
     public Ship oldShip;
-
-    public bool PossessingNewShip
-    {
-        get
-        {
-            return newShip != null;
-        }
-    }
 
     public PossessionEventArgs(Ship newShip, Ship oldShip)
     {

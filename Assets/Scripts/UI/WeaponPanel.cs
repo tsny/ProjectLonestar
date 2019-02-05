@@ -8,19 +8,19 @@ public class WeaponPanel : ShipUIElement
     public VerticalLayoutGroup vlg;
     public GameObject weaponPanelButton;
 
-    public override void SetShip(Ship ship)
+    public override void Init(Ship ship)
     {
-        base.SetShip(ship);
+        base.Init(ship);
 
         //hardpointSystem = ship.hardpointSystem;
         //ClearPanel();
         //PopulatePanel();
     }
 
-    protected override void ClearShip()
+    protected override void Clear()
     {
         ClearPanel();
-        base.ClearShip();
+        base.Clear();
     }
 
     private void PopulatePanel()

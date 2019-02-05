@@ -92,8 +92,8 @@ public class StateController : MonoBehaviour
         currentState.UpdateState(this);
         timeInCurrentState += Time.deltaTime;
 
-        var playerTooFar = Vector3.Distance(GameSettings.pc.transform.position, transform.position) > maxPlayerDistance;
-        if (!importantToPlayer && playerTooFar) Destroy(gameObject);
+        // var playerTooFar = Vector3.Distance(GameSettings.pc.transform.position, transform.position) > maxPlayerDistance;
+        // if (!importantToPlayer && playerTooFar) Destroy(gameObject);
     }
 
     private void OnDrawGizmos()

@@ -12,9 +12,9 @@ public class ScannerUI : ShipUIElement
     private Dictionary<ITargetable, ScannerPanelButton> targetButtonPairs = new Dictionary<ITargetable, ScannerPanelButton>();
     //private Scanner scanner;
 
-    public override void SetShip(Ship ship)
+    public override void Init(Ship ship)
     {
-        base.SetShip(ship);
+        base.Init(ship);
 
         //scanner = ship.hardpointSystem.scanner;
         //scanner.ScannerUpdated += HandleNewScan;
@@ -34,11 +34,11 @@ public class ScannerUI : ShipUIElement
         CreatePanelButton(entry);
     }
 
-    protected override void ClearShip()
+    protected override void Clear()
     {
         ClearPanel();
 
-        base.ClearShip();
+        base.Clear();
     }
 
     public ScannerPanelButton CreatePanelButton(ITargetable target)

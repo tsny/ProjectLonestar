@@ -18,7 +18,7 @@ public class GetRandomTarget : FLAction
             List<Ship> ships = FindObjectsOfType<Ship>().ToList();
 
             ships.Remove(controller.ship);
-            ships.Remove(GameSettings.pc.ship);
+            ships.Remove(PlayerController.Instance.ship);
 
             foreach (var ship in controller.allies)
             {
