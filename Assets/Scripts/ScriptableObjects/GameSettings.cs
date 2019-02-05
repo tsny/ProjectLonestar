@@ -21,8 +21,6 @@ public class GameSettings : SingletonScriptableObject<GameSettings>
     public GameObject[] globalPrefabs;
     public GameObject[] localPrefabs;
 
-    public static PlayerController pc;
-
     public string menuSceneName = "SCN_MainMenu";
 
     public Resolution[] resolutions;

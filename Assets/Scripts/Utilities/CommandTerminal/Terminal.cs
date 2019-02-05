@@ -12,7 +12,7 @@ namespace CommandTerminal
         OpenFull
     }
 
-    public class Terminal : Controller<Terminal>
+    public class Terminal : MonoBehaviour
     {
         [Header("Window")]
         [Range(0, 1)]

@@ -20,7 +20,7 @@ public class ShipEditor : Editor
 
     private void ShowPossessButton()
     {
-        var pc = GameSettings.pc;
+        var pc = PlayerController.Instance;
         if (!Application.isPlaying) return;
 
         EditorGUI.BeginChangeCheck();

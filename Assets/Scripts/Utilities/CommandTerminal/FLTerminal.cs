@@ -5,6 +5,7 @@ using CommandTerminal;
 
 public class FLTerminal : Terminal
 {
+    public static PlayerController pc { get { return PlayerController.Instance; } } 
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.F12))
@@ -54,7 +55,7 @@ public class FLTerminal : Terminal
     [RegisterCommand(Name = "mount", Help = "Mounts a default loadout onto the current ship", MinArgCount = 0, MaxArgCount = 0)]
     static void MountLoadout(CommandArg[] args)
     {
-        if (GameSettings.pc.ship == null) return;
+        if (pc.ship == null) return;
 
         //GameSettings.pc.ship.hardpointSystem.MountLoadout(GameSettings.instance.defaultLoadout);
     }
@@ -62,14 +63,14 @@ public class FLTerminal : Terminal
     [RegisterCommand(Help = "Toggle GodMode on Current Ship", MinArgCount = 0, MaxArgCount = 0)]
     static void God(CommandArg[] args)
     {
-        GameSettings.pc.ship.health.Invulnerable = !GameSettings.pc.ship.health.Invulnerable;
-        Log("Godmode : " + GameSettings.pc.ship.health.Invulnerable);
+        pc.ship.health.Invulnerable = !pc.ship.health.Invulnerable;
+        Log("Godmode : " + pc.ship.health.Invulnerable);
     }
 
     [RegisterCommand(Help = "Kills currently possessed ship", MinArgCount = 0, MaxArgCount = 0)]
     static void Kill(CommandArg[] args)
     {
-        GameSettings.pc.ship.Die();
+        pc.ship.Die();
         Log("Player ship destroyed...");
     }
 
@@ -140,7 +141,7 @@ public class FLTerminal : Terminal
     [RegisterCommand(Help = "Gives current ship unlimited energy", MinArgCount = 0, MaxArgCount = 0)]
     static void Impulse101(CommandArg[] args)
     {
-        var ship = GameSettings.pc.ship;
+        var ship = pc.ship;
 
         ship.energyCapacity = 1000000;
         ship.energy = 1000000;
@@ -152,7 +153,7 @@ public class FLTerminal : Terminal
     [RegisterCommand(Help = "Gives current ship unlimited afterburner energy", MinArgCount = 0, MaxArgCount = 0)]
     static void Impulse102(CommandArg[] args)
     {
-        var abHardpoint = GameSettings.pc.ship.aft;
+        var abHardpoint = pc.ship.aft;
         abHardpoint.stats.drainRate = abHardpoint.stats.drainRate == 0 ? 100 : 0;
 
         Log("Toggled infinite afterburner...");
@@ -161,14 +162,14 @@ public class FLTerminal : Terminal
     [RegisterCommand(Help = "Unpossesses the current ship", MinArgCount = 0, MaxArgCount = 0)]
     static void Release(CommandArg[] args)
     {
-        GameSettings.pc.Release();
+        pc.Release();
         Log("Ship unpossessed");
     }
 
     [RegisterCommand(Name = "last", Help = "Repossesses the last ship", MinArgCount = 0, MaxArgCount = 0)]
     static void Repossesses(CommandArg[] args)
     {
-        GameSettings.pc.Repossess();
+        pc.Repossess();
         Log("Repossessed last ship");
     }
 
@@ -184,14 +185,14 @@ public class FLTerminal : Terminal
     static void SetThrottlePower(CommandArg[] args)
     {
         var newPower = Mathf.Clamp(args[0].Int, 0, 99999);
-        GameSettings.pc.ship.engine.engineStats.enginePower = newPower;
+        pc.ship.engine.engineStats.enginePower = newPower;
     }
 
     [RegisterCommand(Name = "cruise.power", Help = "Change the current ship's cruise power", MinArgCount = 1, MaxArgCount = 1)]
     static void SetCruisePower(CommandArg[] args)
     {
         var newPower = Mathf.Clamp(args[0].Int, 0, 99999);
-        GameSettings.pc.ship.cruiseEngine.stats.thrust = newPower;
+        pc.ship.cruiseEngine.stats.thrust = newPower;
     }
 
     [RegisterCommand(Name = "noti", Help = "Tests the notifaction system, spawns a test notification", MinArgCount = 0, MaxArgCount = 1)]
@@ -207,24 +208,25 @@ public class FLTerminal : Terminal
 
     private Ship FindClosestShip(Ship[] ships)
     {
-        ships.ToList().Remove(GameSettings.pc.ship);
-
-        Ship closestShip = null;
-        float closestShipDistance = 0;
-
-        closestShip = ships[0];
-        closestShipDistance = Vector3.Distance(GameSettings.pc.ship.transform.position, closestShip.transform.position);
-
-        foreach (var ship in ships)
-        {
-            var dist = Vector3.Distance(GameSettings.pc.ship.transform.position, ship.transform.position);
-            if (dist < closestShipDistance)
-            {
-                closestShip = ship;
-                closestShipDistance = dist;
-            }
-        }
-
         return null;
+        // ships.ToList().Remove(GameSettings.pc.ship);
+
+        // Ship closestShip = null;
+        // float closestShipDistance = 0;
+
+        // closestShip = ships[0];
+        // closestShipDistance = Vector3.Distance(GameSettings.pc.ship.transform.position, closestShip.transform.position);
+
+        // foreach (var ship in ships)
+        // {
+        //     var dist = Vector3.Distance(GameSettings.pc.ship.transform.position, ship.transform.position);
+        //     if (dist < closestShipDistance)
+        //     {
+        //         closestShip = ship;
+        //         closestShipDistance = dist;
+        //     }
+        // }
+
+        // return null;
     }
 }

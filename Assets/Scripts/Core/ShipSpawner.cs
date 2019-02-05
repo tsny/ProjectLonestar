@@ -58,7 +58,7 @@ public class ShipSpawner : MonoBehaviour
         var ship = SpawnShip(spawnInfo, pos);
 
         ship.ai.currentState = spawnInfo.state;
-        ship.ai.Target = spawnInfo.target ?? GameSettings.pc.ship.gameObject;
+        ship.ai.Target = spawnInfo.target ?? PlayerController.Instance.ship.gameObject;
         ship.ai.aiIsActive = true;
 
         ship.Died += (s) => { LootSpawner.SpawnLoot(s.transform.position, spawnInfo); };

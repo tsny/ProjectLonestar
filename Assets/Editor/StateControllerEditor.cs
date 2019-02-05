@@ -30,7 +30,7 @@ public class StateControllerEditor : Editor
         }
 
         if (Btn("Target Player Ship"))
-            cont.Target = GameSettings.pc.ship.gameObject;
+            cont.Target = PlayerController.Instance.ship.gameObject;
 
         if (Btn("Clear Target"))
             cont.Target = null;
