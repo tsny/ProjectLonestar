@@ -30,23 +30,12 @@ public class GameSettings : SingletonScriptableObject<GameSettings>
     static void GameLoading()
     {
         Instance.InitResolutions();
-
-        // pc = FindObjectOfType<PlayerController>();
-
-        // if (pc == null)
-        //     pc = Instantiate(Instance.pcPrefab);
-
-        // DontDestroyOnLoad(pc);
-
-        // DontDestroyOnLoad(pc.GetComponent<NebulaCameraFog>().fadeQuad = Instantiate(Instance.nebulaCanvasPrefab).GetComponent<Image>());
-
-        // Instance.playerInventory = Utilities.CheckScriptableObject<Inventory>(Instance.playerInventory);
     }
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     static void GameStartup()
     {
-        new GameObject().AddComponent<FLTerminal>();
+        DontDestroyOnLoad(new GameObject().AddComponent<FLTerminal>());
     }
 
 

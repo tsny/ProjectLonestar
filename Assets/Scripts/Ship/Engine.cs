@@ -7,6 +7,7 @@ public class Engine : ShipComponent
     [Header("Main")]
     public Rigidbody rb;
     public new Transform transform;
+    public bool canRotate = true;
 
     [Header("Model")]
     public Vector3 modelTurnOffset;
@@ -310,6 +311,7 @@ public class Engine : ShipComponent
 
     public void AddPitch(float amount)
     {
+        if (!canRotate) return;
         amount = Mathf.Clamp(amount, -1, 1);
         transform.Rotate(Vector3.left * amount * engineStats.turnSpeed);
         _pitch = amount;
@@ -317,6 +319,7 @@ public class Engine : ShipComponent
 
     public void AddYaw(float amount)
     {
+        if (!canRotate) return;
         amount = Mathf.Clamp(amount, -1, 1);
         transform.Rotate(Vector3.up * amount * engineStats.turnSpeed);
         _yaw = amount;
@@ -325,6 +328,7 @@ public class Engine : ShipComponent
 
     public void AddRoll(float amount)
     {
+        if (!canRotate) return;
         amount = Mathf.Clamp(amount, -1, 1);
         transform.Rotate(Vector3.forward * amount * engineStats.turnSpeed);
         _roll = amount;
