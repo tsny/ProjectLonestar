@@ -152,6 +152,8 @@ namespace CommandTerminal
         protected virtual void Initialize()
         {
             name = "TERMINAL";
+            transform.SetAsFirstSibling();
+
 
             if (ConsoleFont == null) {
                 ConsoleFont = Font.CreateDynamicFontFromOSFont("Courier New", 14);

@@ -6,6 +6,7 @@ using CommandTerminal;
 public class FLTerminal : Terminal
 {
     public static PlayerController pc { get { return PlayerController.Instance; } } 
+
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.F12))
@@ -40,7 +41,8 @@ public class FLTerminal : Terminal
     [RegisterCommand(Name = "version.check", Help = "Checks the live version on itch.io against the local version", MinArgCount = 0, MaxArgCount = 0)]
     static void VersionCheck(CommandArg[] args)
     {
-        FindObjectOfType<MonoBehaviour>().StartCoroutine(VersionChecker.GetVersions("https://itch.io/api/1/x/wharf/latest?target=tsny/project-lonestar&channel_name=win", null, true));
+        var url = "https://itch.io/api/1/x/wharf/latest?target=tsny/project-lonestar&channel_name=win";
+        StaticCoroutine.StartCoroutine(VersionChecker.GetVersions(url, null, true));
     }
 
     [RegisterCommand(Name = "hud", MinArgCount = 0, MaxArgCount = 0)]
@@ -72,6 +74,12 @@ public class FLTerminal : Terminal
     {
         pc.ship.Die();
         Log("Player ship destroyed...");
+    }
+
+    [RegisterCommand(Name = "newship", Help = "Spawns default ship for player'", MinArgCount = 0, MaxArgCount = 0)]
+    static void SpawnPlayerShip(CommandArg[] args)
+    {
+        pc.Possess(Instantiate(GameSettings.Instance.defaultShip));
     }
 
     [RegisterCommand(Help = "Spawns a ship. Usage: spawn 'entity' 'times' 'possess?'", MinArgCount = 1, MaxArgCount = 3)]
@@ -130,6 +138,12 @@ public class FLTerminal : Terminal
         //         GameSettings.pc.Possess(spawnedShip);
         //     }
         // }
+    }
+
+    [RegisterCommand(MinArgCount = 0, MaxArgCount = 0)]
+    static void test(CommandArg[] args)
+    {
+        AIManager.Instance.StopAllAgents();
     }
 
     [RegisterCommand(Help = "Toggles the game's time scale between 1 and 0", MinArgCount = 0, MaxArgCount = 0)]

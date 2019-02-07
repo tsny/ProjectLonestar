@@ -4,6 +4,8 @@ using System.Collections;
 
 public class VersionChecker : ScriptableObject
 {
+    public static ButlerInfo info;
+
     public static IEnumerator GetVersions(string url, MonoBehaviour caller = null, bool printToConsole = false)
     {
         // Example URL: "https://itch.io/api/1/x/wharf/latest?target=tsny/project-lonestar&channel_name=win"
@@ -21,6 +23,8 @@ public class VersionChecker : ScriptableObject
             else
             {
                 var json = JsonUtility.FromJson<ButlerInfo>(www.downloadHandler.text);
+
+                info = json;
 
                 if (printToConsole)
                 {
