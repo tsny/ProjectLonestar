@@ -312,3 +312,5 @@ ExportedObj/
 *.mdb
 *.opendb
 *.VC.db
+
+*.asset
