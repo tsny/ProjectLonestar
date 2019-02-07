@@ -38,7 +38,6 @@ public class GameSettings : SingletonScriptableObject<GameSettings>
         DontDestroyOnLoad(new GameObject().AddComponent<FLTerminal>());
     }
 
-
     private void InitResolutions()
     {
         resolutions = Screen.resolutions;

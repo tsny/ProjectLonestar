@@ -63,10 +63,18 @@ public class StateController : MonoBehaviour
     public float timeInCurrentState;
     public int timesFired;
 
+    public static event AIEventHandler Spawned; 
+    public delegate void AIEventHandler(StateController agent);
+
     private void Awake()
     {
         ship = GetComponent<Ship>();
         aiIsActive = true;
+    }
+
+    private void Start()
+    {
+        if (Spawned != null) Spawned(this);
     }
 
     public void ResetAI()
@@ -77,6 +85,12 @@ public class StateController : MonoBehaviour
         enabled = false;
         pastStates.Clear();
         ResetStateData();
+    }
+
+    public void FullStop()
+    {
+        currentState = stopState;
+        pastStates.Clear();
     }
 
     private void ResetStateData()

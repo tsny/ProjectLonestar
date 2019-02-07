@@ -135,7 +135,7 @@ public class Loot : MonoBehaviour
         {
             Inventory targetInventory = GameSettings.Instance.playerInventory;
 
-            if (targetInventory == null)
+            if (!targetInventory)
             {
                 ClearTarget();
                 Debug.LogError("ERROR: No inventory");

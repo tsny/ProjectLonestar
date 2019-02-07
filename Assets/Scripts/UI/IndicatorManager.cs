@@ -20,13 +20,20 @@ public class IndicatorManager : ShipUIElement
     {
         Ship.Spawned += HandleShipSpawned;
         Loot.Spawned += HandleLootSpawned;
+        TargetingInfo.Spawned += AddIndicator;
+    }
 
-        TargetingInfo.Spawned += (info) => { AddIndicator(info); };
+    private void OnDestroy() 
+    {
+        TargetingInfo.Spawned -= AddIndicator;
+        Ship.Spawned -= HandleShipSpawned;
+        Loot.Spawned -= HandleLootSpawned;
     }
 
     private void HandleShipDied(Ship ship)
     {
         shipsInScene.Remove(ship);
+        ship.Died -= HandleShipDied;
     }
 
     private void HandleShipSpawned(Ship ship)

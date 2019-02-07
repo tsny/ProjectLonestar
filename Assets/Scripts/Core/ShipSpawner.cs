@@ -26,6 +26,9 @@ public class ShipSpawner : MonoBehaviour
     // private int shipsPerWave = 1;
     // private float waveDuration = 10;
 
+    public event TriggeredEventHandler Triggered;
+    public delegate void TriggeredEventHandler();
+
     private BoxCollider coll;
 
     private void Awake()
@@ -41,9 +44,6 @@ public class ShipSpawner : MonoBehaviour
     public void TriggerSelf()
     {
         SpawnShips(shipsToSpawn, transform.position, coll.bounds);
-
-        onTriggered.Invoke();
-
         // Spawn all
         // Destroy self or implement wave feature if we want more ships to spawn later
         if (destroyOnTrigger)
@@ -51,6 +51,12 @@ public class ShipSpawner : MonoBehaviour
             coll.enabled = false;
             Destroy(gameObject, destroyDelay);
         }
+        if (Triggered != null) Triggered();
+    }
+
+    public void InvokeSelf()
+    {
+        onTriggered.Invoke();
     }
 
     public static Ship SpawnNPC(ShipSpawnInfo spawnInfo, Vector3 pos)

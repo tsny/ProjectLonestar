@@ -13,9 +13,7 @@ public class ShipSpawnerEditor : Editor
 
         if (!Application.isPlaying) return;
 
-        if (GUILayout.Button("Spawn Ships"))
-        {
-            spawner.TriggerSelf();
-        }
+        if (GUILayout.Button("Spawn Ships")) spawner.TriggerSelf();
+        if (GUILayout.Button("Invoke Event")) spawner.InvokeSelf();
     }
 }
