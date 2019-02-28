@@ -11,6 +11,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 57ca43aecd31e0f4ca3c1e7523285afc, type: 3}
   m_Name: FireActive
   m_EditorClassIdentifier: 
+  useRange: 0
   missChance: 5
+  lowerRangeMissChance: 5
+  upperRangeMissChance: 10
   timesToFire: 10
-  missOffset: {x: 1, y: 1, z: 1}
+  missOffset: {x: 5, y: 5, z: 5}

@@ -18,13 +18,17 @@ public class AIManager : Object
     public float verificationFreq = 3;
     public float maxDistFromPlayer = 1000;    
     private List<StateController> agents;
+    private List<GameObject> mapTargets;
 
     private AIManager()
     {
         SceneManager.activeSceneChanged += (scn, scn2) => { agents.Clear(); }; 
         agents = FindObjectsOfType<StateController>().ToList();
         StateController.Spawned += AddAgent;
-        StaticCoroutine.StartCoroutine(TestCheck());
+
+        //StaticCoroutine.StartCoroutine(TestCheck());
+
+        mapTargets = GameObject.FindGameObjectsWithTag("MapTarget").ToList();
     }
 
     private IEnumerator TestCheck()
@@ -34,6 +38,13 @@ public class AIManager : Object
             Debug.Log("Test");
             yield return new WaitForSeconds(verificationFreq);
         }
+    }
+
+    public GameObject GetRandomGotoPoint()
+    {
+        if (mapTargets == null) return null;
+
+        return mapTargets[new System.Random().Next(mapTargets.Count)].gameObject;
     }
 
     public void AddAgent(StateController agent)

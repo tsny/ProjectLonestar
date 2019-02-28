@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 [RequireComponent(typeof(CanvasGroup))]
 public class UIFadeout : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
@@ -54,5 +55,22 @@ public class UIFadeout : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         canvasGroup = GetComponent<CanvasGroup>();
         StartCoroutine(FadeElement(false));
         playerController = FindObjectOfType<PlayerController>();
+    }
+
+    public static void DisplayRollingText(Text text, string str)
+    {
+        StaticCoroutine.StartCoroutine(RollingTextRoutine(text, str));
+    }
+
+    private static IEnumerator RollingTextRoutine(Text text, string str)
+    {
+        text.text = "";
+
+        foreach (char ch in str)
+        {
+            if (ch == '\\') text.text += "\n";
+            else text.text += ch;
+            yield return new WaitForFixedUpdate(); 
+        }
     }
 }

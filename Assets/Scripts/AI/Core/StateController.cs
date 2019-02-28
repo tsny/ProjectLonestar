@@ -169,4 +169,22 @@ public class StateController : MonoBehaviour
             }
         }
     }
+
+    public enum Relation
+    {
+        NEUTRAL,
+        FRIENDLY,
+        HOSTILE
+    }
+
+    public Color GetRelationColor(Relation relation)
+    {
+        switch (relation)
+        {
+            case Relation.NEUTRAL: return Color.white;
+            case Relation.FRIENDLY: return Color.green;
+            case Relation.HOSTILE: return Color.red;
+            default: return Color.gray;
+        }
+    }
 }

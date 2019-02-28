@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Collections;
 
 public class Ship : MonoBehaviour
 {
@@ -86,6 +87,7 @@ public class Ship : MonoBehaviour
     public Transform firstPersonCameraPosition;
     public float shipCollisionForce = 10;
     public float collisionExplosionRadius = 10;
+    private IEnumerator rotateCR;
 
     public delegate void PossessionEventHandler(PlayerController pc, Ship sender, bool possessed);
     public delegate void ShipEventHandler(Ship sender);
@@ -256,6 +258,38 @@ public class Ship : MonoBehaviour
         }
 
         return false;
+    }
+
+    public void Rotate(char axis, float amount, float increment)
+    {
+        if (rotateCR != null) return;
+        rotateCR = RotateRoutine(axis, amount, increment);
+        StartCoroutine(rotateCR);
+    }
+
+    private IEnumerator RotateRoutine(char axis, float amount, float increment)
+    {
+        float rotated = 0;
+
+        while (rotated < amount)
+        {
+            rotated += amount;
+            switch (axis)
+            {
+                case 'R':
+                    engine.AddRoll(increment);
+                    break;
+                case 'P':
+                    engine.AddPitch(increment);
+                    break;
+                case 'Y': 
+                    engine.AddYaw(increment);
+                    break;
+            }
+            yield return new WaitForFixedUpdate();
+        }
+
+        rotateCR = null;
     }
 
     private void OnCollisionEnter(Collision other) 

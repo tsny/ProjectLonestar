@@ -140,10 +140,22 @@ public class FLTerminal : Terminal
         // }
     }
 
-    [RegisterCommand(MinArgCount = 0, MaxArgCount = 0)]
-    static void test(CommandArg[] args)
+   [RegisterCommand(Name = "agents", MinArgCount = 1, MaxArgCount = 1)]
+    static void AgentCommands(CommandArg[] args)
     {
-        AIManager.Instance.StopAllAgents();
+        var arg = args[0].String;
+
+
+        switch (arg)
+        {
+            case "stop":
+                AIManager.Instance.StopAllAgents();
+                break;
+
+            // case "die"
+            // case "crazy"
+            // case "vendetta" (target player)
+        }
     }
 
     [RegisterCommand(Help = "Toggles the game's time scale between 1 and 0", MinArgCount = 0, MaxArgCount = 0)]
@@ -180,11 +192,24 @@ public class FLTerminal : Terminal
         Log("Ship unpossessed");
     }
 
-    [RegisterCommand(Name = "last", Help = "Repossesses the last ship", MinArgCount = 0, MaxArgCount = 0)]
-    static void Repossesses(CommandArg[] args)
+    [RegisterCommand(Name = "possess", Help = "Repossesses the last ship", MinArgCount = 1, MaxArgCount = 1)]
+    static void Possess(CommandArg[] args)
     {
-        pc.Repossess();
-        Log("Repossessed last ship");
+        var arg = args[1].String;
+
+        switch (arg)
+        {
+            case "last":
+                pc.Repossess();
+                Log("Repossessed last ship");
+                break;
+            case "near":
+                // possess nearest ship
+                break;
+            case "random":
+                // possess random ship
+                break;
+        }
     }
 
     [RegisterCommand(Help = "Reloads the current scene", MinArgCount = 0, MaxArgCount = 0)]

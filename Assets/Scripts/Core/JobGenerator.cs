@@ -1,23 +1,28 @@
 using UnityEngine;
 
-public class JobGenerator : Component
+public class JobGenerator : MonoBehaviour
 {
-    public static string[] adjectives = { "Fiery, Destitute, Loner, Aggressive, Insane, Huge, Powerful, Weak, Wimpy, Overpowered" };
+    public static string[] adjectives = { "Fiery", "Destitute", "Loner", "Aggressive", "Insane", "Huge", "Powerful", "Weak", "Wimpy", "Overpowered" };
     public ShipSpawner[] missionZones;
 
-    private ShipSpawner currentSpawner;
-    private GameObject currentMission;
+    public ShipSpawner currentSpawner;
+    public GameObject currentMission;
 
     public static string GenerateTitle()
     {
         int numOfEnemies = UnityEngine.Random.Range(1, 7);
         string adjective = adjectives[new System.Random().Next(adjectives.Length)];
-        return numOfEnemies + " " + adjective + " need to be dealt with";
+        return numOfEnemies + " " + adjective + " enemy ships need to be dealt with";
     }    
 
     private void HandleSpawnTriggered()
     {
         currentSpawner.Triggered -= HandleSpawnTriggered;
+    }
+
+    void Start()
+    {
+        GenerateMissionInZone();
     }
 
     public void GenerateMissionInZone()

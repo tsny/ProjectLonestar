@@ -11,7 +11,6 @@ public class Loot : MonoBehaviour
 
     public ParticleSystem deathFX;
 
-    public bool isBeingLooted;
     public float pickupRange = 5;
     public float outOfBoundsRange = 100;
 
@@ -72,19 +71,6 @@ public class Loot : MonoBehaviour
         Destroy(rb);
     }
 
-    // Maybe some kind of higher level AI should manage whether an agent or anything is too far away from the player
-    // private IEnumerator CheckPlayerDistance()
-    // {
-    //     // while (true)
-    //     // {
-    //     //     var playerTooFar = Vector3.Distance(GameSettings.pc.transform.position, transform.position) > maxPlayerDistance;
-    //     //     if (playerTooFar && !isImportantToPlayer) break;
-    //     //     yield return new WaitForSeconds(5);
-    //     // }
-
-    //     Destroy(gameObject);
-    // }
-
     private void OnTriggerEnter(Collider other) 
     {
         if (other.CompareTag("Player"))
@@ -107,13 +93,11 @@ public class Loot : MonoBehaviour
     {
         ClearTarget();
         target = newTarget;
-        isBeingLooted = true;
     }
 
     public void ClearTarget()
     {
         target = null;
-        isBeingLooted = false;
     }
 
     private void FixedUpdate()
@@ -123,7 +107,7 @@ public class Loot : MonoBehaviour
 
     public void GravitateTowardsLooter()
     {
-        if (!target || !isBeingLooted) return;
+        if (!target) return;
 
         if (DistanceToTarget > outOfBoundsRange)
         {
@@ -138,13 +122,13 @@ public class Loot : MonoBehaviour
             if (!targetInventory)
             {
                 ClearTarget();
-                Debug.LogError("ERROR: No inventory");
-                return;
+                Debug.LogWarning("ERROR: No inventory");
             }
-
-            targetInventory.AddItem(item);
-
-            if (Looted != null) Looted(this);
+            else
+            {
+                targetInventory.AddItem(item);
+                if (Looted != null) Looted(this);
+            }
 
             Destroy(gameObject);
             return;

@@ -18,7 +18,7 @@ public class StateControllerEditor : Editor
 
     private void ShowButtons()
     {
-        if (Btn("Target Random Object"))
+        if (Btn("Target Random GameObject w/ Mesh"))
         {
             var targets = FindObjectsOfType<MeshRenderer>();
             cont.Target = targets[UnityEngine.Random.Range(0, targets.Length)].gameObject;
