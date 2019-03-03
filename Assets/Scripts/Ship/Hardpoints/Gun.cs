@@ -71,7 +71,6 @@ public class Gun : ShipComponent
     private void Awake()
     {
         stats = Utilities.CheckScriptableObject<WeaponStats>(stats);
-        cooldown = Utilities.CheckScriptableObject<Cooldown>(cooldown);
         cooldown.duration = stats.cooldownDuration;
         SetTargetToNeutral();
     }

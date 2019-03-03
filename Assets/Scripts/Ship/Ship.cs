@@ -102,7 +102,6 @@ public class Ship : MonoBehaviour
 
     void Awake()
     {
-        energyCooldown = Utilities.CheckScriptableObject<Cooldown>(energyCooldown);
         ai = Utilities.CheckComponent<StateController>(gameObject);
 
         targetInfo = Utilities.CheckComponent<TargetingInfo>(gameObject);

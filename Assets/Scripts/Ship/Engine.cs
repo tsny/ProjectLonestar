@@ -133,8 +133,6 @@ public class Engine : ShipComponent
     {
         meshOriginalRot = meshTransform.rotation;     
         engineStats = Utilities.CheckScriptableObject<EngineStats>(engineStats);
-        blinkCD = Utilities.CheckScriptableObject<Cooldown>(blinkCD);
-        sidestepCD = Utilities.CheckScriptableObject<Cooldown>(sidestepCD);
     }
 
     public void SidestepRight()

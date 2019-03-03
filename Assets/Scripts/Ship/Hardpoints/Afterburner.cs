@@ -20,7 +20,6 @@ public class Afterburner : Hardpoint
 
     private void Awake()
     {
-        outOfEnergyCooldown = Utilities.CheckScriptableObject<Cooldown>(outOfEnergyCooldown);
         stats = Utilities.CheckScriptableObject<AfterburnerStats>(stats);
         charge = stats.capacity;
     }

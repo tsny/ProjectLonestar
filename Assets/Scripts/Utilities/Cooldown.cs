@@ -1,7 +1,8 @@
 using System.Collections;
 using UnityEngine;
 
-public class Cooldown : ScriptableObject
+[System.Serializable]
+public class Cooldown
 {
     public bool logElapsed = false;
     public bool IsDecrementing { get { return cr != null; } }
