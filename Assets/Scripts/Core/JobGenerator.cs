@@ -30,6 +30,8 @@ public class JobGenerator : MonoBehaviour
         Reset();
 
         var zone = GetRandomZone();
+        if (zone == null) return;
+
         var mission = new GameObject("PLAYERMISSION");
         mission.AddComponent<TargetingInfo>().Init("MISSION", null, false);
 

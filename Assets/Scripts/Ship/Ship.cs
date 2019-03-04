@@ -275,15 +275,9 @@ public class Ship : MonoBehaviour
             rotated += amount;
             switch (axis)
             {
-                case 'R':
-                    engine.AddRoll(increment);
-                    break;
-                case 'P':
-                    engine.AddPitch(increment);
-                    break;
-                case 'Y': 
-                    engine.AddYaw(increment);
-                    break;
+                case 'R': engine.AddRoll(increment); break;
+                case 'P': engine.AddPitch(increment); break;
+                case 'Y': engine.AddYaw(increment); break;
             }
             yield return new WaitForFixedUpdate();
         }

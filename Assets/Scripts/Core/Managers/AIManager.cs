@@ -42,7 +42,7 @@ public class AIManager : Object
 
     public GameObject GetRandomGotoPoint()
     {
-        if (mapTargets == null) return null;
+        if (mapTargets == null || mapTargets.Count <= 0) return null;
 
         return mapTargets[new System.Random().Next(mapTargets.Count)].gameObject;
     }
