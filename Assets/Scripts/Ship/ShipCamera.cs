@@ -32,6 +32,12 @@ public class ShipCamera : ShipComponent
     public float maxUpperPitch = 1;
     public float maxLowerPitch = -10;
     public float maxDistance = 10;
+
+    [Header("Shake")] [Space(5)]
+    public float shakeX = 5;
+    public float shakeY = 5;
+    public bool isShaking;
+
     public float Speed
     {
         get
@@ -90,8 +96,15 @@ public class ShipCamera : ShipComponent
         Vector3 newPosition;
 
         newPosition = transformToFollow.position - (transformToFollow.forward * distanceOffset);
-        newPosition = newPosition + (transformToFollow.up * pitchOffset);
-        newPosition = newPosition + (transformToFollow.right * yawOffset);
+        newPosition += (transformToFollow.up * pitchOffset);
+        newPosition += (transformToFollow.right * yawOffset);
+
+        if (isShaking)
+        {
+            float x = UnityEngine.Random.Range(-shakeX, shakeX);
+            float y = UnityEngine.Random.Range(-shakeY, shakeY);
+            newPosition += new Vector3(x, y); 
+        }
 
         transform.position = Vector3.Lerp(transform.position, newPosition, lerpSpeed);
         transform.rotation = transformToFollow.rotation;
