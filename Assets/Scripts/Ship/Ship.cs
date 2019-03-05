@@ -83,10 +83,12 @@ public class Ship : MonoBehaviour
     [Header("Other")]
     private bool _possessed;
     public bool Possessed { get { return _possessed; } }
-    public Transform cameraPosition;
-    public Transform firstPersonCameraPosition;
     public float shipCollisionForce = 10;
     public float collisionExplosionRadius = 10;
+    public int damagedEffectThreshold = 50; 
+    public Transform cameraPosition;
+    public Transform firstPersonCameraPosition;
+    public List<ParticleSystem> damagedEffects;
     private IEnumerator rotateCR;
 
     public delegate void PossessionEventHandler(PlayerController pc, Ship sender, bool possessed);
@@ -117,7 +119,7 @@ public class Ship : MonoBehaviour
         engine.DriftingChange += HandleDriftingChange;
         engine.ThrottleChanged += HandleThrottleChange;
         cruiseEngine.CruiseStateChanged += HandleCruiseChange;
-        health.HealthDepleted += HandleHealthDepleted;
+        health.HealthUpdated += HandleHealthUpdated;
 
         SetLayersAndTags(_possessed);
 
@@ -134,6 +136,20 @@ public class Ship : MonoBehaviour
                 energy = Mathf.Clamp(energy, 0, energyCapacity);
             }
         }
+    }
+
+    void HandleHealthUpdated(Health hp)
+    {
+        if (health.Amount <= 0)
+        {
+            Die();
+            return;
+        } 
+
+        if (health.Amount <= damagedEffectThreshold)
+            damagedEffects.ForEach(x => x.Play());
+        else 
+            damagedEffects.ForEach(x => x.Stop());
     }
 
     private void HandleCruiseChange(CruiseEngine sender, CruiseState newState)
@@ -156,11 +172,6 @@ public class Ship : MonoBehaviour
             cruiseEngine.StopAnyCruise();
 
         ShipPhysicsStats.HandleDrifting(rb, engine.physicsStats, drifting);
-    }
-
-    private void HandleHealthDepleted()
-    {
-        Die();
     }
 
     public void SetPossessed(PlayerController pc, bool possessed)
