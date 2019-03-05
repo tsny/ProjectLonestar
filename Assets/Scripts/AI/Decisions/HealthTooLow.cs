@@ -14,7 +14,7 @@ public class HealthTooLow : FLDecision
 
     public override bool Decide(StateController cont)
     {
-        if (cont.ship.health.health < healthThreshold)
+        if (cont.ship.health.Amount < healthThreshold)
         {
             if (Utilities.Chance(chance))
             {

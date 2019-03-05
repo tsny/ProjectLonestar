@@ -13,6 +13,6 @@ public class TargetHealth : FLDecision
 
     public override bool Decide(StateController controller)
     {
-        return controller.TargetShip.health.health <= healthThreshold;
+        return controller.TargetShip.health.Amount <= healthThreshold;
     }
 }

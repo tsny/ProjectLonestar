@@ -13,24 +13,62 @@ public class Health : MonoBehaviour
 
         set
         {
-            if (InvulnerableToggled != null) InvulnerableToggled(this, value);
+            if (InvulnerableToggled != null) InvulnerableToggled(this);
             _inv = value;
         }
     }
+
+    public float Amount
+    {
+        get
+        {
+            return _amount;
+        }
+
+        set
+        {
+            _amount = value;
+            if (HealthUpdated != null) HealthUpdated(this);
+        }
+    }
+
+    public float Shield
+    {
+        get
+        {
+            return _shield;
+        }
+
+        set
+        {
+            _shield = value;
+        }
+    }
+
+    public float Armor
+    {
+        get
+        {
+            return armor;
+        }
+
+        set
+        {
+            armor = value;
+        }
+    }
+
     public HealthStats stats;
 
-    public HealthObject[] healthObjects;
+    private float _amount = 100;
+    private float _shield = 100;
+    private float armor;
 
-    public float health = 100;
-    public float shield = 100;
-    public float armor;
-
-    public event EventHandler TookDamage;
-    public event EventHandler HealthDepleted;
+    public event HealthEventHandler HealthUpdated;
+    public event HealthEventHandler HealthDepleted;
     public event HealthEventHandler InvulnerableToggled;
 
-    public delegate void EventHandler();
-    public delegate void HealthEventHandler(Health sender, bool invulnerable);
+    public delegate void HealthEventHandler(Health sender);
 
     private void Awake() 
     {
@@ -39,44 +77,50 @@ public class Health : MonoBehaviour
 
     public void Init()
     {
-        // foreach (var obj in healthObjects)
-        // {
-        //     obj.Init();
-        // }
-
         stats = Utilities.CheckScriptableObject<HealthStats>(stats);
-
-        health = stats.startingHealth;
-        shield = stats.startingShield;
-        armor = stats.startingArmor;
+        Amount = stats.startingHealth;
+        Shield = stats.startingShield;
+        Armor = stats.startingArmor;
     } 
 
-    private void OnTookDamage(WeaponStats weapon) { if (TookDamage != null) TookDamage(); }
-    private void OnHealthDepleted() { if (HealthDepleted != null) HealthDepleted(); }
+    private void OnTookDamage(WeaponStats weapon) { if (HealthUpdated != null) HealthUpdated(this); }
+    private void OnHealthDepleted() { if (HealthDepleted != null) HealthDepleted(this); }
 
     public virtual void TakeDamage(WeaponStats weapon)
     {
-        if (_inv || health <= stats.minHealth) return;
+        if (_inv || Amount <= stats.minHealth) return;
 
-        if (shield >= stats.minShield)
+        if (Shield >= stats.minShield)
         {
-            shield -= weapon.shieldDamage;
+            Shield -= weapon.shieldDamage;
         }
 
-        else if (armor >= stats.minArmor)
+        else if (Armor >= stats.minArmor)
         {
             // Do some more calculations here
-            armor -= weapon.hullDamage;
+            Armor -= weapon.hullDamage;
         }
 
-        else if (health >= stats.minHealth)
+        else if (Amount >= stats.minHealth)
         {
-            health -= weapon.hullDamage;
+            Amount -= weapon.hullDamage;
         }
 
         OnTookDamage(weapon);
 
-        if (health <= stats.minHealth) OnHealthDepleted();
+        if (Amount <= stats.minHealth) OnHealthDepleted();
+    }
+
+    public void FullHealth()
+    {
+        Amount = stats.maxHealth;
+        Shield = stats.maxShield;
+    }
+
+    public void Deplete()
+    {
+        Amount = 0;        
+        Shield = 0;
     }
 }
 

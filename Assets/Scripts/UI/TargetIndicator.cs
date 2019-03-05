@@ -130,8 +130,8 @@ public class TargetIndicator : MonoBehaviour
         if (target.health == null) return;
 
         var health = target.health;
-        healthBarImage.fillAmount = health.health / health.stats.maxHealth;
-        shieldBarImage.fillAmount = health.shield / health.stats.maxShield;
+        healthBarImage.fillAmount = health.Amount / health.stats.maxHealth;
+        shieldBarImage.fillAmount = health.Shield / health.stats.maxShield;
     }
 
     public virtual void Select()

@@ -25,19 +25,7 @@ public class AIManager : Object
         SceneManager.activeSceneChanged += (scn, scn2) => { agents.Clear(); }; 
         agents = FindObjectsOfType<StateController>().ToList();
         StateController.Spawned += AddAgent;
-
-        //StaticCoroutine.StartCoroutine(TestCheck());
-
         mapTargets = GameObject.FindGameObjectsWithTag("MapTarget").ToList();
-    }
-
-    private IEnumerator TestCheck()
-    {
-        while (true)
-        {
-            Debug.Log("Test");
-            yield return new WaitForSeconds(verificationFreq);
-        }
     }
 
     public GameObject GetRandomGotoPoint()
