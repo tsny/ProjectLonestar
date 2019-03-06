@@ -8,6 +8,8 @@ public class LootDropper : MonoBehaviour
     [ContextMenu("Spawn Drops")]
     public void SpawnLootDrops()
     {
+        if (dropList == null) return;
+
         foreach (Drop drop in dropList)
         {
             if (Utilities.Chance(drop.chance))
