@@ -8,13 +8,13 @@ public static class Utilities
     /// <summary>
     /// Checks whether a gameObject has a specific component and adds it if it doesn't
     /// </summary>
-    public static T CheckComponent<T>(GameObject caller) where T : Component
+    public static T CheckComponent<T>(GameObject target) where T : Component
     {
-        var comp = caller.GetComponent<T>();
+        var comp = target.GetComponent<T>();
 
         if (comp == null)
         {
-            comp = caller.AddComponent<T>();
+            comp = target.AddComponent<T>();
         }
         
         return comp;

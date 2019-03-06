@@ -67,7 +67,8 @@ public class ShipSpawner : MonoBehaviour
         ship.ai.Target = spawnInfo.target ?? PlayerController.Instance.ship.gameObject;
         ship.ai.aiIsActive = true;
 
-        ship.Died += (s) => { LootSpawner.SpawnLoot(s.transform.position, spawnInfo); };
+        var dropper = Utilities.CheckComponent<LootDropper>(ship.gameObject);
+        ship.Died += (s) => { dropper.SpawnLootDrops(); };
 
         return ship;
     }
@@ -131,7 +132,5 @@ public class ShipSpawnInfo
     public State state;
     public Loadout loadout;
     public Ship ship;
-    public DropList dl;
-    public LootSpawnInfo[] lootInfo;
-    // Relations to other ships??
+    public Drop[] drops;
 }

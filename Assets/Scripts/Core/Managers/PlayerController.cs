@@ -230,52 +230,52 @@ public class PlayerController : MonoBehaviour
         #region hardpoints
         if(Input.GetKey(InputManager.Hardpoint1Key))
         {
-            ship.FireWeaponHardpoint(1, CurrentAimPosition);
+            ship.FireWeaponHardpoint(ship.guns[0], CurrentAimPosition);
         }
 
         if(Input.GetKey(InputManager.Hardpoint2Key))
         {
-            ship.FireWeaponHardpoint(2, CurrentAimPosition);
+            ship.FireWeaponHardpoint(ship.guns[1], CurrentAimPosition);
         }
 
         if(Input.GetKey(InputManager.Hardpoint3Key))
         {
-            ship.FireWeaponHardpoint(3, CurrentAimPosition);
+            ship.FireWeaponHardpoint(ship.guns[2], CurrentAimPosition);
         }
 
         if(Input.GetKey(InputManager.Hardpoint4Key))
         {
-            ship.FireWeaponHardpoint(4, CurrentAimPosition);
+            ship.FireWeaponHardpoint(ship.guns[3], CurrentAimPosition);
         }
 
         if(Input.GetKey(InputManager.Hardpoint5Key))
         {
-            ship.FireWeaponHardpoint(5, CurrentAimPosition);
+            ship.FireWeaponHardpoint(ship.guns[4], CurrentAimPosition);
         }
 
         if(Input.GetKey(InputManager.Hardpoint6Key))
         {
-            ship.FireWeaponHardpoint(6, CurrentAimPosition);
+            ship.FireWeaponHardpoint(ship.guns[5], CurrentAimPosition);
         }
 
         if(Input.GetKey(InputManager.Hardpoint7Key))
         {
-            ship.FireWeaponHardpoint(7, CurrentAimPosition);
+            ship.FireWeaponHardpoint(ship.guns[6], CurrentAimPosition);
         }
 
         if(Input.GetKey(InputManager.Hardpoint8Key))
         {
-            ship.FireWeaponHardpoint(8, CurrentAimPosition);
+            ship.FireWeaponHardpoint(ship.guns[7], CurrentAimPosition);
         }
 
         if(Input.GetKey(InputManager.Hardpoint9Key))
         {
-            ship.FireWeaponHardpoint(9, CurrentAimPosition);
+            ship.FireWeaponHardpoint(ship.guns[8], CurrentAimPosition);
         }
 
         if(Input.GetKey(InputManager.Hardpoint10Key))
         {
-            ship.FireWeaponHardpoint(10, CurrentAimPosition);
+            ship.FireWeaponHardpoint(ship.guns[9], CurrentAimPosition);
         }
 
         if(Input.GetKey(InputManager.FireKey))

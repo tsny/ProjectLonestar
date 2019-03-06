@@ -226,7 +226,6 @@ public class Ship : MonoBehaviour
     public bool FireActiveWeapons(AimPosition aimPos)
     {
         var allFired = false;
-
         foreach (Gun gun in guns)
         {
             if (gun.IsActive) 
@@ -235,23 +234,7 @@ public class Ship : MonoBehaviour
                     allFired = false;
             }
         }
-
         return allFired;
-    }
-
-    public bool FireWeaponHardpoint(int hardpointSlot, AimPosition aim)
-    {
-        hardpointSlot--;
-
-        if (hardpointSlot < 0 || hardpointSlot > guns.Count) 
-            return false;
-
-        if (guns[hardpointSlot] != null)
-        {
-            return FireWeaponHardpoint(guns[hardpointSlot], aim);
-        }
-
-        return false;
     }
 
     public bool FireWeaponHardpoint(Gun gun, AimPosition aim)
@@ -277,6 +260,14 @@ public class Ship : MonoBehaviour
         StartCoroutine(rotateCR);
     }
 
+    public void FullStop()
+    {
+        engine.Throttle = 0;
+        engine.Strafe = 0;
+        cruiseEngine.StopAnyCruise();
+        aft.Deactivate();
+    }
+
     private IEnumerator RotateRoutine(char axis, float amount, float increment)
     {
         float rotated = 0;
@@ -294,6 +285,16 @@ public class Ship : MonoBehaviour
         }
 
         rotateCR = null;
+    }
+
+    private IEnumerator LookAtRoutine(Transform target)
+    {
+        while (true)
+        {
+            Quaternion newRot = Quaternion.LookRotation(target.position - transform.position);
+            transform.rotation = Quaternion.Slerp(transform.rotation, newRot, engine.engineStats.turnSpeed * Time.deltaTime);
+            yield return new WaitForFixedUpdate();
+        }
     }
 
     private void OnCollisionEnter(Collision other) 

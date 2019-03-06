@@ -61,13 +61,7 @@ public class ShipCamera : ShipComponent
 
     private void FixedUpdate()
     {
-        if (transformToFollow == null)
-        {
-            //Debug.LogWarning("ShipCam has no transform to follow... Disabling...");
-            //enabled = false;
-            return;
-        }
-
+        if (transformToFollow == null) return;
         CalculateOffsets();
         FollowTarget();
     }
