@@ -27,6 +27,7 @@ public class Item : ScriptableObject
     public int SpaceRemaining { get { return stackLimit - quantity; } }
     public bool StackIsFull { get { return (quantity == stackLimit) ? true : false; } }
     public Rarity rarity = Rarity.Common;
+    public Gradient gradient;
 
     public static Color GetMatchingColor(Item item)
     {
