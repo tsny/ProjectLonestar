@@ -149,6 +149,12 @@ public class StateController : MonoBehaviour
         }
     }
 
+    public void TargetRandomPoint()
+    {
+        Target = new GameObject("Temp Target");
+        Target.transform.position = transform.position + Vector3.one * Random.Range(10, 50);
+    }
+
     public void TargetRandomEnemy()
     {
         if (enemies.Count < 1 || enemies == null) return;

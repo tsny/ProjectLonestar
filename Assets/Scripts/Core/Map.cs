@@ -5,57 +5,62 @@ using UnityEngine.UI;
 
 public class Map : MonoBehaviour 
 {
-    public float width;
-    public float height;
+    public Vector3 mapCenter;
+    public Vector3 defaultMapSize;
+    public MapTarget[] targets;
+    public Image mapImage;
+
     public float margin;
-    public Image bg;
     public static Dictionary<Type, Sprite> typesDict;
 
-    public void Toggle() { gameObject.SetActive(!gameObject.activeSelf); }
-
-    private void Awake() 
-    {
-        CalculateBounds();     
-    }
-
     [ContextMenu("CalculateBounds")]
-    public void CalculateBounds() 
+    public void Main()
     {
-        var targets = FindObjectsOfType<MapTarget>();
-        if (targets == null || targets.Length < 2) return; 
-
-        DistObj[] objs = new DistObj[targets.Length];
-        int biggestIndex = 0;
-        
-        for (int i = 0; i < targets.Length; i++)
+        targets = FindObjectsOfType<MapTarget>();
+        if (targets == null || targets.Length < 2) 
         {
-            objs[i].self = targets[i].gameObject;
-
-            for (int j = 0; j < targets.Length; j++)
-            {
-                if (targets[i] == targets[j]) continue;
-
-                var distTest = Vector3.Distance(objs[i].self.transform.position, targets[j].transform.position);
-
-                if (distTest > objs[i].dist) 
-                {
-                    objs[i].target = targets[j].gameObject;
-                    objs[i].dist = distTest;
-                }
-            }
-
-            if (objs[i].dist > objs[biggestIndex].dist)
-                biggestIndex = i;
+            Debug.LogError("Could not calculate bounds. Not enough MapTargets in scene");
+            return; 
         }
 
-        DistObj furthestPoints = objs[biggestIndex];
+        var bounds = CalculateMapBounds(targets); 
+
+        var mapObject = new GameObject("Map Bounds");
+        mapObject.transform.position = bounds.center;
+        var box = Utilities.CheckComponent<BoxCollider>(mapObject);
+        box.size = bounds.size;
+
+        var map = mapImage.rectTransform.sizeDelta;
+        var overworld = new Vector2(bounds.size.x, bounds.size.z);
+        var scale = overworld / map;
+
+        foreach (var target in targets)
+        {
+            var loc = target.transform.position - bounds.center;
+            var temp = new Vector2(loc.x, loc.z) / scale;
+            print(temp);
+        }
     }
 
-
-    struct DistObj
+    public Bounds CalculateMapBounds(MapTarget[] gameObjects)
     {
-        public GameObject self;
-        public GameObject target;
-        public float dist;
+        Bounds bounds = new Bounds(mapCenter, defaultMapSize);
+
+        String[] containees = new String[gameObjects.Length];
+        for (int i = 0; i < gameObjects.Length; i++)
+        {
+            containees[i] = gameObjects[i].name;
+            bounds.Encapsulate(gameObjects[i].transform.position);
+        }
+
+        var longestSide = bounds.size.x > bounds.size.y ? bounds.size.x : bounds.size.y;
+        bounds = new Bounds(bounds.center, new Vector3(longestSide, 0, longestSide));
+
+        bounds.Expand(margin);
+
+        print("bounds contains: " + string.Join(", ", containees));
+        print("making bounds with " + bounds);
+
+        return bounds;
     }
 }

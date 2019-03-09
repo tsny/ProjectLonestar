@@ -1,31 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-//using System;
 using UnityEngine.Events;
 
 public class ShipSpawner : MonoBehaviour
 {
-    public bool destroyOnTrigger = true;
-    public bool targetPlayer;
-
-    public float spawnDelay = 1;
-    public float destroyDelay = 3;
-    public float distanceApart = 5;
-
-    public Transform target;
     public UnityEvent onTriggered;
-
-    // Default State
-    // Default Actions?
-    // Need to make this more complicated in order to individually make some ships hostile/friendly to one another
     public ShipSpawnInfo[] shipsToSpawn;
-
-    // TODO: Experiment with these
-    // private int wave = 1;
-    // private int shipsPerWave = 1;
-    // private float waveDuration = 10;
-
     public event TriggeredEventHandler Triggered;
     public delegate void TriggeredEventHandler();
 
@@ -44,13 +25,6 @@ public class ShipSpawner : MonoBehaviour
     public void TriggerSelf()
     {
         SpawnShips(shipsToSpawn, transform.position, coll.bounds);
-        // Spawn all
-        // Destroy self or implement wave feature if we want more ships to spawn later
-        if (destroyOnTrigger)
-        {
-            coll.enabled = false;
-            Destroy(gameObject, destroyDelay);
-        }
         if (Triggered != null) Triggered();
     }
 

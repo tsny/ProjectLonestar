@@ -239,8 +239,7 @@ public class Ship : MonoBehaviour
 
     public bool FireWeaponHardpoint(Gun gun, AimPosition aim)
     {
-        if (CanFireWeapons == false || gun.stats == null) 
-            return false;
+        if (CanFireWeapons == false || gun.stats == null) return false;
 
         if (gun.stats.energyDraw < energy && gun.Fire(aim, colliders.ToArray()))
         {
