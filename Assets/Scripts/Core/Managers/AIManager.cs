@@ -22,7 +22,7 @@ public class AIManager : Object
 
     private AIManager()
     {
-        SceneManager.activeSceneChanged += (scn, scn2) => { agents.Clear(); }; 
+        SceneManager.activeSceneChanged += (scn, scn2) => agents.Clear();  
         agents = FindObjectsOfType<StateController>().ToList();
         StateController.Spawned += AddAgent;
         mapTargets = GameObject.FindGameObjectsWithTag("MapTarget").ToList();

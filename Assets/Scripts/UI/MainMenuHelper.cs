@@ -6,12 +6,21 @@ public class MainMenuHelper : MonoBehaviour
 {
 	public Ship[] shipsToPutAtFullThrottle;
 	public Rigidbody cameraRb;
+	public SceneHelper helper;
 
 	private void Start() 
 	{
 		foreach (var ship in shipsToPutAtFullThrottle)
 		{
 			ship.engine.Throttle = 1;	
+		}
+	}
+
+	private void Update() 
+	{
+		if (Input.GetKeyDown(KeyCode.Return) && helper.HasStartedFadeIn)
+		{
+			helper.FadeToScene("SCN_Debug");
 		}
 	}
 

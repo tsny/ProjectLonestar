@@ -8,6 +8,8 @@ public class SceneHelper : MonoBehaviour
     public PlayerController pc;
     public bool spawnPlayer;
 
+    public bool HasStartedFadeIn { get; private set; }
+
     void Awake()
     {
         fade.updateElapsed = false;
@@ -27,6 +29,7 @@ public class SceneHelper : MonoBehaviour
     public void StartFading()
     {
         fade.updateElapsed = true;
+        HasStartedFadeIn = true;
     }
     
     public void FadeToScene(string scnName)

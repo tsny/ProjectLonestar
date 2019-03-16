@@ -86,4 +86,22 @@ public static class Utilities
         var v = Enum.GetValues (typeof (T));
         return (T) v.GetValue (new System.Random().Next(v.Length));
     }
+
+    public static void ClearChildren(Transform trans)
+    {
+        var objects = new GameObject[trans.childCount];
+
+        for (int i = 0; i < trans.childCount; i++)
+        {
+            objects[i] = trans.GetChild(i).gameObject;
+        }
+
+        trans.DetachChildren();
+
+        foreach(var obj in objects)
+        {
+            if (Application.isPlaying) GameObject.Destroy(obj);
+            else GameObject.DestroyImmediate(obj);
+        }
+    }
 }
