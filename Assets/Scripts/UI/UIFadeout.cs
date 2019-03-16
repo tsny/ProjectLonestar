@@ -3,58 +3,59 @@ using System.Collections;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(CanvasGroup))]
 public class UIFadeout : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     public PlayerController playerController;
+    public CanvasGroup canvasGroup;
+    public Image image;
 
     public float fadeDuration = 1;
     public float fadeInAlpha = 1;
     public float fadeOutAlpha = .2f;
     public float mouseExitDelay = .5f;
 
-    private CanvasGroup canvasGroup;
+    public bool fadingIn; 
+    public float elapsed = 0;
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        StopAllCoroutines();
-        StartCoroutine(FadeElement(true));
-
-        if (playerController != null)
-        {
-            playerController.inputAllowed = false;
-        }
+        fadingIn = true;
+        elapsed = 0;
+        print("pointer enter");
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        StopAllCoroutines();
-        StartCoroutine(FadeElement(false));
-
-        if (playerController != null)
-        {
-            playerController.inputAllowed = true;
-        }
+        fadingIn = false;
+        print("pointer exit");
     }
 
-    IEnumerator FadeElement(bool fadeIn)
-    {
-        float desiredAlpha = fadeIn ? fadeInAlpha : fadeOutAlpha;
-        float alpha = canvasGroup.alpha;
-
-        for (float t = 0; t < 1; t += Time.deltaTime / fadeDuration)
-        {
-            canvasGroup.alpha = Mathf.Lerp(canvasGroup.alpha, desiredAlpha, t);
-            yield return null;
-        }
+    private void OnMouseEnter() {
+        fadingIn = true;
+        elapsed = 0;
+        print("mouse enter");
     }
 
-    // Use this for initialization
-    void Start()
+    private void OnMouseExit() {
+        fadingIn = false;
+        print("mouse exit");
+    }
+
+    private void Update()
     {
-        canvasGroup = GetComponent<CanvasGroup>();
-        StartCoroutine(FadeElement(false));
-        playerController = FindObjectOfType<PlayerController>();
+        if (fadingIn && elapsed < fadeDuration)
+        {
+            elapsed += Time.fixedDeltaTime;
+        } 
+        else if (!fadingIn && elapsed > 0)
+        {
+            elapsed -= Time.fixedDeltaTime;  
+        }
+
+        //canvasGroup.alpha = elapsed / fadeDuration;
+        var temp = image.color;
+        temp.a = (elapsed / fadeDuration) * fadeInAlpha;
+        image.color = temp;
     }
 
     public static void DisplayRollingText(Text text, string str)

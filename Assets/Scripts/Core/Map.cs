@@ -9,37 +9,52 @@ public class Map : MonoBehaviour
     public Vector3 defaultMapSize;
     public MapTarget[] targets;
     public Image mapImage;
+    public float scaleModifier = 2;
 
     public float margin;
     public static Dictionary<Type, Sprite> typesDict;
 
-    [ContextMenu("CalculateBounds")]
-    public void Main()
+    [ContextMenu("Refresh UI")]
+    public void Initialize()
     {
+        Utilities.ClearChildren(mapImage.transform);
+
         targets = FindObjectsOfType<MapTarget>();
-        if (targets == null || targets.Length < 2) 
+        if (targets == null || targets.Length < 2 || mapImage == null) 
         {
-            Debug.LogError("Could not calculate bounds. Not enough MapTargets in scene");
+            Debug.LogError("Could not calculate bounds. Not enough MapTargets in scene or mapImage is null");
             return; 
         }
 
         var bounds = CalculateMapBounds(targets); 
+        var mapSize = mapImage.rectTransform.sizeDelta;
+        var worldSize = new Vector2(bounds.size.x, bounds.size.z);
+        var mapWorldScale = mapSize / worldSize;
 
+        //CreateVisualizedBounds(bounds);
+
+        foreach (var target in targets)
+        {
+            var pos = target.transform.position - bounds.center; 
+            var mapPos = new Vector2(pos.x, pos.z);
+            //var posScale = mapPos / worldSize;
+            mapPos.Scale(mapWorldScale);
+            var mapIcon = new GameObject("Map_" + target.name).AddComponent<Image>();
+
+            mapIcon.transform.SetParent(mapImage.transform, false);
+            mapIcon.rectTransform.localPosition = new Vector3(mapPos.x, mapPos.y);
+            mapIcon.sprite = target.mapSprite;
+            mapIcon.rectTransform.sizeDelta = target.spriteSize;
+        }
+    }
+
+    public static GameObject CreateVisualizedBounds(Bounds bounds)
+    {
         var mapObject = new GameObject("Map Bounds");
         mapObject.transform.position = bounds.center;
         var box = Utilities.CheckComponent<BoxCollider>(mapObject);
         box.size = bounds.size;
-
-        var map = mapImage.rectTransform.sizeDelta;
-        var overworld = new Vector2(bounds.size.x, bounds.size.z);
-        var scale = overworld / map;
-
-        foreach (var target in targets)
-        {
-            var loc = target.transform.position - bounds.center;
-            var temp = new Vector2(loc.x, loc.z) / scale;
-            print(temp);
-        }
+        return mapObject;
     }
 
     public Bounds CalculateMapBounds(MapTarget[] gameObjects)
