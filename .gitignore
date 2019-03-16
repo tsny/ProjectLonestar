@@ -314,3 +314,10 @@ ExportedObj/
 *.VC.db
 
 *.asset
+
+# tsny custom
+*.ttf
+*.mat
+*.rar
+
+Assets/SciFiGUI
