@@ -321,3 +321,5 @@ ExportedObj/
 *.rar
 
 Assets/SciFiGUI
+
+buildversion.txt
