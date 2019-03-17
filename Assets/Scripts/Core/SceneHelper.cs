@@ -21,7 +21,16 @@ public class SceneHelper : MonoBehaviour
             pc.Possess(ship);
         }
 
+
         Invoke("StartFadeIn", 2);
+    }
+
+    [ContextMenu("test")]
+    public void Test()
+    {
+        var test = SaveManager.QuickSave();
+        print(test.name);
+        print(test.Filepath);
     }
 
     public void StartFadeIn()

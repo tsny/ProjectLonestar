@@ -36,7 +36,10 @@ public class FadeCamera : MonoBehaviour
         alpha = curve.Evaluate(elapsed);
 
         if (musicSource != null)
+        {
+            if (!musicSource.isPlaying) musicSource.Play();
             musicSource.volume = 1 - curve.Evaluate(elapsed) - (1 - origMusicVolume);
+        }
 
         CheckTransitionFinished();
     }

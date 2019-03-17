@@ -259,6 +259,13 @@ public class Ship : MonoBehaviour
         StartCoroutine(rotateCR);
     }
 
+    public void Rotate(char axis, AnimationCurve curve, float increment)
+    {
+        if (rotateCR != null) return;
+        rotateCR = RotateOverCurveRoutine(axis, curve);
+        StartCoroutine(rotateCR);
+    }
+
     public void FullStop()
     {
         engine.Throttle = 0;
@@ -280,6 +287,26 @@ public class Ship : MonoBehaviour
                 case 'P': engine.AddPitch(increment); break;
                 case 'Y': engine.AddYaw(increment); break;
             }
+            yield return new WaitForFixedUpdate();
+        }
+
+        rotateCR = null;
+    }
+
+    private IEnumerator RotateOverCurveRoutine(char axis, AnimationCurve curve)
+    {
+        float elapsed = 0;
+        while (elapsed < curve.keys[curve.length].time)
+        {
+            var amount = curve.Evaluate(elapsed);
+
+            switch (axis)
+            {
+                case 'R': engine.AddRoll(amount); break;
+                case 'P': engine.AddPitch(amount); break;
+                case 'Y': engine.AddYaw(amount); break;
+            }
+            elapsed += Time.fixedDeltaTime;
             yield return new WaitForFixedUpdate();
         }
 
