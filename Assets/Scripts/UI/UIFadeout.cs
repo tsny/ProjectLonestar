@@ -2,14 +2,16 @@
 using System.Collections;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using UnityEngine.Events;
 
 public class UIFadeout : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     public PlayerController playerController;
     public CanvasGroup canvasGroup;
     public Image image;
+    public UnityEvent onFinishedFade;
 
-    public float fadeDuration = 1;
+    public float fadeInDuration = 1;
     public float fadeInAlpha = 1;
     public float fadeOutAlpha = .2f;
     public float mouseExitDelay = .5f;
@@ -21,29 +23,18 @@ public class UIFadeout : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     {
         fadingIn = true;
         elapsed = 0;
-        print("pointer enter");
+        enabled = true;
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
         fadingIn = false;
-        print("pointer exit");
-    }
-
-    private void OnMouseEnter() {
-        fadingIn = true;
-        elapsed = 0;
-        print("mouse enter");
-    }
-
-    private void OnMouseExit() {
-        fadingIn = false;
-        print("mouse exit");
+        enabled = true;
     }
 
     private void Update()
     {
-        if (fadingIn && elapsed < fadeDuration)
+        if (fadingIn && elapsed < fadeInDuration)
         {
             elapsed += Time.fixedDeltaTime;
         } 
@@ -51,11 +42,20 @@ public class UIFadeout : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         {
             elapsed -= Time.fixedDeltaTime;  
         }
+        else return;
 
-        //canvasGroup.alpha = elapsed / fadeDuration;
         var temp = image.color;
-        temp.a = (elapsed / fadeDuration) * fadeInAlpha;
+        temp.a = (elapsed / fadeInDuration) * fadeInAlpha;
         image.color = temp;
+
+        var finishedFadeIn = fadingIn && elapsed > fadeInDuration;
+        var finishedFadeOut = !fadingIn && elapsed <= 0;
+
+        if (finishedFadeIn || finishedFadeOut)
+        {
+            enabled = false;
+            onFinishedFade.Invoke();
+        }
     }
 
     public static void DisplayRollingText(Text text, string str)

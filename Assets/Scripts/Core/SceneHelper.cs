@@ -8,14 +8,12 @@ public class SceneHelper : MonoBehaviour
     public PlayerController pc;
     public bool spawnPlayer;
 
-    public bool HasStartedFadeIn { get; private set; }
-
-    void Awake()
+    protected virtual void Awake()
     {
         fade.updateElapsed = false;
     }
 
-    void Start()
+    protected virtual void Start()
     {
         if (spawnPlayer)
         {
@@ -23,31 +21,11 @@ public class SceneHelper : MonoBehaviour
             pc.Possess(ship);
         }
 
-        Invoke("StartFading", 2);
+        Invoke("StartFadeIn", 2);
     }
 
-    public void StartFading()
+    public void StartFadeIn()
     {
         fade.updateElapsed = true;
-        HasStartedFadeIn = true;
-    }
-    
-    public void FadeToScene(string scnName)
-    {
-        if (!IsSceneValid(scnName)) return;
-        StartCoroutine(FadeRoutine("SCN_Debug"));
-    }
-
-    bool IsSceneValid(string scnName)
-    {
-        Scene scn = SceneManager.GetSceneByName(scnName);
-        return scn.buildIndex != 1;
-    }
-
-    private IEnumerator FadeRoutine(string scnName)
-    {
-        fade.fadeIn = false;
-        yield return new WaitForSeconds(1);
-        SceneManager.LoadScene(scnName);
     }
 }

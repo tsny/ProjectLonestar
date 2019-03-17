@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using UnityEngine.Rendering.PostProcessing;
 using UnityEngine.EventSystems;
 
-[RequireComponent(typeof(Camera), typeof(AudioListener), typeof(ShipCamera))]
+[RequireComponent(typeof(Camera), typeof(ShipCamera))]
 public class PlayerController : MonoBehaviour
 {
     private static PlayerController _inst;
@@ -44,7 +44,6 @@ public class PlayerController : MonoBehaviour
     public Flycam flycam;
     public Camera cam;
     public PostProcessLayer ppl;
-    public AudioListener listener;
     public float mouseRaycastDistance = 1000;
 
     public AimPosition CurrentAimPosition {get; set;}

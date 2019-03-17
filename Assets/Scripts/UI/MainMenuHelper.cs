@@ -1,32 +1,40 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
-public class MainMenuHelper : MonoBehaviour 
+public class MainMenuHelper : SceneHelper
 {
 	public Ship[] shipsToPutAtFullThrottle;
 	public Rigidbody cameraRb;
-	public SceneHelper helper;
+	public bool canTransitionToNewScene;
 
-	private void Start() 
+	protected override void Start() 
 	{
+		base.Start();
+
 		foreach (var ship in shipsToPutAtFullThrottle)
 		{
 			ship.engine.Throttle = 1;	
 		}
 	}
 
-	private void Update() 
+	public void SetCanTransition()
 	{
-		if (Input.GetKeyDown(KeyCode.Return) && helper.HasStartedFadeIn)
-		{
-			helper.FadeToScene("SCN_Debug");
-		}
+		canTransitionToNewScene = true;
 	}
 
-	// This will happen and then a fade out?
-	public void Activate()
+	public void LoadGameplayScene()
 	{
-		cameraRb.velocity = new Vector3(0, -5, 0);
+		SceneManager.LoadScene("SCN_Debug");
+	}
+
+	private void Update() 
+	{
+		if (Input.GetKeyDown(KeyCode.Return) && canTransitionToNewScene)
+		{
+			fade.fadeIn = false;
+			fade.updateElapsed = true;
+		}
 	}
 }
