@@ -14,6 +14,7 @@ public class HUDManager : MonoBehaviour
     public GameObject settingsPanel;
     public GameObject backgroundPanel;
     public TextMeshProUGUI objectiveText;
+    public Minimap minimap;
 
     public IndicatorManager im;
 
@@ -150,6 +151,8 @@ public class HUDManager : MonoBehaviour
         SetCruiseText(args.newShip.cruiseEngine.State);
 
         args.newShip.cruiseEngine.CruiseStateChanged += HandleCruiseChanged;
+
+        if (minimap != null) minimap.transformToMirror = args.newShip.transform;
 
         if (blinkIndicator != null) blinkIndicator.cd = args.newShip.engine.blinkCD;
         if (sidestepIndicator != null) sidestepIndicator.cd = args.newShip.engine.sidestepCD;
