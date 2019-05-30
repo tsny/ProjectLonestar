@@ -12,8 +12,6 @@ public class PlayerController : MonoBehaviour
     private static PlayerController _inst;
     public static PlayerController Instance { get { return _inst; } }
 
-    public HUDManager hudPrefab;
-
     [Header("Input")]
     public bool canPause = true;
     public bool inputAllowed = true;
@@ -67,10 +65,6 @@ public class PlayerController : MonoBehaviour
         _inst = this;
         name = "PLAYER CONTROLLER";
         enabled = false;
-
-        var hud = FindObjectOfType<HUDManager>();
-        if (!hud) hud = Instantiate(hudPrefab);
-        hud.SetPlayerController(this);
     }
 
     protected virtual void OnPossessedNewShip(PossessionEventArgs args)
