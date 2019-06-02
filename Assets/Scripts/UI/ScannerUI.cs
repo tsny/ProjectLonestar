@@ -1,8 +1,8 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
+using UnityEngine.UI;
 
 public class ScannerUI : ShipUIElement
 {
@@ -12,33 +12,15 @@ public class ScannerUI : ShipUIElement
     private Dictionary<ITargetable, ScannerPanelButton> targetButtonPairs = new Dictionary<ITargetable, ScannerPanelButton>();
     //private Scanner scanner;
 
-    public override void Init(Ship ship)
-    {
-        base.Init(ship);
-
-        //scanner = ship.hardpointSystem.scanner;
-        //scanner.ScannerUpdated += HandleNewScan;
-
-        //RefreshPanel();
-    }
-
     private void HandleNewScan(Scanner sender, List<ITargetable> targets)
     {
         ClearPanel();
-
         targets.ForEach(x => CreatePanelButton(x));
     }
 
     private void HandleScannerTargetAdded(Scanner sender, ITargetable entry)
     {
         CreatePanelButton(entry);
-    }
-
-    protected override void Clear()
-    {
-        ClearPanel();
-
-        base.Clear();
     }
 
     public ScannerPanelButton CreatePanelButton(ITargetable target)
@@ -75,7 +57,7 @@ public class ScannerUI : ShipUIElement
     {
         //foreach (var target in scanner.targets)
         //{
-            //CreatePanelButton(target);
+        //CreatePanelButton(target);
         //}
     }
 
@@ -94,5 +76,14 @@ public class ScannerUI : ShipUIElement
             RemovePanelButton(key);
         }
     }
+
+    public override void OnPossessed(PlayerController pc, PossessionEventArgs e)
+    {
+
+    }
+
+    public override void OnReleased(PlayerController pc, PossessionEventArgs e)
+    {
+        ClearPanel();
+    }
 }
- 

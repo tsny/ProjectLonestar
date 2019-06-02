@@ -1,11 +1,11 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Collections.Generic;
+using TMPro;
+using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
-using TMPro;
+using UnityEngine.UI;
 
 public class HUDManager : MonoBehaviour
 {
@@ -100,7 +100,7 @@ public class HUDManager : MonoBehaviour
         noti.Init(text);
     }
 
-    public void SetResolution (int resolutionIndex)
+    public void SetResolution(int resolutionIndex)
     {
         Resolution resolution = GameSettings.Instance.resolutions[resolutionIndex];
         Screen.SetResolution(resolution.width, resolution.height, Screen.fullScreen);
@@ -125,7 +125,7 @@ public class HUDManager : MonoBehaviour
         pc.PossessedNewShip += HandlePossessedNewShip;
         pc.ReleasedShip += HandleReleasedShip;
         pc.MouseStateChanged += HandleMouseStateChange;
-        GetComponentsInChildren(true, uiElements);
+        uiElements.ForEach(x => x.Init(pc));
         indicatorManager.cam = pc.cam;
     }
 
@@ -141,7 +141,7 @@ public class HUDManager : MonoBehaviour
 
     private void HandlePossessedNewShip(PlayerController sender, PossessionEventArgs args)
     {
-        uiElements.ForEach(x => x.Init(args.newShip));
+        uiElements.ForEach(x => x.Init(sender));
         SetCruiseText(args.newShip.cruiseEngine.State);
         args.newShip.cruiseEngine.CruiseStateChanged += HandleCruiseChanged;
         if (minimap != null) minimap.transformToMirror = args.newShip.transform;
@@ -207,8 +207,7 @@ public class HUDManager : MonoBehaviour
         resolutionDropdown.ClearOptions();
         resolutionDropdown.AddOptions(GameSettings.Instance.resolutionOptions);
 
-        resolutionDropdown.onValueChanged.AddListener
-        ( 
+        resolutionDropdown.onValueChanged.AddListener(
             delegate
             {
                 //var res = StringToResolution(resolutionDropdown.options[resolutionDropdown.value].text);
@@ -228,4 +227,3 @@ public class HUDManager : MonoBehaviour
         return res;
     }
 }
-

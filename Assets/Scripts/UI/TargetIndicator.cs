@@ -1,7 +1,7 @@
-﻿using UnityEngine;
+﻿using System;
 using System.Collections;
+using UnityEngine;
 using UnityEngine.UI;
-using System;
 
 public class TargetIndicator : MonoBehaviour
 {
@@ -118,8 +118,8 @@ public class TargetIndicator : MonoBehaviour
             return;
         }
 
-        content.SetActive( (TargetIsOnScreen && target.targetable) );
-        if (!content.activeSelf) return;
+        content.SetActive((TargetIsOnScreen && target.targetable));
+        if (!content.activeSelf)return;
 
         RangeCheck();
 
@@ -127,7 +127,7 @@ public class TargetIndicator : MonoBehaviour
         CalculateScale();
         CalculateTransparency();
 
-        if (target.health == null) return;
+        if (target.health == null)return;
 
         var health = target.health;
         healthBarImage.fillAmount = health.Amount / health.stats.maxHealth;
@@ -136,21 +136,21 @@ public class TargetIndicator : MonoBehaviour
 
     public virtual void Select()
     {
-        if (selected) return;
+        if (selected)return;
 
-        if (target.showHealthOnSelect) ToggleHealthBars(true);
+        if (target.showHealthOnSelect)ToggleHealthBars(true);
         ShowName(true);
         reticle.gameObject.SetActive(true);
         buttonImage.raycastTarget = false;
         animator.SetTrigger("Select");
 
         selected = true;
-        if (Selected != null) Selected(this);
+        if (Selected != null)Selected(this);
     }
 
     public virtual void Deselect()
     {
-        if (!selected) return;
+        if (!selected)return;
 
         selected = false;
 
@@ -160,7 +160,7 @@ public class TargetIndicator : MonoBehaviour
         buttonImage.raycastTarget = true;
         animator.SetTrigger("Select");
 
-        if (Deselected != null) Deselected(this);
+        if (Deselected != null)Deselected(this);
     }
 
     private void CalculatePosition()
@@ -186,7 +186,7 @@ public class TargetIndicator : MonoBehaviour
 
     private void RangeCheck()
     {
-        if ( (DistanceFromTarget > endFadeRange) && selected)
+        if ((DistanceFromTarget > endFadeRange) && selected)
         {
             Deselect();
         }
@@ -205,7 +205,7 @@ public class TargetIndicator : MonoBehaviour
             canvasGroup.alpha = 1 - distanceRatio;
         }
 
-        if (canvasGroup.alpha == 0 && selected) Deselect();
+        if (canvasGroup.alpha == 0 && selected)Deselect();
     }
 
     public void SetButtonColor(Item item)
@@ -228,7 +228,7 @@ public class TargetIndicator : MonoBehaviour
     {
         while (true)
         {
-            header.text = target.indicatorHeaderText + " - " + (int) DistanceFromTarget;
+            header.text = target.indicatorHeaderText + " - " + (int)DistanceFromTarget;
             yield return new WaitForSeconds(waitDur);
         }
     }

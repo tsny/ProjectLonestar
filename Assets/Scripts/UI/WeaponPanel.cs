@@ -1,21 +1,12 @@
-﻿using UnityEngine;
-using System.Collections;
-using UnityEngine.UI;
+﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
 
 public class WeaponPanel : ShipUIElement
 {
     public VerticalLayoutGroup vlg;
     public GameObject weaponPanelButton;
-
-    public override void Init(Ship ship)
-    {
-        base.Init(ship);
-
-        //hardpointSystem = ship.hardpointSystem;
-        //ClearPanel();
-        //PopulatePanel();
-    }
 
     protected override void Clear()
     {
@@ -42,5 +33,15 @@ public class WeaponPanel : ShipUIElement
                 Destroy(child.gameObject);
             }
         }
+    }
+
+    public override void OnPossessed(PlayerController pc, PossessionEventArgs e)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public override void OnReleased(PlayerController pc, PossessionEventArgs e)
+    {
+        throw new System.NotImplementedException();
     }
 }
