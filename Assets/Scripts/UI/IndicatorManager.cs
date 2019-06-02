@@ -1,12 +1,11 @@
 ﻿using System.Collections;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class IndicatorManager : ShipUIElement
 {
-    public List<Ship> shipsInScene = new List<Ship>();
     public TargetIndicator indicatorPrefab;
     public ScannerPanelButton scannerPanelButtonPrefab;
 
@@ -16,35 +15,24 @@ public class IndicatorManager : ShipUIElement
 
     public TargetIndicator selectedIndicator;
 
-    private void Awake()
+    public override void Init(PlayerController pc)
     {
-        Ship.Spawned += HandleShipSpawned;
-        Loot.Spawned += HandleLootSpawned;
+        base.Init(pc);
+        cam = pc.cam;
+
+        Refresh();
         TargetingInfo.Spawned += AddIndicator;
     }
 
-    private void OnDestroy() 
+    private void OnDestroy()
     {
         TargetingInfo.Spawned -= AddIndicator;
-        Ship.Spawned -= HandleShipSpawned;
-        Loot.Spawned -= HandleLootSpawned;
     }
 
-    private void HandleShipDied(Ship ship)
+    private void Refresh()
     {
-        shipsInScene.Remove(ship);
-        ship.Died -= HandleShipDied;
-    }
-
-    private void HandleShipSpawned(Ship ship)
-    {
-        shipsInScene.Add(ship);
-        ship.Died += HandleShipDied;
-    }
-
-    private void HandleLootSpawned(Loot loot)
-    {
-        //AddIndicator(loot.gameObject);
+        ClearIndicators();
+        CreateIndicators();
     }
 
     // Not really perfomant at all, consider not using ever lol
@@ -54,17 +42,9 @@ public class IndicatorManager : ShipUIElement
         foreach (var target in targets) AddIndicator(target);
     }
 
-    private void HandleShipReleased(PlayerController sender, PossessionEventArgs args)
-    {
-        ClearIndicators();
-        Clear();
-    }
-
     private void HandleIndicatorSelected(TargetIndicator newIndicator)
     {
-        if (selectedIndicator != null)
-            selectedIndicator.Deselect();
-
+        if (selectedIndicator != null) selectedIndicator.Deselect();
         selectedIndicator = newIndicator;
     }
 
@@ -76,9 +56,7 @@ public class IndicatorManager : ShipUIElement
 
     public void DeselectCurrentIndicator()
     {
-        if (selectedIndicator != null) 
-            selectedIndicator.Deselect();
-
+        if (selectedIndicator != null) selectedIndicator.Deselect();
         selectedIndicator = null;
     }
 
@@ -87,5 +65,15 @@ public class IndicatorManager : ShipUIElement
         var newIndicator = Instantiate(indicatorPrefab, indicatorLayer);
         newIndicator.Setup(info, cam);
         newIndicator.Selected += HandleIndicatorSelected;
+    }
+
+    public override void OnPossessed(PlayerController pc, PossessionEventArgs e)
+    {
+        Refresh();
+    }
+
+    public override void OnReleased(PlayerController pc, PossessionEventArgs e)
+    {
+        ClearIndicators();
     }
 }
