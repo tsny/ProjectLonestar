@@ -10,8 +10,9 @@ public class Gun : ShipComponent
     public Transform spawn;
     public AudioSource audioSource;
     public AudioClip clip;
+    public Collider[] ignoredColliders;
 
-    [Range(0,1)]
+    [Range(0, 1)]
     public float volume = .5f;
 
     public bool CanFire
@@ -49,7 +50,7 @@ public class Gun : ShipComponent
             }
         }
     }
-    
+
     public Cooldown cooldown;
     public bool ignoreCooldown = false;
     public bool useMaxTargetAngle = true;
@@ -62,6 +63,12 @@ public class Gun : ShipComponent
     private void OnFired() { if (Fired != null) Fired(this, EventArgs.Empty); }
     private void OnActivated() { if (Activated != null) Activated(this, EventArgs.Empty); }
     private void OnDeactivated() { if (Deactivated != null) Deactivated(this, EventArgs.Empty); }
+
+    public override void Initialize(Ship sender)
+    {
+        base.Initialize(sender);
+        ignoredColliders = sender.GetComponentsInChildren<Collider>();
+    }
 
     public void Toggle()
     {
@@ -80,51 +87,23 @@ public class Gun : ShipComponent
         target = transform.forward + transform.position;
     }
 
-    public bool Fire(AimPosition aim, Collider[] colliders)
+    public Projectile Fire(AimPosition aim)
     {
-        if (aim.HitAnything && aim.HitTargetReticle)
-        {
-            return FireAtMovingTarget(aim.TargetIndicator.Ship.rb, colliders);
+        var proj = SpawnProjectile();
+        if (proj == null) return null;
+        var pos = aim.rb == null ?
+            aim.pos : Utilities.CalculateAimPosition(SpawnPoint, rbTarget, stats.thrust);
 
-            // else
-            // {
-            //     return Fire(aim.hit.transform.position, colliders);
-            // }
-        }
+        proj.Initialize(pos, stats, ignoredColliders);
 
-        else if (aim.rb != null)
-        {
-            return FireAtMovingTarget(aim.rb, colliders);
-        }
-
-        else
-        {
-            return Fire(aim.pos, colliders);
-        }
+        return proj;
     }
 
-    public bool Fire(Collider[] colliders)
+    public Projectile SpawnProjectile()
     {
-        return Fire(target, colliders);
-    }
-
-    public bool Fire(Vector3 target, Collider[] colliders)
-    {
-        if (!CanFire) return false;
-
-        var proj = Instantiate(projectile, SpawnPoint, Quaternion.identity);
-        proj.Initialize(target, stats, colliders);
+        if (!CanFire) return null;
         if (clip && audioSource) audioSource.PlayOneShot(clip, volume);
-
         cooldown.Begin(this);
-        return true;
-    }
-
-    public bool FireAtMovingTarget(Rigidbody rbt, Collider[] colliders)
-    {
-        rbTarget = rbt;
-        if (rbTarget == null) return false;
-        var pos = Utilities.CalculateAimPosition(SpawnPoint, rbt, stats.thrust);
-        return Fire(pos, colliders);
+        return Instantiate(projectile, SpawnPoint, Quaternion.identity);
     }
 }

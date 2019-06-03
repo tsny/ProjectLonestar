@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Linq;
-using System.Collections.Generic;
-using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
 public class Ship : MonoBehaviour
 {
@@ -56,8 +56,8 @@ public class Ship : MonoBehaviour
                 float totalRange = 0;
                 foreach (var gun in guns) totalRange += gun.stats.range;
                 avgWepRange = totalRange / guns.Count;
-            } 
-            
+            }
+
             return avgWepRange;
         }
     }
@@ -85,7 +85,7 @@ public class Ship : MonoBehaviour
     public bool Possessed { get { return _possessed; } }
     public float shipCollisionForce = 10;
     public float collisionExplosionRadius = 10;
-    public int damagedEffectThreshold = 50; 
+    public int damagedEffectThreshold = 50;
     public Transform cameraPosition;
     public Transform firstPersonCameraPosition;
     public List<ParticleSystem> damagedEffects;
@@ -100,7 +100,10 @@ public class Ship : MonoBehaviour
     public event ShipEventHandler Died;
     public event PossessionEventHandler Possession;
 
-    protected void OnPossession(PlayerController pc, bool possessed) { if (Possession != null) Possession(pc, this, possessed); }
+    protected void OnPossession(PlayerController pc, bool possessed)
+    {
+        if (Possession != null) Possession(pc, this, possessed);
+    }
 
     void Awake()
     {
@@ -144,17 +147,17 @@ public class Ship : MonoBehaviour
         {
             Die();
             return;
-        } 
+        }
 
         if (health.Amount <= damagedEffectThreshold)
             damagedEffects.ForEach(x => x.Play());
-        else 
+        else
             damagedEffects.ForEach(x => x.Stop());
     }
 
     private void HandleCruiseChange(CruiseEngine sender, CruiseState newState)
     {
-        if (newState == CruiseState.Charging) 
+        if (newState == CruiseState.Charging)
         {
             engine.Drifting = false;
         }
@@ -162,7 +165,7 @@ public class Ship : MonoBehaviour
 
     private void HandleThrottleChange(Engine sender, ThrottleChangeEventArgs e)
     {
-        if (e.IsAccelerating == false) 
+        if (e.IsAccelerating == false)
             cruiseEngine.StopAnyCruise();
     }
 
@@ -177,7 +180,7 @@ public class Ship : MonoBehaviour
     public void SetPossessed(PlayerController pc, bool possessed)
     {
         // Add the random pilot's name
-        name = possessed ? "PLAYER SHIP" : "NPC SHIP"; 
+        name = possessed ? "-- PLAYER SHIP --" : shipDetails.shipName + " NPC";
         tag = possessed ? "Player" : "Ship";
 
         if (possessed) transform.SetSiblingIndex(0);
@@ -223,33 +226,18 @@ public class Ship : MonoBehaviour
         else aft.Deactivate();
     }
 
-    public bool FireActiveWeapons(AimPosition aimPos)
+    public bool FireActiveWeapons(AimPosition aim)
     {
         var allFired = false;
         foreach (Gun gun in guns)
         {
-            if (gun.IsActive) 
+            if (gun.IsActive)
             {
-                if (!FireWeaponHardpoint(gun, aimPos))
+                if (!gun.Fire(aim))
                     allFired = false;
             }
         }
         return allFired;
-    }
-
-    public bool FireWeaponHardpoint(Gun gun, AimPosition aim)
-    {
-        if (CanFireWeapons == false || gun.stats == null) return false;
-
-        if (gun.stats.energyDraw < energy && gun.Fire(aim, colliders.ToArray()))
-        {
-            energy -= gun.stats.energyDraw;
-            if (WeaponFired != null) WeaponFired(gun);
-            energyCooldown.Begin(this);
-            return true;
-        }
-
-        return false;
     }
 
     public void Rotate(char axis, float amount, float increment)
@@ -283,9 +271,15 @@ public class Ship : MonoBehaviour
             rotated += amount;
             switch (axis)
             {
-                case 'R': engine.AddRoll(increment); break;
-                case 'P': engine.AddPitch(increment); break;
-                case 'Y': engine.AddYaw(increment); break;
+                case 'R':
+                    engine.AddRoll(increment);
+                    break;
+                case 'P':
+                    engine.AddPitch(increment);
+                    break;
+                case 'Y':
+                    engine.AddYaw(increment);
+                    break;
             }
             yield return new WaitForFixedUpdate();
         }
@@ -302,9 +296,15 @@ public class Ship : MonoBehaviour
 
             switch (axis)
             {
-                case 'R': engine.AddRoll(amount); break;
-                case 'P': engine.AddPitch(amount); break;
-                case 'Y': engine.AddYaw(amount); break;
+                case 'R':
+                    engine.AddRoll(amount);
+                    break;
+                case 'P':
+                    engine.AddPitch(amount);
+                    break;
+                case 'Y':
+                    engine.AddYaw(amount);
+                    break;
             }
             elapsed += Time.fixedDeltaTime;
             yield return new WaitForFixedUpdate();
@@ -323,7 +323,7 @@ public class Ship : MonoBehaviour
         }
     }
 
-    private void OnCollisionEnter(Collision other) 
+    private void OnCollisionEnter(Collision other)
     {
         if (other.gameObject.CompareTag("Ship"))
         {

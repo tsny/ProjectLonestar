@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Animations;
-using System.Collections.Generic;
-using UnityEngine.Rendering.PostProcessing;
 using UnityEngine.EventSystems;
+using UnityEngine.Rendering.PostProcessing;
 
 [RequireComponent(typeof(Camera), typeof(ShipCamera))]
 public class PlayerController : MonoBehaviour
@@ -44,7 +44,7 @@ public class PlayerController : MonoBehaviour
     public PostProcessLayer ppl;
     public float mouseRaycastDistance = 1000;
 
-    public AimPosition CurrentAimPosition {get; set;}
+    public AimPosition CurrentAimPosition { get; set; }
 
     public delegate void PossessionEventHandler(PlayerController sender, PossessionEventArgs args);
     public event PossessionEventHandler PossessedNewShip;
@@ -130,34 +130,34 @@ public class PlayerController : MonoBehaviour
     {
         CurrentAimPosition = GetCurrentAimPosition();
 
-        if(Input.GetKeyDown(InputManager.PauseGameKey) && canPause)
+        if (Input.GetKeyDown(InputManager.PauseGameKey) && canPause)
         {
             GameStateUtils.TogglePause();
             return;
         }
 
-        if(!inputAllowed || ship == null) return;
+        if (!inputAllowed || ship == null) return;
 
         #region movement
-        if(Input.GetKey(InputManager.ThrottleUpKey) || Input.GetAxis("Mouse ScrollWheel") > 0f)
+        if (Input.GetKey(InputManager.ThrottleUpKey) || Input.GetAxis("Mouse ScrollWheel") > 0f)
         {
             ship.engine.ThrottleUp();
         }
 
-        else if(Input.GetKeyUp(InputManager.ThrottleUpKey))
+        else if (Input.GetKeyUp(InputManager.ThrottleUpKey))
         {
             Action<bool> action = ship.engine.Blink;
             StartCoroutine(DoubleTap(InputManager.ThrottleUpKey, action, true));
         }
 
-        if(Input.GetKey(InputManager.ThrottleDownKey) || Input.GetAxis("Mouse ScrollWheel") < 0f)
+        if (Input.GetKey(InputManager.ThrottleDownKey) || Input.GetAxis("Mouse ScrollWheel") < 0f)
         {
             ship.engine.ThrottleDown();
         }
 
-        if(Input.GetKey(InputManager.StrafeLeftKey))
+        if (Input.GetKey(InputManager.StrafeLeftKey))
         {
-            ship.engine.Strafe = -1; 
+            ship.engine.Strafe = -1;
         }
         else if (Input.GetKeyUp(InputManager.StrafeLeftKey))
         {
@@ -165,9 +165,9 @@ public class PlayerController : MonoBehaviour
             StartCoroutine(DoubleTap(InputManager.StrafeLeftKey, action));
         }
 
-        if(Input.GetKey(InputManager.StrafeRightKey))
+        if (Input.GetKey(InputManager.StrafeRightKey))
         {
-            ship.engine.Strafe = 1; 
+            ship.engine.Strafe = 1;
         }
         else if (Input.GetKeyUp(InputManager.StrafeRightKey))
         {
@@ -176,44 +176,44 @@ public class PlayerController : MonoBehaviour
         }
 
         // If neither strafe key is pressed, reset the ship's strafing
-        if(!Input.GetKey(InputManager.StrafeRightKey) && !Input.GetKey(InputManager.StrafeLeftKey))
+        if (!Input.GetKey(InputManager.StrafeRightKey) && !Input.GetKey(InputManager.StrafeLeftKey))
         {
-            ship.engine.Strafe = 0; 
-        }         
+            ship.engine.Strafe = 0;
+        }
 
-        if(Input.GetKeyDown(InputManager.ToggleMouseFlightKey))
+        if (Input.GetKeyDown(InputManager.ToggleMouseFlightKey))
         {
             ToggleMouseFlight();
         }
 
-        if(Input.GetKeyDown(InputManager.AfterburnerKey))
+        if (Input.GetKeyDown(InputManager.AfterburnerKey))
         {
             ship.ToggleAfterburner(true);
         }
-        
-        else if(Input.GetKeyUp(InputManager.AfterburnerKey))
+
+        else if (Input.GetKeyUp(InputManager.AfterburnerKey))
         {
             ship.ToggleAfterburner(false);
         }
 
-        if(Input.GetKeyDown(InputManager.ManualMouseFlightKey))
+        if (Input.GetKeyDown(InputManager.ManualMouseFlightKey))
         {
-            if(MouseState == MouseState.Off) StartCoroutine("ManualMouseFlightCoroutine");
+            if (MouseState == MouseState.Off) StartCoroutine("ManualMouseFlightCoroutine");
         }
 
-        if(Input.GetKeyUp(InputManager.ManualMouseFlightKey))
+        if (Input.GetKeyUp(InputManager.ManualMouseFlightKey))
         {
             StopAllCoroutines();
 
             if (MouseState == MouseState.Held) MouseState = MouseState.Off;
         }
 
-        if(Input.GetKey(KeyCode.LeftShift) && Input.GetKeyDown(InputManager.ThrottleUpKey))
+        if (Input.GetKey(KeyCode.LeftShift) && Input.GetKeyDown(InputManager.ThrottleUpKey))
         {
             ship.cruiseEngine.ToggleCruiseEngines();
         }
 
-        if(Input.GetKeyDown(InputManager.KillEnginesKey))
+        if (Input.GetKeyDown(InputManager.KillEnginesKey))
         {
             ship.engine.Drifting = !ship.engine.Drifting;
         }
@@ -221,57 +221,57 @@ public class PlayerController : MonoBehaviour
         #endregion
 
         #region hardpoints
-        if(Input.GetKey(InputManager.Hardpoint1Key))
+        if (Input.GetKey(InputManager.Hardpoint1Key))
         {
-            ship.FireWeaponHardpoint(ship.guns[0], CurrentAimPosition);
+            ship.guns[0].Fire(CurrentAimPosition);
         }
 
-        if(Input.GetKey(InputManager.Hardpoint2Key))
+        if (Input.GetKey(InputManager.Hardpoint2Key))
         {
-            ship.FireWeaponHardpoint(ship.guns[1], CurrentAimPosition);
+            ship.guns[1].Fire(CurrentAimPosition);
         }
 
-        if(Input.GetKey(InputManager.Hardpoint3Key))
+        if (Input.GetKey(InputManager.Hardpoint3Key))
         {
-            ship.FireWeaponHardpoint(ship.guns[2], CurrentAimPosition);
+            ship.guns[2].Fire(CurrentAimPosition);
         }
 
-        if(Input.GetKey(InputManager.Hardpoint4Key))
+        if (Input.GetKey(InputManager.Hardpoint4Key))
         {
-            ship.FireWeaponHardpoint(ship.guns[3], CurrentAimPosition);
+            ship.guns[3].Fire(CurrentAimPosition);
         }
 
-        if(Input.GetKey(InputManager.Hardpoint5Key))
+        if (Input.GetKey(InputManager.Hardpoint5Key))
         {
-            ship.FireWeaponHardpoint(ship.guns[4], CurrentAimPosition);
+            ship.guns[4].Fire(CurrentAimPosition);
         }
 
-        if(Input.GetKey(InputManager.Hardpoint6Key))
+        if (Input.GetKey(InputManager.Hardpoint6Key))
         {
-            ship.FireWeaponHardpoint(ship.guns[5], CurrentAimPosition);
+            ship.guns[5].Fire(CurrentAimPosition);
         }
 
-        if(Input.GetKey(InputManager.Hardpoint7Key))
+        if (Input.GetKey(InputManager.Hardpoint7Key))
         {
-            ship.FireWeaponHardpoint(ship.guns[6], CurrentAimPosition);
+            ship.guns[6].Fire(CurrentAimPosition);
         }
 
-        if(Input.GetKey(InputManager.Hardpoint8Key))
+        if (Input.GetKey(InputManager.Hardpoint8Key))
         {
-            ship.FireWeaponHardpoint(ship.guns[7], CurrentAimPosition);
+            ship.guns[7].Fire(CurrentAimPosition);
         }
 
-        if(Input.GetKey(InputManager.Hardpoint9Key))
+        if (Input.GetKey(InputManager.Hardpoint9Key))
         {
-            ship.FireWeaponHardpoint(ship.guns[8], CurrentAimPosition);
+            ship.guns[8].Fire(CurrentAimPosition);
         }
 
-        if(Input.GetKey(InputManager.Hardpoint10Key))
+        if (Input.GetKey(InputManager.Hardpoint10Key))
         {
-            ship.FireWeaponHardpoint(ship.guns[9], CurrentAimPosition);
+            ship.guns[9].Fire(CurrentAimPosition);
         }
 
-        if(Input.GetKey(InputManager.FireKey))
+        if (Input.GetKey(InputManager.FireKey))
         {
             ship.FireActiveWeapons(CurrentAimPosition);
         }
@@ -305,7 +305,7 @@ public class PlayerController : MonoBehaviour
 
     public void ToggleMouseFlight()
     {
-        switch(MouseState)
+        switch (MouseState)
         {
             case MouseState.Off:
                 MouseState = MouseState.Toggled;
@@ -356,7 +356,7 @@ public class PlayerController : MonoBehaviour
                 action();
                 yield break;
             }
-        
+
             elapsed += Time.deltaTime;
             yield return new WaitForEndOfFrame();
         }
@@ -373,7 +373,7 @@ public class PlayerController : MonoBehaviour
                 action(value);
                 yield break;
             }
-        
+
             elapsed += Time.deltaTime;
             yield return new WaitForEndOfFrame();
         }
@@ -382,7 +382,7 @@ public class PlayerController : MonoBehaviour
     private AimPosition GetCurrentAimPosition()
     {
         // Work around for CustomStandaloneInput being null in the first couple seconds after the scene load
-        if (Time.timeSinceLevelLoad < 1) 
+        if (Time.timeSinceLevelLoad < 1)
             return AimPosition.FromMouse(cam, false, mouseRaycastDistance);
 
         var sim = (CustomStandaloneInputModule) EventSystem.current.currentInputModule;
