@@ -117,3 +117,36 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+
+# LONESTAR
+
+.collabignore
+buildversion.txt
+
+UnityPackageManager/
+Assets/Animations
+Assets/Audio
+Assets/Fonts
+Assets/Art
+Assets/Materials
+Assets/Resources
+Assets/Meshes
+Assets/Scenes
+Assets/Prefabs
+Assets/Shaders
+Assets/StreamingAssets
+Assets/Textures
+Assets/3rd Party
+Assets/SciFiGUI
+Assets/Gizmos
+
+Packages/
+
+*.asset
+*.meta
+*.mat
+*.prefab
+
+launch.json
+settings.json
+ProjectVersion.txt
