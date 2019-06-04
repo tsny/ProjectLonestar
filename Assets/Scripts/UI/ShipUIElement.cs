@@ -1,20 +1,25 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System.Collections;
+using UnityEngine;
 
-public class ShipUIElement : MonoBehaviour
+public abstract class ShipUIElement : MonoBehaviour
 {
+    public PlayerController pc;
     public Ship ship;
 
-    public virtual void Init(Ship newShip)
+    public virtual void Init(PlayerController pc)
     {
-        if (ship != null)
-            Clear();
-
-        ship = newShip;
+        this.pc = pc;
+        ship = pc.ship;
+        pc.PossessedNewShip += OnPossessed;
+        pc.ReleasedShip += OnReleased;
     }
 
     protected virtual void Clear()
     {
+        pc = null;
         ship = null;
     }
+
+    public abstract void OnPossessed(PlayerController pc, PossessionEventArgs e);
+    public abstract void OnReleased(PlayerController pc, PossessionEventArgs e);
 }

@@ -1,6 +1,6 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 using UnityEngine.UI;
-using System.Collections;
 
 public class ShipStatusUI : ShipUIElement
 {
@@ -14,9 +14,9 @@ public class ShipStatusUI : ShipUIElement
     public Afterburner afterburnerHardpoint;
     public Engine engine;
 
-    public override void Init(Ship ship)
+    public override void Init(PlayerController pc)
     {
-        base.Init(ship);
+        base.Init(pc);
         afterburnerHardpoint = ship.engine.aft;
         engine = ship.engine;
     }
@@ -48,5 +48,16 @@ public class ShipStatusUI : ShipUIElement
         {
             afterburnerText.text = "Afterburner: OFFLINE";
         }
+    }
+
+    public override void OnPossessed(PlayerController pc, PossessionEventArgs e)
+    {
+        this.enabled = true;
+    }
+
+    public override void OnReleased(PlayerController pc, PossessionEventArgs e)
+    {
+        speedText.text = "";
+        afterburnerText.text = "";
     }
 }

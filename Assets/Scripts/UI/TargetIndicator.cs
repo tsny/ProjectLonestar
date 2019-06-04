@@ -20,13 +20,7 @@ public class TargetIndicator : MonoBehaviour
             return targetViewportPoint.z > 0;
         }
     }
-    public bool HasTarget
-    {
-        get
-        {
-            return target != null;
-        }
-    }
+
     public bool TargetIsInRange
     {
         get
@@ -113,7 +107,7 @@ public class TargetIndicator : MonoBehaviour
 
     private void Update()
     {
-        if (!HasTarget)
+        if (target == null)
         {
             Destroy(gameObject);
             return;
