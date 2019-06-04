@@ -13,7 +13,7 @@ public class JobGenerator : MonoBehaviour
         int numOfEnemies = UnityEngine.Random.Range(1, 7);
         string adjective = adjectives[new System.Random().Next(adjectives.Length)];
         return numOfEnemies + " " + adjective + " enemy ships need to be dealt with";
-    }    
+    }
 
     private void HandleSpawnTriggered()
     {
@@ -45,7 +45,7 @@ public class JobGenerator : MonoBehaviour
         if (currentMission) Destroy(currentMission);
         if (currentSpawner) currentSpawner.Triggered -= HandleSpawnTriggered;
     }
-    
+
     private ShipSpawner GetRandomZone()
     {
         if (missionZones == null || missionZones.Length < 1)

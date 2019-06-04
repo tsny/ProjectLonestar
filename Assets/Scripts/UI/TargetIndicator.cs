@@ -1,7 +1,7 @@
-﻿using UnityEngine;
+﻿using System;
 using System.Collections;
+using UnityEngine;
 using UnityEngine.UI;
-using System;
 
 public class TargetIndicator : MonoBehaviour
 {
@@ -88,7 +88,7 @@ public class TargetIndicator : MonoBehaviour
         content.SetActive(false);
     }
 
-    public void Setup(TargetingInfo info, Camera cam)
+    public void Setup(TargetingInfo info, Color color, Camera cam)
     {
         targetRb = info.GetComponent<Rigidbody>();
 
@@ -102,6 +102,7 @@ public class TargetIndicator : MonoBehaviour
         target = info;
 
         this.cam = cam ?? Camera.main;
+        buttonImage.color = color;
 
         ToggleHealthBars(false);
         ShowName(false);
@@ -118,7 +119,7 @@ public class TargetIndicator : MonoBehaviour
             return;
         }
 
-        content.SetActive( (TargetIsOnScreen && target.targetable) );
+        content.SetActive((TargetIsOnScreen && target.targetable));
         if (!content.activeSelf) return;
 
         RangeCheck();
@@ -186,7 +187,7 @@ public class TargetIndicator : MonoBehaviour
 
     private void RangeCheck()
     {
-        if ( (DistanceFromTarget > endFadeRange) && selected)
+        if ((DistanceFromTarget > endFadeRange) && selected)
         {
             Deselect();
         }

@@ -1,6 +1,6 @@
 ﻿using System.Collections;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -23,7 +23,7 @@ public class IndicatorManager : ShipUIElement
         TargetingInfo.Spawned += AddIndicator;
     }
 
-    private void OnDestroy() 
+    private void OnDestroy()
     {
         TargetingInfo.Spawned -= AddIndicator;
         Ship.Spawned -= HandleShipSpawned;
@@ -76,7 +76,7 @@ public class IndicatorManager : ShipUIElement
 
     public void DeselectCurrentIndicator()
     {
-        if (selectedIndicator != null) 
+        if (selectedIndicator != null)
             selectedIndicator.Deselect();
 
         selectedIndicator = null;
@@ -85,7 +85,7 @@ public class IndicatorManager : ShipUIElement
     public void AddIndicator(TargetingInfo info)
     {
         var newIndicator = Instantiate(indicatorPrefab, indicatorLayer);
-        newIndicator.Setup(info, cam);
+        newIndicator.Setup(info, Color.white, cam);
         newIndicator.Selected += HandleIndicatorSelected;
     }
 }
