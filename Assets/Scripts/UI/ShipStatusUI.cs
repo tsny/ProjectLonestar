@@ -50,6 +50,9 @@ public class ShipStatusUI : ShipUIElement
         }
     }
 
+    public void HandleShipCruising()
+    { }
+
     public override void OnPossessed(PlayerController pc, PossessionEventArgs e)
     {
         this.enabled = true;
